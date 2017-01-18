@@ -1,0 +1,21 @@
+<?php
+
+namespace :app_namespaceModels;
+
+use Despark\Cms\Models\AdminModel;
+use Despark\Cms\Admin\Traits\AdminModelTrait;
+:uses
+
+
+class :model_name extends AdminModel :implementations
+{
+    :traits
+
+    protected $table = ':table_name';
+
+    protected $fillable = [];
+
+    protected $rules = [];
+
+    protected $identifier = ':identifier';
+}
