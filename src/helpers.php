@@ -1,22 +1,34 @@
 <?php
 
-if ( ! function_exists('formatDate')) {
+if (! function_exists('formatDate')) {
     function formatDate($date, $format = 'F jS, Y')
     {
         return date($format, strtotime($date));
     }
 }
 
-if ( ! function_exists('set_active')) {
+if (! function_exists('set_active')) {
     function set_active($routeNames, $active = 'is-active')
     {
         return in_array(\Route::currentRouteName(), $routeNames) ? $active : '';
     }
 }
 
-if ( ! function_exists('auto_p')) {
+if (! function_exists('auto_p')) {
     function auto_p($string)
     {
         return '<p>'.str_replace("\n", "</p>\n<p>", $string)."</p>\n";
+    }
+}
+
+if (! function_exists('build_resource_backport')) {
+    function build_resource_backport($name)
+    {
+        $routeNames = [];
+        foreach (['create', 'show', 'store', 'destroy', 'update', 'edit', 'index'] as $action) {
+            $routeNames[$action] = $name.'.'.$action;
+        }
+
+        return $routeNames;
     }
 }

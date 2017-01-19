@@ -66,6 +66,6 @@ trait UploadFilesTrait
      */
     public function getFileFields()
     {
-        return config('admin.'.$this->identifier.'.file_fields');
+        return config('resources.'.$this->identifier.'.file_fields');
     }
 }

@@ -22,7 +22,7 @@ use Despark\Cms\Http\Middleware\RoleMiddleware;
 use Illuminate\Console\AppNamespaceDetectorTrait;
 use Illuminate\Contracts\View\View as ViewContract;
 
-class AdminServiceProvider extends ServiceProvider
+class CoreServiceProvider extends ServiceProvider
 {
     use AppNamespaceDetectorTrait;
 
@@ -32,7 +32,7 @@ class AdminServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-        //        \Despark\Cms\Console\Commands\Admin\InstallCommand::class,
+        \Despark\Cms\Console\Commands\InstallCommand::class,
         \Despark\Cms\Console\Commands\Admin\ResourceCommand::class,
         \Despark\Cms\Console\Commands\File\ClearTemp::class,
         \Despark\Cms\Console\Commands\Image\Rebuild::class,
@@ -49,12 +49,9 @@ class AdminServiceProvider extends ServiceProvider
             $schedule->command('igni:file:clear')->weeklyOn(6);
         });
 
-        // Route Middleware
-        $router->middleware('role', RoleMiddleware::class);
-
         // NB:Version dependent
         // Routes
-        $router->group(['namespace' => 'Despark\Cms\Http\Controllers', 'middleware' => ['web']], function ($router) {
+        $router->group(['namespace' => 'Despark\Cms\Http\Controllers'], function ($router) {
             require __DIR__.'/../routes/web.php';
         });
 
@@ -63,26 +60,40 @@ class AdminServiceProvider extends ServiceProvider
             __DIR__.'/../../routes/resources.php' => base_path('routes/resources.php'),
         ]);
 
-        // We need to know the namespace of the running app.
+        // Register our resources route
         if (File::exists(base_path('routes/resources.php'))) {
-            $router->group([
-                'namespace'  => $this->getAppNamespace().'Http\Controllers',
-                'prefix'     => 'admin',
-                'middleware' => ['web', 'auth', 'role:,access_admin'],
-            ],
-                function () {
-                    require base_path('routes/resources.php');
-                });
+            $resourcesRoute = base_path('routes/resources.php');
+        } else {
+            $resourcesRoute = __DIR__.'/../../routes/resources.php';
         }
+        $router->group([
+            'namespace' => $this->getAppNamespace().'Http\Controllers',
+            'prefix' => 'admin',
+            'middleware' => ['auth.admin'],
+        ],
+            function () use ($resourcesRoute) {
+                require $resourcesRoute;
+            });
+
         // Register Assets
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ignicms');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'lang');
+
+        // Register config
+        $this->mergeConfigFrom(__DIR__.'/../../config/ignicms.php', 'ignicms');
+        $this->mergeConfigFrom(__DIR__.'/../../config/admin/sidebar.php', 'admin.sidebar');
+        $this->mergeConfigFrom(__DIR__.'/../../config/resources/user.php', 'resources.user');
 
         // Register the application commands
         $this->commands($this->commands);
 
         // Publish the Resources
 
+        // TODO VERSION DEPENDANT
+        // Migrations
+        $this->publishes([
+            __DIR__.'/../../database/migrations' => database_path('migrations'),
+        ], 'migrations');
         // Configs
         $this->publishes([
             __DIR__.'/../../config/' => config_path(),
@@ -105,27 +116,26 @@ class AdminServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../public/' => public_path(),
         ], 'public');
-        // App
-        $this->publishes([
-            __DIR__.'/../../app/' => base_path('/app'),
-        ], 'app');
+        //        // App
+        //        $this->publishes([
+        //            __DIR__.'/../../app/' => base_path('/app'),
+        //        ], 'app');
 
         $this->publishes([
-            __DIR__.'/../../.env.example'  => base_path('.env.example'),
-            __DIR__.'/../../package.json'  => base_path('package.json'),
-            __DIR__.'/../../bower.json'    => base_path('bower.json'),
-            __DIR__.'/../../.bowerrc'      => base_path('.bowerrc'),
-            __DIR__.'/../../.babelrc'      => base_path('.babelrc'),
-            __DIR__.'/../../.eslintrc'     => base_path('.eslintrc'),
+            __DIR__.'/../../package.json' => base_path('package.json'),
+            __DIR__.'/../../bower.json' => base_path('bower.json'),
+            __DIR__.'/../../.bowerrc' => base_path('.bowerrc'),
+            __DIR__.'/../../.babelrc' => base_path('.babelrc'),
+            __DIR__.'/../../.eslintrc' => base_path('.eslintrc'),
             __DIR__.'/../../.editorconfig' => base_path('.editorconfig'),
-            __DIR__.'/../../gulpfile.js'   => base_path('gulpfile.js'),
+            __DIR__.'/../../gulpfile.js' => base_path('gulpfile.js'),
         ]);
 
-        $configPaths = config('admin.bootstrap.paths');
+        $configPaths = config('ignicms.paths');
         if ($configPaths) {
             foreach ($configPaths as $key => $path) {
-                if ( ! is_dir($path)) {
-                    mkdir($path, 775, true);
+                if (! is_dir($path)) {
+                    File::makeDirectory($path, 0755, true);
                 }
             }
         }
@@ -141,43 +151,12 @@ class AdminServiceProvider extends ServiceProvider
         /*
          * Register the service provider for the dependency.
          */
-        $this->app->register('Collective\Html\HtmlServiceProvider');
-        $this->app->register('Intervention\Image\ImageServiceProvider');
+        $this->app->register(\Collective\Html\HtmlServiceProvider::class);
+        $this->app->register(\Intervention\Image\ImageServiceProvider::class);
         $this->app->register(\Cviebrock\EloquentSluggable\ServiceProvider::class);
-        $this->app->register('Roumen\Sitemap\SitemapServiceProvider');
-        $this->app->register('Rutorika\Sortable\SortableServiceProvider');
-        $this->app->register('Jenssegers\Agent\AgentServiceProvider');
-        $this->app->register('Spatie\Permission\PermissionServiceProvider');
-        $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
-
-        /*
-         * Create aliases for the dependency.
-         */
-        $loader = AliasLoader::getInstance();
-        $loader->alias('Form', 'Collective\Html\FormFacade');
-        $loader->alias('Html', 'Collective\Html\HtmlFacade');
-        $loader->alias('Image', 'Intervention\Image\Facades\Image');
-        $loader->alias('Agent', 'Jenssegers\Agent\Facades\Agent');
-
-        /*
-         * Assets manager
-         */
-        $this->app->singleton(AssetsContract::class, AssetManager::class);
-
-        /*
-         * Manually register Mailchimp
-         */
-        $this->app->singleton('Mailchimp', function ($app) {
-            $config = $app['config']['mailchimp'];
-
-            return new Mailchimp($config['apikey']);
-        });
-
-        /*
-         * Swap Permission model implementation
-         */
-        $this->app->bind(Permission::class, \Despark\Cms\Models\Permission::class);
-        $this->app->bind(Role::class, \Despark\Cms\Models\Role::class);
+        // $this->app->register('Roumen\Sitemap\SitemapServiceProvider');
+        $this->app->register(\Rutorika\Sortable\SortableServiceProvider::class);
+        //        $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
 
         /*
          * Image contract implementation
@@ -187,15 +166,18 @@ class AdminServiceProvider extends ServiceProvider
         });
 
         /*
-         * Flowjs
+         * Create aliases for the dependency.
          */
-        $this->app->bind(\Flow\File::class, function () {
-            $config = new \Flow\Config([
-                'tempDir' => FileHelper::getTempDirectory(),
-            ]);
+        $loader = AliasLoader::getInstance();
+        $loader->alias('Form', 'Collective\Html\FormFacade');
+        $loader->alias('Html', 'Collective\Html\HtmlFacade');
+        // Todo Core considerations
+        $loader->alias('Image', 'Intervention\Image\Facades\Image');
 
-            return new \Flow\File($config);
-        });
+        /*
+         * Assets manager
+         */
+        $this->app->singleton(AssetsContract::class, AssetManager::class);
 
         /*
          * Switch View implementation

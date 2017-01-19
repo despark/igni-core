@@ -1,6 +1,6 @@
 <?php
 
-namespace Despark\Cms\Http\Controllers\Admin;
+namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Events\Admin\AfterSidebarSet;
 use Despark\Cms\Models\AdminModel;
@@ -17,7 +17,7 @@ use Yajra\Datatables\Datatables;
 /**
  * Class AdminController.
  */
-abstract class AdminController extends BaseController
+class AdminController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ManagesAssets;
     /**
@@ -61,8 +61,8 @@ abstract class AdminController extends BaseController
     {
         $this->setSidebar();
 
-        $this->paginateLimit = config('admin.bootstrap.paginateLimit');
-        $this->defaultFormView = config('admin.bootstrap.defaultFormView');
+        $this->paginateLimit = config('ignicms.paginateLimit');
+        $this->defaultFormView = config('ignicms.defaultFormView');
 
         $this->viewData['pageTitle'] = 'Admin';
         $this->viewData['inputs'] = \Request::all();

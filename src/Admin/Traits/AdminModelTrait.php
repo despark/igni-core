@@ -56,7 +56,7 @@ trait AdminModelTrait
     public function getAdminTableColumns()
     {
         if ( ! isset($this->adminColumns)) {
-            $this->adminColumns = config('admin.'.$this->getIdentifier().'.adminColumns', []);
+            $this->adminColumns = config('resources.'.$this->getIdentifier().'.adminColumns', []);
         }
 
         return $this->adminColumns;
@@ -199,7 +199,7 @@ trait AdminModelTrait
     public function getFormFields()
     {
         if ( ! isset($this->adminFormFields)) {
-            $this->adminFormFields = config('admin.'.$this->getIdentifier().'.adminFormFields', []);
+            $this->adminFormFields = config('resources.'.$this->getIdentifier().'.adminFormFields', []);
         }
 
         return $this->adminFormFields;

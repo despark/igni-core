@@ -36,17 +36,17 @@ class ResourceCompiler
      * @var array
      */
     protected $modelReplacements = [
-        ':identifier'           => '',
-        ':model_name'           => '',
-        ':app_namespace'        => '',
+        ':identifier' => '',
+        ':model_name' => '',
+        ':app_namespace' => '',
         ':image_traits_include' => '',
-        ':image_traits_use'     => '',
-        ':file_traits_include'  => '',
-        ':file_traits_use'      => '',
-        ':table_name'           => '',
-        ':implementations'      => [],
-        ':uses'                 => [],
-        ':traits'               => [],
+        ':image_traits_use' => '',
+        ':file_traits_include' => '',
+        ':file_traits_use' => '',
+        ':table_name' => '',
+        ':implementations' => [],
+        ':uses' => [],
+        ':traits' => [],
     ];
 
     /**
@@ -54,21 +54,21 @@ class ResourceCompiler
      */
     protected $configReplacements = [
         ':image_fields' => '',
-        ':file_fields'  => '',
+        ':file_fields' => '',
     ];
 
     /**
      * @var array
      */
     protected $controllerReplacements = [
-        ':identifier'      => '',
-        ':model_name'      => '',
+        ':identifier' => '',
+        ':model_name' => '',
         ':controller_name' => '',
-        ':app_namespace'   => '',
-        ':resource'        => '',
-        ':create_route'    => '',
-        ':edit_route'      => '',
-        ':destroy_route'   => '',
+        ':app_namespace' => '',
+        ':resource' => '',
+        ':create_route' => '',
+        ':edit_route' => '',
+        ':destroy_route' => '',
     ];
 
     /**
@@ -132,6 +132,7 @@ class ResourceCompiler
 
         $this->prepareReplacements();
 
+        // TODO VERSION DEPENDANT
         // Check to see if route is not already used
         if (\Route::has($this->identifier.'.index')) {
             // Check if admin is also free
@@ -146,7 +147,7 @@ class ResourceCompiler
         }
 
         $route = "Route::resource('$this->identifier', 'Admin\\".$this->command->controller_name($this->identifier)."'";
-        if ( ! empty($this->routeNames)) {
+        if (! empty($this->routeNames)) {
             // create the resource names
             $route .= ',['.PHP_EOL."'names' => [".PHP_EOL;
             foreach ($this->routeNames as $action => $name) {
@@ -299,8 +300,10 @@ class ResourceCompiler
      */
     public function appendToFile($file, $content)
     {
-        if ( ! file_exists($file)) {
-            throw new \Exception('File is missing');
+        if (! file_exists($file)) {
+            touch($file);
+            file_put_contents($file, '<?php'.PHP_EOL, FILE_APPEND);
+            //            throw new \Exception("File '$file' is missing. Cannot append");
         }
         file_put_contents($file, $content, FILE_APPEND);
     }

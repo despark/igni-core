@@ -87,7 +87,7 @@ class ResourceCommand extends Command
     {
         $template = $this->getTemplate($type);
         $template = $this->compiler->{'render_'.$type}($template);
-        $path = config('admin.bootstrap.paths.'.$type);
+        $path = config('ignicms.paths.'.$type);
         $filename = $this->{$type.'_name'}().'.php';
         $this->saveResult($template, $path, $filename);
     }
@@ -99,12 +99,6 @@ class ResourceCommand extends Command
     public static function normalize($str)
     {
         return snake_case($str);
-        $str[0] = strtolower($str[0]);
-        $func = create_function('$c', 'return "_".strtolower($c[1]);');
-
-        $snake = preg_replace_callback('/([A-Z])/', $func, $str);
-
-        return str_replace(' ', '', $snake);
     }
 
     protected function askImageUploads()

@@ -1,4 +1,4 @@
-@extends('ignicms::auth.auth')
+@extends('ignicms::admin.auth.auth')
 
 @section('pageTitle', 'Log in')
 

@@ -4,9 +4,9 @@
     <!-- Logo -->
     <a href="{{ url('/admin') }}" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini">{{ config('admin.bootstrap.projectName')[0] }}</span>
+        <span class="logo-mini">{{ config('ignicms.projectName')[0] }}</span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg">{{ config('admin.bootstrap.projectName') }} Administration</span>
+        <span class="logo-lg">{{ config('ignicms.projectName') }} Administration</span>
     </a>
 
     <!-- Header Navbar -->
@@ -24,11 +24,6 @@
 
                     <!-- Menu Toggle Button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <!-- The user image in the navbar-->
-                        @if (Auth::user()->hasImages())
-                            <img src="{{ asset(Auth::user()->getFilePathByOrientation(2)) }}" class="user-image"
-                                 alt="User Image"/>
-                    @endif
                     <!-- hidden-xs hides the username on small devices so only the image appears. -->
                         <span class="hidden-xs">{{ Auth::user()->name }}</span>
                     </a>
@@ -36,10 +31,6 @@
                     <ul class="dropdown-menu">
                         <!-- The user image in the menu -->
                         <li class="user-header">
-                            @if (Auth::user()->hasImages())
-                                <img src="{{ asset(Auth::user()->getFilePathByOrientation(2)) }}" class="img-circle"
-                                     alt="User Image"/>
-                            @endif
                             <p>
                                 {{ Auth::user()->name }}
                                 <small>Member since {{ Auth::user()->created_at->format('F jS, Y') }}</small>
@@ -49,7 +40,7 @@
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-right">
-                                <form method="post" action="{{url('/logout')}}">
+                                <form method="post" action="{{url('/admin/logout')}}">
                                     {{csrf_field()}}
                                     <button class="btn btn-default btn-flat">Sign out</button>
                                 </form>

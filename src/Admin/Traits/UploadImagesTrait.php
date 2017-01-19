@@ -117,6 +117,6 @@ trait UploadImagesTrait
      */
     public function getImageFields()
     {
-        return config('admin.'.$this->identifier.'.image_fields');
+        return config('resources.'.$this->identifier.'.image_fields');
     }
 }

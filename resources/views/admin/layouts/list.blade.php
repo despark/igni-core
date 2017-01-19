@@ -150,7 +150,7 @@
 
     var table = $('#data-table').DataTable({
         paging: isSortable !== false,
-        pageLength: {{ config('admin.bootstrap.paginateLimit') }},
+        pageLength: {{ config('ignicms.paginateLimit') }},
         lengthChange: false,
         searching: true,
         ordering: isSortable !== false,
