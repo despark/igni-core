@@ -1,6 +1,6 @@
 {
     "name": "despark/igni-core",
-    "description": "Administrative interface builder for Laravel 5.1",
+    "description": "Igni CMS Kernel",
     "keywords": [
         "framework",
         "laravel",

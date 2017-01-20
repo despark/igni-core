@@ -18,23 +18,39 @@ class FieldServiceProvider extends ServiceProvider
     /**
      * @var array
      */
-    protected $fields = [
-        'gallery' => Gallery::class,
-    ];
+    protected $fields = [];
 
+    /**
+     *
+     */
     public function register()
     {
-        foreach ($this->fields as $field => $class) {
+        foreach ($this->getFields() as $field => $class) {
             $this->app->bind($field.'_field', function ($app, $params) use ($class) {
                 return new $class($params['model'], $params['field'], $params['options'], $params['element_name']);
             });
         }
     }
 
+    /**
+     * @return array
+     */
     public function provides()
     {
+        $fields = $this->getFields();
+
         return array_map(function ($field) {
             return $field.'_field';
-        }, array_keys($this->fields));
+        }, array_keys($fields));
+    }
+
+    /**
+     * Get all registered fields.
+     * @return array
+     */
+    public function getFields()
+    {
+        // TODO add some way to alter them by other modules.
+        return $this->fields;
     }
 }
