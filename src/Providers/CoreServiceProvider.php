@@ -95,13 +95,10 @@ class CoreServiceProvider extends ServiceProvider
         // Resources
         $this->publishes([
             __DIR__.'/../../resources/assets' => base_path('/resources/assets'),
-        ], 'resources');
-        $this->publishes([
             __DIR__.'/../../resources/lang' => base_path('/resources/lang'),
-        ], 'resources');
-        $this->publishes([
             __DIR__.'/../../resources/icomoon.json' => base_path('/resources/icomoon.json'),
         ], 'resources');
+
         // Gulp
         $this->publishes([
             __DIR__.'/../../gulp/' => base_path('/gulp'),
@@ -123,7 +120,7 @@ class CoreServiceProvider extends ServiceProvider
             __DIR__.'/../../.eslintrc' => base_path('.eslintrc'),
             __DIR__.'/../../.editorconfig' => base_path('.editorconfig'),
             __DIR__.'/../../gulpfile.js' => base_path('gulpfile.js'),
-        ]);
+        ], ['fe']);
 
         $configPaths = config('ignicms.paths');
         if ($configPaths) {
