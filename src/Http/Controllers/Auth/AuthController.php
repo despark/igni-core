@@ -2,9 +2,9 @@
 
 namespace Despark\Cms\Http\Controllers\Auth;
 
-use App\User;
 use Auth;
 use Despark\Cms\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -61,7 +61,7 @@ class AuthController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array $data
-     * @return User
+     * @return Authenticatable
      */
     protected function create(array $data)
     {
