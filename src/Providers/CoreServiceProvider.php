@@ -107,10 +107,6 @@ class CoreServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../public/' => public_path(),
         ], 'public');
-        //        // App
-        //        $this->publishes([
-        //            __DIR__.'/../../app/' => base_path('/app'),
-        //        ], 'app');
 
         $this->publishes([
             __DIR__.'/../../package.json' => base_path('package.json'),
@@ -120,7 +116,7 @@ class CoreServiceProvider extends ServiceProvider
             __DIR__.'/../../.eslintrc' => base_path('.eslintrc'),
             __DIR__.'/../../.editorconfig' => base_path('.editorconfig'),
             __DIR__.'/../../gulpfile.js' => base_path('gulpfile.js'),
-        ], ['fe']);
+        ], 'fe');
 
         $configPaths = config('ignicms.paths');
         if ($configPaths) {
