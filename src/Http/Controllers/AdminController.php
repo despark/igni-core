@@ -69,6 +69,8 @@ class AdminController extends BaseController
 
         $this->viewData['pageTitle'] = Str::studly($this->identifier);
 
+        $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
+
         // Fill sidebar
         View::composer('ignicms::admin.layouts.sidebar', function ($view) {
             $view->with('sidebarItems', $this->sidebarItems);
@@ -141,7 +143,7 @@ class AdminController extends BaseController
             }
         }
 
-        if ( ! empty($with)) {
+        if (! empty($with)) {
             $query->with($with);
             // We should refactor this and find actual related field.
             $query->select($table.'.*');
@@ -214,8 +216,8 @@ class AdminController extends BaseController
     public function forbidden()
     {
         $this->notify([
-            'type'        => 'warning',
-            'title'       => 'No access!',
+            'type' => 'warning',
+            'title' => 'No access!',
             'description' => 'Sorry, you don\'t have access to manage this resources',
         ]);
 
@@ -256,5 +258,13 @@ class AdminController extends BaseController
         $container = "<div class='action-btns'>{$editBtn}{$deleteBtn}</div>";
 
         return $container;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataTablesAjaxUrl()
+    {
+        return route($this->model->getIdentifier().'.index');
     }
 }

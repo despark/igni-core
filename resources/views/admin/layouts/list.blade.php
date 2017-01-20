@@ -158,7 +158,7 @@
         autoWidth: true,
         processing: true,
         serverSide: true,
-        ajax: "{{ route($model->getIdentifier().'.index') }}",
+        ajax: "{{ $dataTablesAjaxUrl }}",
         columns: [
                 @foreach ($model->getAdminTableColumns() as $name => $col)
             {
