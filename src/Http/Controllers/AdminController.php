@@ -2,8 +2,10 @@
 
 namespace Despark\Cms\Http\Controllers;
 
+use Despark\Cms\Contracts\RequestContract;
 use Despark\Cms\Events\Admin\AfterSidebarSet;
 use Despark\Cms\Models\AdminModel;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Despark\Cms\Traits\ManagesAssets;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -67,6 +69,7 @@ class AdminController extends BaseController
         $this->viewData['pageTitle'] = 'Admin';
         $this->viewData['inputs'] = \Request::all();
 
+        // TODO something else as a title.
         $this->viewData['pageTitle'] = Str::studly($this->identifier);
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
@@ -150,22 +153,6 @@ class AdminController extends BaseController
         }
 
         return $query;
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     * @return View
-     */
-    public function create()
-    {
-        $this->viewData['record'] = $this->model;
-
-        $this->viewData['actionVerb'] = 'Create';
-        $this->viewData['formMethod'] = 'POST';
-        $this->viewData['formAction'] = $this->identifier.'.store';
-
-        return view($this->defaultFormView, $this->viewData);
     }
 
     /**
@@ -265,6 +252,12 @@ class AdminController extends BaseController
      */
     public function getDataTablesAjaxUrl()
     {
-        return route($this->model->getIdentifier().'.index');
+       // return route($this->model->getIdentifier().'.index');
     }
+
+//    public function getModel(){
+//        if(!isset($this->model)){
+//            if(request()->is()){}
+//        }
+//    }
 }

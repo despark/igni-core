@@ -12,6 +12,8 @@ return [
         'migration' => base_path('database/migrations'),
         'config' => base_path('config/admin'),
         'routes' => base_path('routes'),
+        // Where your resource files are kept.
+        'resources' => config_path('resources'),
     ],
     'files' => [
         // No leading slash

@@ -49,26 +49,11 @@ class CoreServiceProvider extends ServiceProvider
             require __DIR__.'/../routes/web.php';
         });
 
-        // NB:Version dependent
-        $this->publishes([
-            __DIR__.'/../../routes/resources.php' => base_path('routes/resources.php'),
-        ]);
-
-        // Register our resources route
-        if (File::exists(base_path('routes/resources.php'))) {
-            $resourcesRoute = base_path('routes/resources.php');
-        } else {
-            $resourcesRoute = __DIR__.'/../../routes/resources.php';
-        }
-        $router->group([
-            'namespace' => $this->getAppNamespace().'Http\Controllers',
-            'prefix' => 'admin',
-            'middleware' => ['auth.admin'],
-        ],
-            function () use ($resourcesRoute) {
-                require $resourcesRoute;
-            });
-
+        // Add our resource routes
+        $router->group(['prefix' => 'admin', 'middleware' => 'auth.admin'], function ($router) {
+            require __DIR__.'/../routes/resources.php';
+        });
+        
         // Register Assets
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ignicms');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'lang');

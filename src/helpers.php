@@ -22,10 +22,18 @@ if (! function_exists('auto_p')) {
 }
 
 if (! function_exists('build_resource_backport')) {
-    function build_resource_backport($name)
+    function build_resource_backport($name, array $only = [], array $except = [])
     {
         $routeNames = [];
-        foreach (['create', 'show', 'store', 'destroy', 'update', 'edit', 'index'] as $action) {
+        $methods = ['create', 'show', 'store', 'destroy', 'update', 'edit', 'index'];
+        $methods = array_combine($methods, $methods);
+        if (! empty($only)) {
+            $methods = array_only($methods, $only);
+        }
+        if (! empty($except)) {
+            $methods = array_except($methods, $except);
+        }
+        foreach ($methods as $action) {
             $routeNames[$action] = $name.'.'.$action;
         }
 

@@ -39,11 +39,6 @@ abstract class AdminModel extends Model
     /**
      * @var string
      */
-    protected $identifier;
-
-    /**
-     * @var string
-     */
     protected $uploadType;
 
     /**
@@ -210,14 +205,6 @@ abstract class AdminModel extends Model
         $this->rulesUpdate = $rulesUpdate;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
     }
 
     /**
