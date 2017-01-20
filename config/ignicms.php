@@ -4,6 +4,7 @@ return [
     'projectName' => 'Despark',
     'defaultFormView' => 'ignicms::admin.formElements.defaultForm',
     'paginateLimit' => 15,
+    'logo' => 'images/logo.png',
     'paths' => [
         'model' => app_path('Models'),
         'request' => app_path('Http/Requests/Admin'),
