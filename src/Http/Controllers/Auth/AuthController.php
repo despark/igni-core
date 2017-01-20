@@ -4,9 +4,9 @@ namespace Despark\Cms\Http\Controllers\Auth;
 
 use App\User;
 use Auth;
+use Despark\Cms\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
-use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
