@@ -2,25 +2,19 @@
 
 namespace Despark\Cms\Providers;
 
-use File;
-use Mailchimp;
-use Despark\Cms\Admin\Admin;
-use Despark\Cms\Models\Image;
-use Illuminate\Routing\Router;
-use Despark\Cms\Helpers\FileHelper;
 use Despark\Cms\Assets\AssetManager;
-use Illuminate\Validation\Validator;
-use Despark\Cms\Illuminate\View\View;
-use Spatie\Permission\Contracts\Role;
-use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider;
-use Despark\Cms\Contracts\ImageContract;
 use Despark\Cms\Contracts\AssetsContract;
-use Illuminate\Console\Scheduling\Schedule;
-use Spatie\Permission\Contracts\Permission;
-use Despark\Cms\Http\Middleware\RoleMiddleware;
+use Despark\Cms\Contracts\ImageContract;
+use Despark\Cms\Illuminate\View\View;
+use Despark\Cms\Models\Image;
+use File;
 use Illuminate\Console\AppNamespaceDetectorTrait;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Validator;
 
 class CoreServiceProvider extends ServiceProvider
 {
