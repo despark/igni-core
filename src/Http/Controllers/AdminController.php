@@ -110,7 +110,7 @@ abstract class AdminController extends BaseController
                                              return $this->getActionButtons($record);
                                          });
 
-            $this->prepareDataTable($dataTableEngine);
+            $this->prepareDataTable($request, $dataTableEngine);
 
             return $dataTableEngine->make(true);
         }
@@ -315,7 +315,8 @@ abstract class AdminController extends BaseController
 
     /**
      * Give chance for children to alter the data table.
+     * @param Request                 $request
      * @param DataTableEngineContract $dataTableEngine
      */
-    protected function prepareDataTable(DataTableEngineContract $dataTableEngine) { }
+    protected function prepareDataTable(Request $request, DataTableEngineContract $dataTableEngine) { }
 }
