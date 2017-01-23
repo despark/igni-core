@@ -37,7 +37,8 @@ class ResourceManager
 
                 return array_merge(['id' => $resource], $array);
             });
-            $this->resources[$resourceConfig['id']] = $resource;
+
+            $this->resources[$resourceConfig['id']] = $resourceConfig;
         }
 
         // Add igni default resources
@@ -50,7 +51,7 @@ class ResourceManager
 
                     return array_merge(['id' => $resource], $array);
                 });
-                $this->resources[$resourceConfig['id']] = $resource;
+                $this->resources[$resourceConfig['id']] = $resourceConfig;
             }
         }
     }
@@ -139,7 +140,6 @@ class ResourceManager
         return $this->resources;
     }
 
-
     /**
      * Generates all the needed routes for resources
      */
@@ -169,7 +169,6 @@ class ResourceManager
             } else {
                 \Route::resource($resource, ResourceController::class);
             }
-
         }
     }
 
