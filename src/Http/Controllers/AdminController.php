@@ -189,7 +189,7 @@ abstract class AdminController extends BaseController
             $this->viewData['record'] = $this->model->findOrFail($id);
         }
         $this->viewData['formMethod'] = 'PUT';
-        $this->viewData['formAction'] = $this->identifier.'.update';
+        $this->viewData['formAction'] = $this->getResourceConfig()['id'].'.update';
 
         return view($this->defaultFormView, $this->viewData);
     }

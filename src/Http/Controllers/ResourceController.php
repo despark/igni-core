@@ -27,7 +27,7 @@ class ResourceController extends AdminController
     /**
      * Store a newly created resource in storage.
      *
-     * @param :request_name $request
+     * @param AdminFormRequest $request
      *
      * @return Response
      */
@@ -40,10 +40,10 @@ class ResourceController extends AdminController
         $this->notify([
             'type' => 'success',
             'title' => 'Successful create!',
-            'description' => ':model_name is created successfully!',
+            'description' => $this->getResourceConfig()['name'].' is created successfully!',
         ]);
 
-        return redirect(route(':resource.edit', ['id' => $record->id]));
+        return redirect(route($this->getResourceConfig()['id'].'.edit', ['id' => $record->id]));
     }
 
     /**
@@ -60,7 +60,7 @@ class ResourceController extends AdminController
         $this->viewData['record'] = $record;
 
         $this->viewData['formMethod'] = 'PUT';
-        $this->viewData['formAction'] = ':resource.update';
+        $this->viewData['formAction'] = $this->getResourceConfig()['id'].'.update';
 
         return view($this->defaultFormView, $this->viewData);
     }
@@ -68,7 +68,7 @@ class ResourceController extends AdminController
     /**
      * Update the specified resource in storage.
      *
-     * @param :request_name $request
+     * @param AdminFormRequest $request
      * @param int $id
      *
      * @return Response
@@ -84,7 +84,7 @@ class ResourceController extends AdminController
         $this->notify([
             'type' => 'success',
             'title' => 'Successful update!',
-            'description' => ':model_name is updated successfully.',
+            'description' => $this->getResourceConfig()['name'].' is updated successfully.',
         ]);
 
         return redirect()->back();
@@ -104,7 +104,7 @@ class ResourceController extends AdminController
         $this->notify([
             'type' => 'danger',
             'title' => 'Successful delete!',
-            'description' => ':model_name is deleted successfully.',
+            'description' => $this->getResourceConfig()['name'].' is deleted successfully.',
         ]);
 
         return redirect()->back();
