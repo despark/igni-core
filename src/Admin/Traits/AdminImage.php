@@ -818,11 +818,11 @@ trait AdminImage
                 }
 
                 if (isset($minDimensions['width']) && $minDimensions['width']) {
-                    return $minDimensions['width'].'px '.trans('admin.images.width');
+                    return $minDimensions['width'].'px '.trans('ignicms::admin.images.width');
                 }
 
                 if (isset($minDimensions['height']) && $minDimensions['height']) {
-                    return $minDimensions['height'].'px '.trans('admin.images.height');
+                    return $minDimensions['height'].'px '.trans('ignicms::admin.images.height');
                 }
             }
 

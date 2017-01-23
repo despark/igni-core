@@ -56,7 +56,7 @@ class CoreServiceProvider extends ServiceProvider
         
         // Register Assets
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ignicms');
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'lang');
+        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'ignicms');
 
         // Register config
         $this->mergeConfigFrom(__DIR__.'/../../config/ignicms.php', 'ignicms');
@@ -80,7 +80,7 @@ class CoreServiceProvider extends ServiceProvider
         // Resources
         $this->publishes([
             __DIR__.'/../../resources/assets' => base_path('/resources/assets'),
-            __DIR__.'/../../resources/lang' => base_path('/resources/lang'),
+            __DIR__.'/../../resources/lang' => base_path('/resources/lang/vendor/ignicms'),
             __DIR__.'/../../resources/icomoon.json' => base_path('/resources/icomoon.json'),
         ], 'resources');
 

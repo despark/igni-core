@@ -223,13 +223,13 @@ abstract class AdminController extends BaseController
         $deleteBtn = '';
         if (isset($this->viewData['editRoute'])) {
             $editBtn = '<a href="'.route($this->viewData['editRoute'],
-                    ['id' => $record->id]).'" class="btn btn-primary">'.trans('admin.edit').'</a>';
+                    ['id' => $record->id]).'" class="btn btn-primary">'.trans('ignicms::admin.edit').'</a>';
         }
 
         if (isset($this->viewData['destroyRoute'])) {
             $deleteBtn = '<a href="#"  class="js-open-delete-modal btn btn-danger"
                     data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->id]).'">
-                    '.trans('admin.delete').'
+                    '.trans('ignicms::admin.delete').'
                 </a>';
         }
 

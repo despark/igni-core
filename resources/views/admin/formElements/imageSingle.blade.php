@@ -28,7 +28,7 @@
     @if(isset($options['help']))
         <div class="help-text">{{ $options['help']}}</div>
     @elseif($dimensions = $record->getMinDimensions($fieldName, true))
-        <div class="help-text">{{ trans('admin.images.min_dimensions' , ['dimensions' => $dimensions]) }}</div>
+        <div class="help-text">{{ trans('ignicms::admin.images.min_dimensions' , ['dimensions' => $dimensions]) }}</div>
     @endif
     <div class="text-red">
         {{ join($errors->get($fieldName), '<br />') }}

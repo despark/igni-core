@@ -14,7 +14,7 @@
                     <div id="data-table_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
                         @if(isset($createRoute))
                             <a href="{{ route($createRoute) }}"
-                               class="btn btn-success pull-left">+ {{ trans('admin.add') }} {{ $pageTitle }}</a>
+                               class="btn btn-success pull-left">+ {{ trans('ignicms::admin.add') }} {{ $pageTitle }}</a>
                         @endif
                         <div class="row">
                             <div class="col-sm-12">
@@ -25,7 +25,7 @@
                                         @foreach($model->getAdminTableColumns() as $col)
                                             <th class="col-{{ $col }}">{{ $col }}</th>
                                         @endforeach
-                                        <th class="no-sort actions-col">{{ trans('admin.actions') }}</th>
+                                        <th class="no-sort actions-col">{{ trans('ignicms::admin.actions') }}</th>
                                     </tr>
                                     </thead>
 
@@ -45,23 +45,23 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-target="#delete-modal" data-dismiss="modal"
-                                aria-label="{{ trans('admin.close') }}"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">{{ trans('admin.deleteTitle') }}</h4>
+                                aria-label="{{ trans('ignicms::admin.close') }}"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{{ trans('ignicms::admin.deleteTitle') }}</h4>
                     </div>
                     <div class="modal-body">
                         <p>
-                            {{ trans('admin.deleteConfirm') }}
+                            {{ trans('ignicms::admin.deleteConfirm') }}
                         </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline pull-left" data-target="#delete-modal"
-                                data-dismiss="modal">{{ trans('admin.close') }}</button>
+                                data-dismiss="modal">{{ trans('ignicms::admin.close') }}</button>
                         <form method="POST" action="" class="delete-form">
                             <input type="hidden" name="_token" value="{!! csrf_token() !!}"/>
                             <input type="hidden" name="_method" value="DELETE"/>
 
                             <button type="submit" type="button" class="delete-btn btn btn-outline">
-                                {{ trans('admin.delete') }}
+                                {{ trans('ignicms::admin.delete') }}
                             </button>
                         </form>
                     </div>
