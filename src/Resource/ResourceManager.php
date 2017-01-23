@@ -145,8 +145,7 @@ class ResourceManager
      */
     public function routes()
     {
-        foreach ($this->all() as $config) {
-            $resource = $config['id'];
+        foreach ($this->all() as $resource => $config) {
             $availableMethods = $this->routeMethods;
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);

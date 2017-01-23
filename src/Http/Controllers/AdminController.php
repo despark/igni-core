@@ -6,6 +6,7 @@ use Despark\Cms\Admin\Sidebar;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Resource\ResourceManager;
 use Despark\Cms\Traits\ManagesAssets;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -181,8 +182,12 @@ abstract class AdminController extends BaseController
      */
     public function edit($id)
     {
-        $this->viewData['record'] = $this->model->findOrFail($id);
-
+        // TODO VERSION DEPENDANT + ROUTE BINDING
+        if (is_object($id) && $id instanceof Model) {
+            $this->viewData['record'] = $id;
+        } else {
+            $this->viewData['record'] = $this->model->findOrFail($id);
+        }
         $this->viewData['formMethod'] = 'PUT';
         $this->viewData['formAction'] = $this->identifier.'.update';
 
