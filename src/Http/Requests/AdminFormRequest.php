@@ -12,8 +12,6 @@ class AdminFormRequest extends Request implements RequestContract
 {
     use AdminValidateTrait;
 
-    protected $model;
-
     /**
      * Get the validation rules that apply to the request.
      *

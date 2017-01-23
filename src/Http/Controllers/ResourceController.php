@@ -19,7 +19,7 @@ class ResourceController extends AdminController
 
         $this->viewData['actionVerb'] = 'Create';
         $this->viewData['formMethod'] = 'POST';
-        $this->viewData['formAction'] = ':resource.store';
+        $this->viewData['formAction'] = $this->getResourceConfig()['id'].'.store';
 
         return view($this->defaultFormView, $this->viewData);
     }

@@ -147,6 +147,11 @@ class SidebarItem
         return isset($this->parent) && $this->parent;
     }
 
+    public function getWeight()
+    {
+        return isset($this->weight) ? $this->weight : 0;
+    }
+
     /**
      * @return bool
      */

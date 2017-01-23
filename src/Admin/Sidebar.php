@@ -60,7 +60,19 @@ class Sidebar
      */
     public function toHtml()
     {
+        $this->beforeToHtml();
+
         return view($this->template, ['sidebarItems' => $this->getSidebarItems()])->__toString();
+    }
+
+    /**
+     * Before html rendering.
+     */
+    protected function beforeToHtml()
+    {
+        uasort($this->sidebarItems, function ($a, $b) {
+            return $a->getWeight() - $b->getWeight();
+        });
     }
 
     /**

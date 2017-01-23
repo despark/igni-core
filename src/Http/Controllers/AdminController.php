@@ -91,8 +91,6 @@ abstract class AdminController extends BaseController
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
-
-
         //Prepare view actions
         $this->prepareActions();
     }

@@ -5,6 +5,7 @@ namespace Despark\Cms\Resource;
 
 use Despark\Cms\Http\Controllers\ResourceController;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 
@@ -94,11 +95,38 @@ class ResourceManager
     public function getByController(Controller $controller)
     {
         $class = get_class($controller);
-        foreach ($this->all() as $item) {
-            if ($item['controller'] === $class) {
-                return $item;
+
+        if ($class == ResourceController::class) {
+            // If it's resource controller we'll try to get the resource by route
+            return $this->getByRoute();
+        } else {
+            foreach ($this->all() as $item) {
+                if ($item['controller'] === $class) {
+                    return $item;
+                }
             }
         }
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getByRoute()
+    {
+        $routeName = \Route::currentRouteName();
+        $routeParts = explode('.', $routeName);
+        $resourceName = reset($routeParts);
+
+        return $this->getById($resourceName);
+    }
+
+    /**
+     * @param $id
+     * @return null|string
+     */
+    public function getById($id)
+    {
+        return isset($this->resources[$id]) ? $this->resources[$id] : null;
     }
 
     /**

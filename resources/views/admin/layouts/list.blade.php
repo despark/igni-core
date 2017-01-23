@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    @if(isset($deleteRoute))
+    @if(isset($destroyRoute))
         <div class="modal modal-danger fade" id="delete-modal" tabindex="-1" role="dialog"
              aria-labelledby="deleteModal">
             <div class="modal-dialog" role="document">
@@ -179,7 +179,7 @@
                 @endforeach
             {
                 data: 'action', name: 'action', orderable: false, searchable: false
-            },
+            }
         ],
         columnDefs: [
             {
