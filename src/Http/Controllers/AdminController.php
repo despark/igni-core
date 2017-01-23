@@ -2,9 +2,11 @@
 
 namespace Despark\Cms\Http\Controllers;
 
+use Despark\Cms\Admin\Sidebar;
 use Despark\Cms\Contracts\RequestContract;
 use Despark\Cms\Events\Admin\AfterSidebarSet;
 use Despark\Cms\Models\AdminModel;
+use Despark\Cms\Resource\ResourceManager;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Despark\Cms\Traits\ManagesAssets;
@@ -57,28 +59,40 @@ class AdminController extends BaseController
     protected $model;
 
     /**
+     * @var ResourceManager
+     */
+    protected $resourceManager;
+
+    /**
+     * @var mixed
+     */
+    protected $resourceConfig;
+
+    /**
      * AdminController constructor.
      */
-    public function __construct()
+    public function __construct(ResourceManager $resourceManager)
     {
+        $this->resourceManager = $resourceManager;
+
+        $this->resourceConfig = $this->resourceManager->getByController($this);
+
+        $this->model = new $this->resourceConfig['model'];
+
         $this->setSidebar();
 
         $this->paginateLimit = config('ignicms.paginateLimit');
         $this->defaultFormView = config('ignicms.defaultFormView');
 
-        $this->viewData['pageTitle'] = 'Admin';
         $this->viewData['inputs'] = \Request::all();
 
-        // TODO something else as a title.
-        $this->viewData['pageTitle'] = Str::studly($this->identifier);
+        $this->viewData['pageTitle'] = $this->getResourceConfig()['name'] ? : config('ignicms.projectName').' '.'Admin';
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
-        // Fill sidebar
-        View::composer('ignicms::admin.layouts.sidebar', function ($view) {
-            $view->with('sidebarItems', $this->sidebarItems);
-        });
+        $this->viewData['sidebar'] = app(Sidebar::class);
     }
+
 
     /**
      * @param Request    $request
@@ -252,12 +266,52 @@ class AdminController extends BaseController
      */
     public function getDataTablesAjaxUrl()
     {
-       // return route($this->model->getIdentifier().'.index');
+        return route($this->getResourceConfig()['id'].'.index');
     }
 
-//    public function getModel(){
-//        if(!isset($this->model)){
-//            if(request()->is()){}
-//        }
-//    }
+    //    public function getModel(){
+    //        if(!isset($this->model)){
+    //            if(request()->is()){}
+    //        }
+    //    }
+
+    /**
+     * @return ResourceManager
+     */
+    public function getResourceManager()
+    {
+        return $this->resourceManager;
+    }
+
+    /**
+     * @param ResourceManager $resourceManager
+     * @return AdminController
+     */
+    public function setResourceManager($resourceManager)
+    {
+        $this->resourceManager = $resourceManager;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResourceConfig()
+    {
+        return $this->resourceConfig;
+    }
+
+    /**
+     * @param mixed $resourceConfig
+     * @return AdminController
+     */
+    public function setResourceConfig($resourceConfig)
+    {
+        $this->resourceConfig = $resourceConfig;
+
+        return $this;
+    }
+
+
 }

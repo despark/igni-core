@@ -60,7 +60,7 @@ class CoreServiceProvider extends ServiceProvider
 
         // Register config
         $this->mergeConfigFrom(__DIR__.'/../../config/ignicms.php', 'ignicms');
-        $this->mergeConfigFrom(__DIR__.'/../../config/admin/sidebar.php', 'admin.sidebar');
+      //  $this->mergeConfigFrom(__DIR__.'/../../config/admin/sidebar.php', 'admin.sidebar');
         $this->mergeConfigFrom(__DIR__.'/../../config/resources/user.php', 'resources.user');
 
         // Register the application commands

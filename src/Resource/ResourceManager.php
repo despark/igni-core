@@ -5,6 +5,7 @@ namespace Despark\Cms\Resource;
 
 use Despark\Cms\Http\Controllers\ResourceController;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Routing\Controller;
 
 
 /**
@@ -19,7 +20,7 @@ class ResourceManager
     protected $resources;
 
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
-    
+
     /**
      * Load the resource manager
      */
@@ -81,6 +82,20 @@ class ResourceManager
         $class = get_class($model);
         foreach ($this->all() as $item) {
             if ($item['model'] === $class) {
+                return $item;
+            }
+        }
+    }
+
+    /**
+     * @param Controller $controller
+     * @return mixed
+     */
+    public function getByController(Controller $controller)
+    {
+        $class = get_class($controller);
+        foreach ($this->all() as $item) {
+            if ($item['controller'] === $class) {
                 return $item;
             }
         }

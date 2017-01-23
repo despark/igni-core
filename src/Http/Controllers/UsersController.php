@@ -5,6 +5,7 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
 use Despark\Cms\Http\Requests\UserUpdateRequest;
+use Despark\Cms\Resource\ResourceManager;
 use Illuminate\Http\Request;
 use Response;
 
@@ -13,9 +14,9 @@ class UsersController extends AdminController
     /**
      * UsersController constructor.
      */
-    public function __construct()
+    public function __construct(ResourceManager $resourceManager)
     {
-        parent::__construct();
+        parent::__construct($resourceManager);
 
         $userModelClass = config('auth.model');
 

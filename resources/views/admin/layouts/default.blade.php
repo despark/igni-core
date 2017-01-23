@@ -17,7 +17,7 @@
 <body class="skin-blue sidebar-mini">
 <div class="wrapper">
     @include('ignicms::admin.layouts.defaultMainHeader')
-    @include('ignicms::admin.layouts.sidebar')
+    {!! $sidebar->toHtml() !!}
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">

@@ -28,4 +28,15 @@ return [
             'label' => 'Password',
         ],
     ],
+    'adminMenu' => [
+        'user_management' => [
+            'name' => 'User Management',
+            'iconClass' => 'fa-users',
+        ],
+        'users' => [
+            'name' => 'Users',
+            'link' => 'user.index',
+            'parent' => 'user_management',
+        ],
+    ],
 ];
