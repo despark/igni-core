@@ -91,6 +91,9 @@ class AdminController extends BaseController
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
         $this->viewData['sidebar'] = app(Sidebar::class);
+
+        //Prepare view actions
+        $this->prepareActions();
     }
 
 
@@ -249,9 +252,9 @@ class AdminController extends BaseController
                     ['id' => $record->id]).'" class="btn btn-primary">'.trans('admin.edit').'</a>';
         }
 
-        if (isset($this->viewData['deleteRoute'])) {
+        if (isset($this->viewData['destroyRoute'])) {
             $deleteBtn = '<a href="#"  class="js-open-delete-modal btn btn-danger"
-                    data-delete-url="'.route($this->viewData['deleteRoute'], ['id' => $record->id]).'">
+                    data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->id]).'">
                     '.trans('admin.delete').'
                 </a>';
         }
@@ -309,6 +312,26 @@ class AdminController extends BaseController
     public function setResourceConfig($resourceConfig)
     {
         $this->resourceConfig = $resourceConfig;
+
+        return $this;
+    }
+
+    /**
+     * Prepares controller actions
+     * @return $this
+     */
+    protected function prepareActions()
+    {
+        $actions = isset($this->resourceConfig['actions']) ? $this->resourceConfig['actions'] : [
+            'edit',
+            'create',
+            'destroy',
+        ];
+
+        $id = $this->resourceConfig['id'];
+        foreach ($actions as $action) {
+            $this->viewData[$action.'Route'] = $id.'.'.$action;
+        }
 
         return $this;
     }

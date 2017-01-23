@@ -10,6 +10,7 @@ return [
         'name',
         'email',
     ],
+    'actions' => ['edit', 'create', 'destroy'],
     'adminFormFields' => [
         'name' => [
             'type' => 'text',
