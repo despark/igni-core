@@ -8,13 +8,6 @@ use Despark\Cms\Http\Requests\AdminFormRequest;
 
 class ResourceController extends AdminController
 {
-
-    public function __construct() {
-        parent::__construct();
-
-        // we need to get the model for the request.
-    }
-
     /**
      * Show the form for creating a new resource.
      *
