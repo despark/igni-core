@@ -32,11 +32,12 @@ class ResourceManager
 
         foreach ($files as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            $this->resources[$resource] = call_user_func(function () use ($file, $resource) {
+            $resourceConfig = call_user_func(function () use ($file, $resource) {
                 $array = include $file;
 
                 return array_merge(['id' => $resource], $array);
             });
+            $this->resources[$resourceConfig['id']] = $resource;
         }
 
         // Add igni default resources
@@ -44,11 +45,12 @@ class ResourceManager
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
             if (! isset($this->resources[$resource])) {
-                $this->resources[$resource] = call_user_func(function () use ($file, $resource) {
+                $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
 
                     return array_merge(['id' => $resource], $array);
                 });
+                $this->resources[$resourceConfig['id']] = $resource;
             }
         }
     }
