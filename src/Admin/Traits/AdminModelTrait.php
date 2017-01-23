@@ -2,7 +2,6 @@
 
 namespace Despark\Cms\Admin\Traits;
 
-use Despark\Cms\Models\I18n;
 use Illuminate\Support\Facades\Request;
 use Despark\Cms\Admin\Helpers\FormBuilder;
 
@@ -43,11 +42,18 @@ trait AdminModelTrait
      */
     public function getIdentifier()
     {
-        if ( ! isset($this->identifier)) {
-            throw new \Exception('Missing required property `identifier` in: '.__CLASS__);
+        $resourceConfig = $this->getResourceConfig();
+
+        return $resourceConfig['id'];
+    }
+
+    public function getResourceConfig()
+    {
+        if (! isset($this->resourceConfig)) {
+            $this->resourceConfig = $this->resourceManager->getByModel($this);
         }
 
-        return $this->identifier;
+        return $this->resourceConfig;
     }
 
     /**
@@ -55,8 +61,8 @@ trait AdminModelTrait
      */
     public function getAdminTableColumns()
     {
-        if ( ! isset($this->adminColumns)) {
-            $this->adminColumns = config('resources.'.$this->getIdentifier().'.adminColumns', []);
+        if (! isset($this->adminColumns)) {
+            $this->adminColumns = $this->getResourceConfig()['adminColumns'];
         }
 
         return $this->adminColumns;
@@ -121,16 +127,18 @@ trait AdminModelTrait
                 return $record->{$col['relation']}->{$col['db_field']};
                 break;
             case 'translation':
-                $locale = config('app.locale', 'en');
-                $i18n = I18n::select('id')->where('locale', $locale)->first();
-                if ($i18n) {
-                    $i18nId = $i18n->id;
-
-                    return $record->translate(1)->{$col['db_field']};
-                }
-
+                // TODO i18n
                 return 'No translation';
-                break;
+            //                $locale = config('app.locale', 'en');
+            //                $i18n = I18n::select('id')->where('locale', $locale)->first();
+            //                if ($i18n) {
+            //                    $i18nId = $i18n->id;
+            //
+            //                    return $record->translate(1)->{$col['db_field']};
+            //                }
+            //
+            //                return 'No translation';
+            //                break;
             default:
                 return $record->{$col['db_field']};
                 break;
@@ -198,8 +206,8 @@ trait AdminModelTrait
      */
     public function getFormFields()
     {
-        if ( ! isset($this->adminFormFields)) {
-            $this->adminFormFields = config('resources.'.$this->getIdentifier().'.adminFormFields', []);
+        if (! isset($this->adminFormFields)) {
+            $this->adminFormFields = $this->getResourceConfig()['adminFormFields'];
         }
 
         return $this->adminFormFields;
@@ -238,21 +246,21 @@ trait AdminModelTrait
         }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRules()
-    {
-        return $this->rules;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRulesUpdate()
-    {
-        return (isset($this->rulesUpdate)) ? array_merge($this->rules, $this->rulesUpdate) : $this->rules;
-    }
+    //    /**
+    //     * @return mixed
+    //     */
+    //    public function getRules()
+    //    {
+    //        return $this->rules;
+    //    }
+    //
+    //    /**
+    //     * @return mixed
+    //     */
+    //    public function getRulesUpdate()
+    //    {
+    //        return (isset($this->rulesUpdate)) ? array_merge($this->rules, $this->rulesUpdate) : $this->rules;
+    //    }
 
     /**
      * Generate preview button for the CMS

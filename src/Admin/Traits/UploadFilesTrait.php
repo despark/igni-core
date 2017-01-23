@@ -66,6 +66,8 @@ trait UploadFilesTrait
      */
     public function getFileFields()
     {
-        return config('resources.'.$this->identifier.'.file_fields');
+        $config = $this->getResourceConfig();
+
+        return $config['image_fields'] ? : null;
     }
 }

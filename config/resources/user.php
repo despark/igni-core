@@ -2,6 +2,10 @@
 
 return [
 
+    'name' => 'User',
+    'description' => 'User resource',
+    'model' => config('auth.model'),
+    'controller' => \Despark\Cms\Http\Controllers\UsersController::class,
     'adminColumns' => [
         'name',
         'email',

@@ -5,6 +5,7 @@ namespace Despark\Cms\Models;
 use Despark\Cms\Admin\Interfaces\UploadImageInterface;
 use Despark\Cms\Admin\Traits\AdminModelTrait;
 use Despark\Cms\Observers\AdminModelObserver;
+use Despark\Cms\Resource\ResourceManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -47,12 +48,19 @@ abstract class AdminModel extends Model
     protected $videoSupport;
 
     /**
+     * @var ResourceManager
+     */
+    protected $resourceManager;
+
+    /**
      * AdminModel constructor.
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
+
+        $this->resourceManager = app(ResourceManager::class);
 
         static::$dispatcher->fire('igni.model.booted: '.static::class, $this);
     }
@@ -63,7 +71,7 @@ abstract class AdminModel extends Model
     public static function boot()
     {
         parent::boot();
-        static::observe(AdminModelObserver::class, - 10);
+        static::observe(AdminModelObserver::class, -10);
     }
 
     /**
@@ -137,7 +145,7 @@ abstract class AdminModel extends Model
     public function getDirty()
     {
         $dirty = parent::getDirty();
-        if ( ! empty($this->files)) {
+        if (! empty($this->files)) {
             // We just set the ID to the same value to trigger the update.
             $dirty[$this->getKeyName()] = $this->getKey();
         }
@@ -231,5 +239,24 @@ abstract class AdminModel extends Model
         } else {
             return $input;
         }
+    }
+
+    /**
+     * @return ResourceManager
+     */
+    public function getResourceManager()
+    {
+        return $this->resourceManager;
+    }
+
+    /**
+     * @param ResourceManager $resourceManager
+     * @return $this
+     */
+    public function setResourceManager($resourceManager)
+    {
+        $this->resourceManager = $resourceManager;
+
+        return $this;
     }
 }

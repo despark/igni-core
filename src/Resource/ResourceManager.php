@@ -4,6 +4,7 @@
 namespace Despark\Cms\Resource;
 
 use Despark\Cms\Http\Controllers\ResourceController;
+use Illuminate\Database\Eloquent\Model;
 
 
 /**
@@ -18,9 +19,9 @@ class ResourceManager
     protected $resources;
 
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
-
+    
     /**
-     *
+     * Load the resource manager
      */
     public function load()
     {
@@ -29,9 +30,24 @@ class ResourceManager
 
         foreach ($files as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            $this->resources[$resource] = call_user_func(function () use ($file) {
-                return include $file;
+            $this->resources[$resource] = call_user_func(function () use ($file, $resource) {
+                $array = include $file;
+
+                return array_merge(['id' => $resource], $array);
             });
+        }
+
+        // Add igni default resources
+        $localFiles = \File::allFiles(__DIR__.'/../../config/resources');
+        foreach ($localFiles as $file) {
+            $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
+            if (! isset($this->resources[$resource])) {
+                $this->resources[$resource] = call_user_func(function () use ($file, $resource) {
+                    $array = include $file;
+
+                    return array_merge(['id' => $resource], $array);
+                });
+            }
         }
     }
 
@@ -54,6 +70,20 @@ class ResourceManager
         }
 
         return $default;
+    }
+
+    /**
+     * @param Model $model
+     * @return array
+     */
+    public function getByModel(Model $model)
+    {
+        $class = get_class($model);
+        foreach ($this->all() as $item) {
+            if ($item['model'] === $class) {
+                return $item;
+            }
+        }
     }
 
     /**
