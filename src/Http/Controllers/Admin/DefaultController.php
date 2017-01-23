@@ -4,12 +4,12 @@
 namespace Despark\Cms\Http\Controllers\Admin;
 
 
-use Illuminate\Routing\Controller;
+use Despark\Cms\Http\Controllers\AdminController;
 
 /**
  * Class DefaultController.
  */
-class DefaultController extends Controller
+class DefaultController extends AdminController
 {
     /**
      * Admin dashboard.
@@ -18,35 +18,7 @@ class DefaultController extends Controller
      */
     public function adminHome()
     {
-        return view('ignicms::admin.pages.home');
+        return view('ignicms::admin.pages.home', ['sidebar' => $this->viewData['sidebar']]);
     }
-
-    /**
-     * Admin dashboard.
-     *
-     * @return mixed
-     */
-    public function forbidden()
-    {
-        $this->notify([
-            'type' => 'warning',
-            'title' => 'No access!',
-            'description' => 'Sorry, you don\'t have access to manage this resources',
-        ]);
-
-        return redirect(route('adminHome'));
-    }
-
-    /**
-     * set notification.
-     *
-     *
-     * @param array $notificationInfo
-     */
-    public function notify(array $notificationInfo)
-    {
-        session()->flash('notification', $notificationInfo);
-    }
-
 
 }

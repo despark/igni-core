@@ -3,7 +3,6 @@
 namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Admin\Sidebar;
-use Despark\Cms\Events\Admin\AfterSidebarSet;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Resource\ResourceManager;
 use Despark\Cms\Traits\ManagesAssets;
@@ -74,14 +73,14 @@ abstract class AdminController extends BaseController
 
         $this->resourceConfig = $this->resourceManager->getByController($this);
 
+        $this->viewData['sidebar'] = app(Sidebar::class);
+
         if (! $this->resourceConfig) {
             // we don't have resource config, so we just return
             return;
         }
 
         $this->model = new $this->resourceConfig['model'];
-
-        $this->setSidebar();
 
         $this->paginateLimit = config('ignicms.paginateLimit');
         $this->defaultFormView = config('ignicms.defaultFormView');
@@ -92,7 +91,7 @@ abstract class AdminController extends BaseController
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
-        $this->viewData['sidebar'] = app(Sidebar::class);
+
 
         //Prepare view actions
         $this->prepareActions();
@@ -185,22 +184,6 @@ abstract class AdminController extends BaseController
         $this->viewData['formAction'] = $this->identifier.'.update';
 
         return view($this->defaultFormView, $this->viewData);
-    }
-
-    /**
-     * set sidebarMenu.
-     */
-    public function setSidebar()
-    {
-        $this->sidebarItems = config('admin.sidebar');
-        $responses = \Event::fire(new AfterSidebarSet($this->sidebarItems));
-        if (is_array($responses)) {
-            foreach ($responses as $response) {
-                if (is_array($response)) {
-                    $this->sidebarItems = array_merge($this->sidebarItems, $response);
-                }
-            }
-        }
     }
 
     /**
