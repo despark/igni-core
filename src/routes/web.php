@@ -14,14 +14,14 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('logout', 'Auth\AuthController@getLogout');
 
     Route::group(['middleware' => 'auth.admin'], function () {
-        Route::get('/', ['as' => 'adminHome', 'uses' => 'AdminController@adminHome']);
-        Route::get('/403', ['as' => 'adminForbidden', 'uses' => 'AdminController@forbidden']);
-        
-        Route::resource('user', 'UsersController',
-            [
-                'names' => build_resource_backport('user'),
-            ]
-        );
+        Route::get('/', ['as' => 'adminHome', 'uses' => 'Admin\DefaultController@adminHome']);
+        Route::get('/403', ['as' => 'adminForbidden', 'uses' => 'Admin\DefaultController@forbidden']);
+
+        //        Route::resource('user', 'UsersController',
+        //            [
+        //                'names' => build_resource_backport('user'),
+        //            ]
+        //        );
 
         //        Route::post('file/{file}', 'FileController@get')->name('file.get');
         //        Route::match(['get', 'post'], 'image/upload', 'Admin\ImageController@upload')->name('image.upload');

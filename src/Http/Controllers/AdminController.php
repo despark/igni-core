@@ -3,25 +3,22 @@
 namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Admin\Sidebar;
-use Despark\Cms\Contracts\RequestContract;
 use Despark\Cms\Events\Admin\AfterSidebarSet;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Resource\ResourceManager;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 use Despark\Cms\Traits\ManagesAssets;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Str;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 use View;
 use Yajra\Datatables\Datatables;
 
 /**
  * Class AdminController.
  */
-class AdminController extends BaseController
+abstract class AdminController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ManagesAssets;
     /**
@@ -76,6 +73,11 @@ class AdminController extends BaseController
         $this->resourceManager = $resourceManager;
 
         $this->resourceConfig = $this->resourceManager->getByController($this);
+
+        if (! $this->resourceConfig) {
+            // we don't have resource config, so we just return
+            return;
+        }
 
         $this->model = new $this->resourceConfig['model'];
 
@@ -199,17 +201,6 @@ class AdminController extends BaseController
                 }
             }
         }
-    }
-
-
-    /**
-     * Admin dashboard.
-     *
-     * @return mixed
-     */
-    public function adminHome()
-    {
-        return view('ignicms::admin.pages.home');
     }
 
     /**
