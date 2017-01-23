@@ -112,7 +112,7 @@ abstract class AdminController extends BaseController
 
             $this->prepareDataTable($dataTableEngine);
 
-            $dataTableEngine->make(true);
+            return $dataTableEngine->make(true);
         }
 
         $this->viewData['model'] = $this->model;
