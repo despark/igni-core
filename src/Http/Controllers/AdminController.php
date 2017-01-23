@@ -12,6 +12,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use View;
+use Yajra\Datatables\Contracts\DataTableEngineContract;
 use Yajra\Datatables\Datatables;
 
 /**
@@ -104,10 +105,14 @@ abstract class AdminController extends BaseController
     public function index(Request $request, Datatables $dataTable)
     {
         if ($request->ajax()) {
-            return $dataTable->eloquent($this->prepareModelQuery())
-                             ->addColumn('action', function ($record) {
-                                 return $this->getActionButtons($record);
-                             })->make(true);
+            $dataTableEngine = $dataTable->eloquent($this->prepareModelQuery())
+                                         ->addColumn('action', function ($record) {
+                                             return $this->getActionButtons($record);
+                                         });
+
+            $this->prepareDataTable($dataTableEngine);
+
+            $dataTableEngine->make(true);
         }
 
         $this->viewData['model'] = $this->model;
@@ -308,5 +313,9 @@ abstract class AdminController extends BaseController
         return $this;
     }
 
-
+    /**
+     * Give chance for children to alter the data table.
+     * @param DataTableEngineContract $dataTableEngine
+     */
+    protected function prepareDataTable(DataTableEngineContract $dataTableEngine) { }
 }
