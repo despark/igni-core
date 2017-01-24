@@ -45,7 +45,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-target="#delete-modal" data-dismiss="modal"
-                                aria-label="{{ trans('ignicms::admin.close') }}"><span aria-hidden="true">&times;</span></button>
+                                aria-label="{{ trans('ignicms::admin.close') }}"><span aria-hidden="true">&times;</span>
+                        </button>
                         <h4 class="modal-title">{{ trans('ignicms::admin.deleteTitle') }}</h4>
                     </div>
                     <div class="modal-body">
@@ -165,16 +166,7 @@
                 data: '{{ $col }}',
                 name: '{{ $col }}'
                 @if(!is_numeric($name)), title: '{{$name}}'@endif,
-                defaultContent: "",
-                render: function (data, type, full, meta) {
-                    if (data === 1) {
-                        return 'Yes';
-                    } else if (data === 0) {
-                        return 'No';
-                    }
-
-                    return data;
-                }
+                defaultContent: ""
             },
                 @endforeach
             {
