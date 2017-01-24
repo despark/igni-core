@@ -18,6 +18,9 @@
 
         {!! Form::close() !!}
     </div>
+    <div class="after-default-form">
+        @yield('after.form')
+    </div>
 @stop
 
 @push('additionalScripts')
