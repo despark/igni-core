@@ -212,6 +212,14 @@ abstract class Field implements FieldContract
     }
 
     /**
+     * @return array
+     */
+    public function getHelp()
+    {
+        return $this->getOptions('help');
+    }
+
+    /**
      * @param $name
      * @param $arguments
      * @return array
