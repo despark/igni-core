@@ -37,6 +37,7 @@ class ResourceManager
                 if (is_array($array)) {
                     return array_merge(['id' => $resource], $array);
                 }
+                return null;
             });
             if ($resourceConfig) {
                 $this->resources[$resourceConfig['id']] = $resourceConfig;
@@ -53,6 +54,7 @@ class ResourceManager
                     if (is_array($array)) {
                         return array_merge(['id' => $resource], $array);
                     }
+                    return null;
                 });
                 if ($resourceConfig) {
                     if (! isset($this->resources[$resourceConfig['id']])) {
