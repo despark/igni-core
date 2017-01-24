@@ -3,6 +3,7 @@
 namespace Despark\Cms\Providers;
 
 use Despark\Cms\Fields\Gallery;
+use Despark\Cms\Fields\Select;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -18,7 +19,9 @@ class FieldServiceProvider extends ServiceProvider
     /**
      * @var array
      */
-    protected $fields = [];
+    protected $fields = [
+        'select' => Select::class,
+    ];
 
     /**
      *
@@ -39,9 +42,13 @@ class FieldServiceProvider extends ServiceProvider
     {
         $fields = $this->getFields();
 
-        return array_map(function ($field) {
+        $ar = array_map(function ($field) {
             return $field.'_field';
         }, array_keys($fields));
+
+        dd($ar);
+
+        return $ar;
     }
 
     /**

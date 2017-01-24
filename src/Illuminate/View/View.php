@@ -14,7 +14,8 @@ class View extends \Illuminate\View\View
         } catch (\Exception $exc) {
             ExceptionHelper::logException($exc);
             $eh = new ExceptionHandler(env('APP_DEBUG'));
-            die($eh->getHtml($exc));
+            // TODO VERSION DEPENDANT
+            die($eh->createResponse($exc)->__toString());
         }
     }
 }

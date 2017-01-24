@@ -42,9 +42,7 @@ trait AdminModelTrait
      */
     public function getIdentifier()
     {
-        $resourceConfig = $this->getResourceConfig();
-
-        return $resourceConfig['id'];
+        return $this->getResourceConfig()['id'];
     }
 
     public function getResourceConfig()

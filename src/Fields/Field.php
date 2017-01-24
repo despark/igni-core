@@ -56,7 +56,7 @@ abstract class Field implements FieldContract
      */
     public function getViewName()
     {
-        if ( ! isset($this->viewName)) {
+        if (! isset($this->viewName)) {
             // Default view name
             $identifier = $this->getModel()->getIdentifier();
             $fieldName = str_slug($this->fieldName).'--field';
@@ -76,6 +76,7 @@ abstract class Field implements FieldContract
 
         return $this->viewName;
     }
+
 
     /**
      * @return AdminModel
@@ -97,6 +98,22 @@ abstract class Field implements FieldContract
     }
 
     /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->model->getOriginal($this->getFieldName());
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function getAttributes()
+    {
+        return isset($this->options['attributes']) ? $this->options['attributes'] : [];
+    }
+
+    /**
      * @return string
      */
     public function __toString()
@@ -106,15 +123,27 @@ abstract class Field implements FieldContract
             $html = $this->toHtml();
             $html = $this->afterToHtml($html);
         } catch (\Exception $exc) {
+            //TODO Version dependent
             $eh = new ExceptionHandler(env('APP_DEBUG'));
-            die($eh->getHtml($exc));
+            die($eh->createResponse($exc)->__toString());
         }
 
         return $html;
     }
 
+    /**
+     *
+     */
     protected function beforeToHtml()
     {
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function toHtml()
+    {
+        return view($this->getViewName(), ['field' => $this])->__toString();
     }
 
     /**
@@ -125,4 +154,117 @@ abstract class Field implements FieldContract
     {
         return $html;
     }
+
+    /**
+     * @return string
+     */
+    public function getFieldName()
+    {
+        return $this->fieldName;
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setFieldName($fieldName)
+    {
+        $this->fieldName = $fieldName;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions($key = null)
+    {
+        if ($key) {
+            return isset($this->options[$key]) ? $this->options[$key] : null;
+        }
+
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions($options, $key = null)
+    {
+        if ($key) {
+            $this->options[$key] = $options;
+        } else {
+            $this->options = $options;
+        }
+    }
+
+    /**
+     * @return null
+     */
+    public function getElementName()
+    {
+        return $this->elementName;
+    }
+
+    /**
+     * @param null $elementName
+     */
+    public function setElementName($elementName)
+    {
+        $this->elementName = $elementName;
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return array
+     */
+    function __call($name, $arguments)
+    {
+        $action = substr($name, 0, 3);
+        if ($action == 'get') {
+            $rawProperty = substr($name, 3);
+            $property = camel_case(substr($name, 3));
+
+            if (isset($this->$property)) {
+                return $this->$property;
+            }
+        }
+        trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    function __get($name)
+    {
+        return $this->getOptions($name);
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    function __set($name, $value)
+    {
+        $this->setOptions($value, $name);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    function __isset($name)
+    {
+        return isset($this->options[$name]);
+    }
+
+    /**
+     * @param $name
+     */
+    function __unset($name)
+    {
+        if (isset($this->options[$name])) {
+            unset($this->options[$name]);
+        }
+    }
+
 }
