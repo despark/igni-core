@@ -42,13 +42,9 @@ class FieldServiceProvider extends ServiceProvider
     {
         $fields = $this->getFields();
 
-        $ar = array_map(function ($field) {
+        return array_map(function ($field) {
             return $field.'_field';
         }, array_keys($fields));
-
-        dd($ar);
-
-        return $ar;
     }
 
     /**
