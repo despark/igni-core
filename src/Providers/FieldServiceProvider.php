@@ -2,6 +2,7 @@
 
 namespace Despark\Cms\Providers;
 
+use Despark\Cms\Fields\Custom;
 use Despark\Cms\Fields\Gallery;
 use Despark\Cms\Fields\Select;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +22,7 @@ class FieldServiceProvider extends ServiceProvider
      */
     protected $fields = [
         'select' => Select::class,
+        'custom' => Custom::class,
     ];
 
     /**

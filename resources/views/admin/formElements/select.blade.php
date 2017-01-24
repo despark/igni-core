@@ -1,5 +1,5 @@
 <?php
-/** @var \Despark\Cms\Fields\Select $field */
+/** @var \Despark\Cms\Fields\Select $this */
 $fieldName = $field->getFieldName();
 ?>
 <div class="form-group {{ $errors->has($fieldName) ? 'has-error' : '' }}">
