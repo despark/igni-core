@@ -34,11 +34,13 @@ class ResourceManager
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
             $resourceConfig = call_user_func(function () use ($file, $resource) {
                 $array = include $file;
-
-                return array_merge(['id' => $resource], $array);
+                if (is_array($array)) {
+                    return array_merge(['id' => $resource], $array);
+                }
             });
-
-            $this->resources[$resourceConfig['id']] = $resourceConfig;
+            if ($resourceConfig) {
+                $this->resources[$resourceConfig['id']] = $resourceConfig;
+            }
         }
 
         // Add igni default resources
@@ -48,11 +50,14 @@ class ResourceManager
             if (! isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
-
-                    return array_merge(['id' => $resource], $array);
+                    if (is_array($array)) {
+                        return array_merge(['id' => $resource], $array);
+                    }
                 });
-                if (! isset($resourceConfig['id'])) {
-                    $this->resources[$resourceConfig['id']] = $resourceConfig;
+                if ($resourceConfig) {
+                    if (! isset($this->resources[$resourceConfig['id']])) {
+                        $this->resources[$resourceConfig['id']] = $resourceConfig;
+                    }
                 }
             }
         }
