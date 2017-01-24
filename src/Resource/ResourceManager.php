@@ -51,7 +51,9 @@ class ResourceManager
 
                     return array_merge(['id' => $resource], $array);
                 });
-                $this->resources[$resourceConfig['id']] = $resourceConfig;
+                if (! isset($resourceConfig['id'])) {
+                    $this->resources[$resourceConfig['id']] = $resourceConfig;
+                }
             }
         }
     }
