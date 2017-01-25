@@ -60,7 +60,7 @@ abstract class Field implements FieldContract
             // Default view name
             $identifier = $this->getModel()->getIdentifier();
             $fieldName = str_slug($this->fieldName).'--field';
-            $field = camel_case(strtolower(snake_case(class_basename(get_class($this)))));
+            $field = $this->getFieldIdentifier();
 
             // First check if there is a rewrite on specific field type
             if (\View::exists('resources.'.$identifier.'.formElements.'.$fieldName)) {
@@ -77,6 +77,14 @@ abstract class Field implements FieldContract
         return $this->viewName;
     }
 
+
+    /**
+     * @return string
+     */
+    public function getFieldIdentifier()
+    {
+        return camel_case(strtolower(snake_case(class_basename(get_class($this)))));
+    }
 
     /**
      * @return AdminModel
@@ -110,7 +118,12 @@ abstract class Field implements FieldContract
      */
     public function getAttributes()
     {
-        return isset($this->options['attributes']) ? $this->options['attributes'] : [];
+        $a = isset($this->options['attributes']) ? $this->options['attributes'] : [];
+        if (isset($a['class']) && is_array($a['class'])) {
+            $a['class'] = implode(' ', $a['class']);
+        }
+
+        return $a;
     }
 
     /**
@@ -172,12 +185,14 @@ abstract class Field implements FieldContract
     }
 
     /**
+     * @param null $key
+     * @param null $default
      * @return array
      */
-    public function getOptions($key = null)
+    public function getOptions($key = null, $default = null)
     {
         if ($key) {
-            return isset($this->options[$key]) ? $this->options[$key] : null;
+            return isset($this->options[$key]) ? $this->options[$key] : $default;
         }
 
         return $this->options;
@@ -185,6 +200,7 @@ abstract class Field implements FieldContract
 
     /**
      * @param array $options
+     * @param null  $key
      */
     public function setOptions($options, $key = null)
     {

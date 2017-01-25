@@ -42,8 +42,7 @@ class Select extends Field
 
     public function getAttributes()
     {
-        $attributes = parent::getAttributes();
-
+        $attributes = isset($this->options['attributes']) ? $this->options['attributes'] : [];
         $a = array_merge_recursive(['class' => ['form-control']], $attributes);
 
         if (isset($a['class']) && is_array($a['class'])) {
