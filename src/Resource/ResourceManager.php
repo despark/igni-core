@@ -37,6 +37,7 @@ class ResourceManager
                 if (is_array($array)) {
                     return array_merge(['id' => $resource], $array);
                 }
+
                 return null;
             });
             if ($resourceConfig) {
@@ -48,16 +49,33 @@ class ResourceManager
         $localFiles = \File::allFiles(__DIR__.'/../../config/resources');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (! isset($this->resources[$resource])) {
+            if ( ! isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
                         return array_merge(['id' => $resource], $array);
                     }
+
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (! isset($this->resources[$resourceConfig['id']])) {
+                    if ( ! isset($this->resources[$resourceConfig['id']])) {
+                        // We need to make sure we don't override existing sidebar items
+                        if (isset($resourceConfig['adminMenu'])) {
+                            foreach ($this->resources as $existingResource) {
+                                if (isset($existingResource['adminMenu'])) {
+                                    $existingMenuItems = array_keys($existingResource['adminMenu']);
+                                    $candidateMenuItems = array_keys($resourceConfig['adminMenu']);
+                                    $nonIntersecting = array_diff($candidateMenuItems, $existingMenuItems);
+                                    if (empty($nonIntersecting)) {
+                                        unset($resourceConfig['adminMenu']);
+                                    } else {
+                                        $resourceConfig['adminMenu'] = array_only($resourceConfig['adminMenu'],
+                                            $nonIntersecting);
+                                    }
+                                }
+                            }
+                        }
                         $this->resources[$resourceConfig['id']] = $resourceConfig;
                     }
                 }
@@ -159,19 +177,19 @@ class ResourceManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);
 
-            if (! empty($methods)) {
+            if ( ! empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], ['names' => build_resource_backport($resource)]);
                 } else {
                     \Route::resource($resource, $config['controller'],
                         [
-                            'only' => $methods,
+                            'only'  => $methods,
                             'names' => build_resource_backport($resource, $methods),
                         ]);
                     \Route::resource($resource, ResourceController::class, [
                         'except' => $methods,
-                        'names' => build_resource_backport($resource, [], $methods),
+                        'names'  => build_resource_backport($resource, [], $methods),
                     ]);
                 }
             } else {

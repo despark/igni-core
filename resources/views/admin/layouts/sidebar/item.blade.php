@@ -1,4 +1,4 @@
-@if(!$sidebarItem->hasParent())
+@if(!$sidebarItem->hasParent() && ($sidebarItem->hasChildren() || isset($sidebarItem->link) ))
     <li class="treeview {{ ($sidebarItem->isActive()) ? 'active' : '' }}">
         <a href="{{ $sidebarItem->getHref() }}">
             <i class=" fa {{ $sidebarItem->getIconClass() }}"></i>
