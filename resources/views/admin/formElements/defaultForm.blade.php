@@ -1,8 +1,8 @@
 @extends('ignicms::admin.layouts.default')
 
 @section('pageTitle', $pageTitle)
-
 @section('content')
+    @yield('before.form')
     <div class="default-form">
         <h3 class="box-title">{{ $pageTitle }} - {{ $actionVerb or 'Edit'  }}</h3>
         {!!  Form::open([
