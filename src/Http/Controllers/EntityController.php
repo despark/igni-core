@@ -6,7 +6,7 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\AdminFormRequest;
 
-class ResourceController extends AdminController
+class EntityController extends AdminController
 {
     /**
      * Show the form for creating a new resource.
@@ -69,7 +69,7 @@ class ResourceController extends AdminController
      * Update the specified resource in storage.
      *
      * @param AdminFormRequest $request
-     * @param int $id
+     * @param int              $id
      *
      * @return Response
      */

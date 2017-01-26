@@ -85,7 +85,8 @@ abstract class AdminController extends BaseController
         $this->model = new $this->resourceConfig['model'];
 
         $this->paginateLimit = config('ignicms.paginateLimit');
-        $this->defaultFormView = config('ignicms.defaultFormView');
+
+        $this->defaultFormView = $this->entityManager->getFormTemplate($this->model);
 
         $this->viewData['inputs'] = \Request::all();
 

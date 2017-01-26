@@ -4,7 +4,7 @@
 namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\FormBuilder;
-use Despark\Cms\Http\Controllers\ResourceController;
+use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
 
@@ -143,7 +143,7 @@ class EntityManager
     {
         $class = get_class($controller);
 
-        if ($class == ResourceController::class) {
+        if ($class == EntityController::class) {
             // If it's resource controller we'll try to get the resource by route
             return $this->getByRoute();
         } else {
@@ -204,13 +204,13 @@ class EntityManager
                             'only' => $methods,
                             'names' => build_resource_backport($resource, $methods),
                         ]);
-                    \Route::resource($resource, ResourceController::class, [
+                    \Route::resource($resource, EntityController::class, [
                         'except' => $methods,
                         'names' => build_resource_backport($resource, [], $methods),
                     ]);
                 }
             } else {
-                \Route::resource($resource, ResourceController::class);
+                \Route::resource($resource, EntityController::class);
             }
         }
     }
@@ -253,6 +253,25 @@ class EntityManager
                 }
             }
         }
+    }
+
+    /**
+     * @param Model $model
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getFormTemplate(Model $model)
+    {
+        $resourceConfig = $this->getByModel($model);
+        if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
+            if (! \View::exists($resourceConfig['formTemplate'])) {
+                throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
+            }
+
+            return $resourceConfig['formTemplate'];
+        }
+
+        return config('ignicms.defaultFormView');
     }
 
     /**

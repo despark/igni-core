@@ -3,6 +3,7 @@
 namespace Despark\Cms\Admin;
 
 use Despark\Cms\Contracts\SourceModel;
+use Despark\Cms\Fields\Field;
 use Despark\Cms\Models\AdminModel;
 use Illuminate\Database\Eloquent\Model;
 
@@ -81,8 +82,15 @@ class FormBuilder
             // Check if field is not already rendered
             if (! $this->isRendered($model, $field)) {
                 $elementName = isset($options['name']) ? $options['name'] : $field;
-                $html .= $this->field($model, $field, $options, $elementName);
+                $fieldInstance = $this->field($model, $field, $options, $elementName);
+                if ($fieldInstance instanceof Field) {
+                    // We don't render fields marked as hidden
+                    if ($fieldInstance->hidden == true) {
+                        continue;
+                    }
+                }
                 $this->rendered[get_class($model)][] = $field;
+                $html .= $fieldInstance;
             }
         }
 

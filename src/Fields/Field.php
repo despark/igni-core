@@ -38,7 +38,7 @@ abstract class Field implements FieldContract
     /**
      * @var bool
      */
-    public $rendered = false;
+    public $hidden = false;
 
     /**
      * Field constructor.
@@ -53,6 +53,7 @@ abstract class Field implements FieldContract
         $this->fieldName = $fieldName;
         $this->options = $options;
         $this->elementName = $elementName;
+        $this->hidden = isset($options['hide']) && $options['hide'];
     }
 
     /**
