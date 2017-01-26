@@ -53,7 +53,7 @@ abstract class Field implements FieldContract
         $this->fieldName = $fieldName;
         $this->options = $options;
         $this->elementName = $elementName;
-        $this->hidden = isset($options['hide']) && $options['hide'];
+        $this->hidden = isset($options['hidden']) && $options['hidden'];
     }
 
     /**
