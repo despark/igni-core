@@ -1,10 +1,10 @@
+<?php
+/** @var \Despark\Cms\Fields\Select $this */
+$fieldName = $field->getFieldName();
+?>
 <div class="form-group {{ $errors->has($fieldName) ? 'has-error' : '' }}">
-    {!! Form::label($elementName, $options['label']) !!}
-    {!! Form::text($elementName, $record->$fieldName, array_merge([
-    'id' =>  $elementName,
-    'class' => "form-control ".$options['class'],
-    'placeholder' => $options['label'],
-], array_get($options, 'attributes', []))) !!}
+    {!! Form::label($fieldName, $field->getLabel()) !!}
+    {!! Form::text($fieldName, $field->getValue(), $field->getAttributes()) !!}
     <div class="text-red">
         {{ join($errors->get($fieldName), '<br />') }}
     </div>

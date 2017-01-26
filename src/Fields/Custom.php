@@ -42,6 +42,7 @@ class Custom extends Field
         // Check for handler and use it
         if (isset($options['handler'])) {
             if (class_exists($options['handler'])) {
+                // Todo make this to resolve through IOC
                 $this->handler = new $options['handler']($this);
             }
         }
