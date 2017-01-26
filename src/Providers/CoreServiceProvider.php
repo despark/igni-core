@@ -2,11 +2,7 @@
 
 namespace Despark\Cms\Providers;
 
-use Despark\Cms\Assets\AssetManager;
-use Despark\Cms\Contracts\AssetsContract;
-use Despark\Cms\Contracts\ImageContract;
 use Despark\Cms\Illuminate\View\View;
-use Despark\Cms\Models\Image;
 use File;
 use Illuminate\Console\AppNamespaceDetectorTrait;
 use Illuminate\Console\Scheduling\Schedule;
@@ -61,7 +57,7 @@ class CoreServiceProvider extends ServiceProvider
         // Register config
         $this->mergeConfigFrom(__DIR__.'/../../config/ignicms.php', 'ignicms');
       //  $this->mergeConfigFrom(__DIR__.'/../../config/admin/sidebar.php', 'admin.sidebar');
-        $this->mergeConfigFrom(__DIR__.'/../../config/resources/user.php', 'resources.user');
+        $this->mergeConfigFrom(__DIR__.'/../../config/entities/user.php', 'resources.user');
 
         // Register the application commands
         $this->commands($this->commands);
@@ -131,13 +127,6 @@ class CoreServiceProvider extends ServiceProvider
         //        $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
 
         /*
-         * Image contract implementation
-         */
-        $this->app->bind(ImageContract::class, function ($app, $attributes = []) {
-            return new Image($attributes);
-        });
-
-        /*
          * Create aliases for the dependency.
          */
         $loader = AliasLoader::getInstance();
@@ -145,11 +134,6 @@ class CoreServiceProvider extends ServiceProvider
         $loader->alias('Html', 'Collective\Html\HtmlFacade');
         // Todo Core considerations
         $loader->alias('Image', 'Intervention\Image\Facades\Image');
-
-        /*
-         * Assets manager
-         */
-        $this->app->singleton(AssetsContract::class, AssetManager::class);
 
         /*
          * Switch View implementation

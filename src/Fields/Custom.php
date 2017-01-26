@@ -4,7 +4,6 @@
 namespace Despark\Cms\Fields;
 
 
-use Despark\Cms\Illuminate\View\View;
 use Despark\Cms\Models\AdminModel;
 
 /**
@@ -22,6 +21,7 @@ class Custom extends Field
      * @var
      */
     protected $handler;
+
 
     /**
      * Custom constructor.

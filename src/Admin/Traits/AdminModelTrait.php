@@ -3,7 +3,6 @@
 namespace Despark\Cms\Admin\Traits;
 
 use Illuminate\Support\Facades\Request;
-use Despark\Cms\Admin\Helpers\FormBuilder;
 
 /**
  * Class AdminModelTrait.
@@ -48,7 +47,7 @@ trait AdminModelTrait
     public function getResourceConfig()
     {
         if (! isset($this->resourceConfig)) {
-            $this->resourceConfig = $this->resourceManager->getByModel($this);
+            $this->resourceConfig = $this->entityManager->getByModel($this);
         }
 
         return $this->resourceConfig;
@@ -189,14 +188,7 @@ trait AdminModelTrait
      */
     public function buildForm()
     {
-        $formFields = '';
-
-        foreach ($this->getFormFields() as $field => $options) {
-            $formBuilder = new FormBuilder();
-            $formFields .= $formBuilder->field($this, $field, $options);
-        }
-
-        return $formFields;
+        return $this->getEntityManager()->renderForm($this);
     }
 
     /**
@@ -233,17 +225,7 @@ trait AdminModelTrait
         return $this;
     }
 
-    /**
-     * @param $fieldName
-     * @return null
-     */
-    public function getAdminFormField($fieldName)
-    {
-        if (isset($this->getFormFields()[$fieldName])) {
-            return $this->getFormFields()[$fieldName];
-        }
-    }
-
+    // TODO validation logic.
     //    /**
     //     * @return mixed
     //     */

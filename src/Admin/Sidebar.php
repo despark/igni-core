@@ -5,18 +5,19 @@ namespace Despark\Cms\Admin;
 
 
 use Despark\Cms\Admin\Sidebar\SidebarItem;
-use Despark\Cms\Resource\ResourceManager;
+use Despark\Cms\Resource\EntityManager;
 
 /**
  * Class Sidebar.
+ * @todo Make the menu items separate file again. Keep the possibility entities to define menu items
  */
 class Sidebar
 {
 
     /**
-     * @var ResourceManager
+     * @var EntityManager
      */
-    protected $resourceManager;
+    protected $entityManager;
 
     /**
      * @var SidebarItem[]
@@ -27,13 +28,13 @@ class Sidebar
 
     /**
      * Sidebar constructor.
-     * @param ResourceManager $resourceManager
+     * @param EntityManager $entityManager
      */
-    public function __construct(ResourceManager $resourceManager)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->resourceManager = $resourceManager;
+        $this->entityManager = $entityManager;
         // We need to build the sidebar items.
-        foreach ($resourceManager->all() as $configs) {
+        foreach ($entityManager->all() as $configs) {
             if (isset($configs['adminMenu'])) {
 
                 foreach ($configs['adminMenu'] as $key => $config) {
@@ -84,20 +85,20 @@ class Sidebar
     }
 
     /**
-     * @return ResourceManager
+     * @return EntityManager
      */
-    public function getResourceManager()
+    public function getEntityManager()
     {
-        return $this->resourceManager;
+        return $this->entityManager;
     }
 
     /**
-     * @param ResourceManager $resourceManager
+     * @param EntityManager $entityManager
      * @return Sidebar
      */
-    public function setResourceManager($resourceManager)
+    public function setEntityManager($entityManager)
     {
-        $this->resourceManager = $resourceManager;
+        $this->entityManager = $entityManager;
 
         return $this;
     }

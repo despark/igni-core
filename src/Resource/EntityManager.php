@@ -3,16 +3,16 @@
 
 namespace Despark\Cms\Resource;
 
+use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Http\Controllers\ResourceController;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 
 /**
- * Class ResourceManager.
+ * Class EntityManager.
  */
-class ResourceManager
+class EntityManager
 {
 
     /**
@@ -20,7 +20,24 @@ class ResourceManager
      */
     protected $resources;
 
+    /**
+     * @var array
+     */
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
+
+    /**
+     * @var FormBuilder
+     */
+    protected $formBuilder;
+
+    /**
+     * EntityManager constructor.
+     * @param FormBuilder $formBuilder
+     */
+    public function __construct(FormBuilder $formBuilder)
+    {
+        $this->formBuilder = $formBuilder;
+    }
 
     /**
      * Load the resource manager
@@ -28,7 +45,7 @@ class ResourceManager
     public function load()
     {
         // Get all configs
-        $files = \File::allFiles(config('ignicms.paths.resources', config_path('resources')));
+        $files = \File::allFiles(config('ignicms.paths.entities', config_path('entities')));
 
         foreach ($files as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
@@ -46,10 +63,10 @@ class ResourceManager
         }
 
         // Add igni default resources
-        $localFiles = \File::allFiles(__DIR__.'/../../config/resources');
+        $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if ( ! isset($this->resources[$resource])) {
+            if (! isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -59,7 +76,7 @@ class ResourceManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if ( ! isset($this->resources[$resourceConfig['id']])) {
+                    if (! isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -177,25 +194,73 @@ class ResourceManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);
 
-            if ( ! empty($methods)) {
+            if (! empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], ['names' => build_resource_backport($resource)]);
                 } else {
                     \Route::resource($resource, $config['controller'],
                         [
-                            'only'  => $methods,
+                            'only' => $methods,
                             'names' => build_resource_backport($resource, $methods),
                         ]);
                     \Route::resource($resource, ResourceController::class, [
                         'except' => $methods,
-                        'names'  => build_resource_backport($resource, [], $methods),
+                        'names' => build_resource_backport($resource, [], $methods),
                     ]);
                 }
             } else {
                 \Route::resource($resource, ResourceController::class);
             }
         }
+    }
+
+    /**
+     * Renders entire form
+     * @param Model $model
+     * @throws \Exception
+     * @return string
+     */
+    public function renderForm(Model $model)
+    {
+        $resource = $this->getByModel($model);
+        if (! $resource) {
+            throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
+        }
+
+        if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
+            return $this->formBuilder->render($model, $resource['adminFormFields']);
+        }
+    }
+
+    /**
+     * Renders single field
+     * @param Model $model
+     * @param       $fieldId
+     * @return \Illuminate\View\View|string
+     * @throws \Exception
+     */
+    public function renderField(Model $model, $fieldId)
+    {
+        $resource = $this->getByModel($model);
+        if (! $resource) {
+            throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
+        }
+        if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
+            foreach ($resource['adminFormFields'] as $field => $config) {
+                if ($fieldId == $field) {
+                    return $this->formBuilder->field($model, $field, $config);
+                }
+            }
+        }
+    }
+
+    /**
+     * @return FormBuilder
+     */
+    public function getFormBuilder()
+    {
+        return $this->formBuilder;
     }
 
 }

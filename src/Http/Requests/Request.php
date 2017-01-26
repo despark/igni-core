@@ -2,7 +2,7 @@
 
 namespace Despark\Cms\Http\Requests;
 
-use Despark\Cms\Resource\ResourceManager;
+use Despark\Cms\Resource\EntityManager;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class Request extends FormRequest
@@ -14,8 +14,8 @@ abstract class Request extends FormRequest
     protected function getValidatorInstance()
     {
         // We will build our model here
-        $resourceManager = app(ResourceManager::class);
-        $config = $resourceManager->getByRoute();
+        $entityManager = app(EntityManager::class);
+        $config = $entityManager->getByRoute();
         if ($config) {
             $this->model = new $config['model'];
         } else {

@@ -1,2 +1,2 @@
 <?php
-app(\Despark\Cms\Resource\ResourceManager::class)->routes();
+app(\Despark\Cms\Resource\EntityManager::class)->routes();

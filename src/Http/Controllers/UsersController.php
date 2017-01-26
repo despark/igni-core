@@ -5,34 +5,11 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
 use Despark\Cms\Http\Requests\UserUpdateRequest;
-use Despark\Cms\Resource\ResourceManager;
 use Illuminate\Http\Request;
 use Response;
 
 class UsersController extends AdminController
 {
-//    /**
-//     * UsersController constructor.
-//     */
-//    public function __construct(ResourceManager $resourceManager)
-//    {
-//        parent::__construct($resourceManager);
-//
-//        $userModelClass = config('auth.model');
-//
-//        $this->model = new $userModelClass;
-//
-//        $this->sidebarItems['users']['isActive'] = true;
-//        if (isset($this->sidebarItems['users']['subMenu']['users_manager'])) {
-//            $this->sidebarItems['users']['subMenu']['users_manager']['isActive'] = true;
-//        }
-//
-//        $this->viewData['pageTitle'] = 'Users';
-//        $this->viewData['editRoute'] = 'user.edit';
-//        $this->viewData['createRoute'] = 'user.create';
-//        $this->viewData['deleteRoute'] = 'user.destroy';
-//    }
-
     /**
      * Show the form for creating a new resource.
      *

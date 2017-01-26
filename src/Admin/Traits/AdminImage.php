@@ -2,22 +2,22 @@
 
 namespace Despark\Cms\Admin\Traits;
 
-use Image;
-use File as FileFacade;
-use Despark\Cms\Models\File\Temp;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Despark\Cms\Models\AdminModel;
-use Despark\Cms\Helpers\FileHelper;
-use Illuminate\Database\Eloquent\Model;
-use Despark\Cms\Contracts\ImageContract;
-use Despark\Cms\Contracts\AssetsContract;
-use Despark\Cms\Admin\Helpers\FormBuilder;
-use Illuminate\Database\Eloquent\Collection;
+use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Admin\Observers\ImageObserver;
-use Symfony\Component\HttpFoundation\File\File;
-use Despark\Cms\Exceptions\ModelSanityException;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Despark\Cms\Contracts\AssetsContract;
+use Despark\Cms\Contracts\ImageContract;
 use Despark\Cms\Exceptions\ModelNotPersistedException;
+use Despark\Cms\Exceptions\ModelSanityException;
+use Despark\Cms\Helpers\FileHelper;
+use Despark\Cms\Models\AdminModel;
+use Despark\Cms\Models\File\Temp;
+use File as FileFacade;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Image;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class AdminImage.
@@ -645,7 +645,7 @@ trait AdminImage
      */
     public function getImageMetaFieldsHtml($fieldName, ImageContract $imageModel = null, $actualFieldName = null)
     {
-        $formBuilder = new FormBuilder();
+        $formBuilder = app(FormBuilder::class);
         $fields = $this->getImageMetaFields($fieldName);
         $html = '';
 

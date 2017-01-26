@@ -2,10 +2,10 @@
 
 namespace Despark\Cms\Fields;
 
-use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Contracts\FieldContract;
-use Symfony\Component\Debug\ExceptionHandler;
 use Despark\Cms\Exceptions\Fields\FieldViewNotFoundException;
+use Despark\Cms\Models\AdminModel;
+use Symfony\Component\Debug\ExceptionHandler;
 
 /**
  * Class Field.
@@ -34,6 +34,11 @@ abstract class Field implements FieldContract
      * @var null
      */
     protected $elementName;
+
+    /**
+     * @var bool
+     */
+    public $rendered = false;
 
     /**
      * Field constructor.

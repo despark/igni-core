@@ -13,7 +13,7 @@ return [
         'config' => base_path('config/admin'),
         'routes' => base_path('routes'),
         // Where your resource files are kept.
-        'resources' => config_path('resources'),
+        'entities' => config_path('entities'),
     ],
     'files' => [
         // No leading slash

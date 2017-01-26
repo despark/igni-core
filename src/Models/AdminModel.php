@@ -5,7 +5,7 @@ namespace Despark\Cms\Models;
 use Despark\Cms\Admin\Interfaces\UploadImageInterface;
 use Despark\Cms\Admin\Traits\AdminModelTrait;
 use Despark\Cms\Observers\AdminModelObserver;
-use Despark\Cms\Resource\ResourceManager;
+use Despark\Cms\Resource\EntityManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -48,9 +48,9 @@ abstract class AdminModel extends Model
     protected $videoSupport;
 
     /**
-     * @var ResourceManager
+     * @var EntityManager
      */
-    protected $resourceManager;
+    protected $entityManager;
 
     /**
      * AdminModel constructor.
@@ -60,7 +60,7 @@ abstract class AdminModel extends Model
     {
         parent::__construct($attributes);
 
-        $this->resourceManager = app(ResourceManager::class);
+        $this->entityManager = app(EntityManager::class);
 
         static::$dispatcher->fire('igni.model.booted: '.static::class, $this);
     }
@@ -242,20 +242,20 @@ abstract class AdminModel extends Model
     }
 
     /**
-     * @return ResourceManager
+     * @return EntityManager
      */
-    public function getResourceManager()
+    public function getEntityManager()
     {
-        return $this->resourceManager;
+        return $this->entityManager;
     }
 
     /**
-     * @param ResourceManager $resourceManager
+     * @param EntityManager $entityManager
      * @return $this
      */
-    public function setResourceManager($resourceManager)
+    public function setEntityManager($entityManager)
     {
-        $this->resourceManager = $resourceManager;
+        $this->entityManager = $entityManager;
 
         return $this;
     }

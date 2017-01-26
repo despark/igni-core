@@ -4,7 +4,7 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Admin\Sidebar;
 use Despark\Cms\Models\AdminModel;
-use Despark\Cms\Resource\ResourceManager;
+use Despark\Cms\Resource\EntityManager;
 use Despark\Cms\Traits\ManagesAssets;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -57,9 +57,9 @@ abstract class AdminController extends BaseController
     protected $model;
 
     /**
-     * @var ResourceManager
+     * @var EntityManager
      */
-    protected $resourceManager;
+    protected $entityManager;
 
     /**
      * @var mixed
@@ -69,11 +69,11 @@ abstract class AdminController extends BaseController
     /**
      * AdminController constructor.
      */
-    public function __construct(ResourceManager $resourceManager)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->resourceManager = $resourceManager;
+        $this->entityManager = $entityManager;
 
-        $this->resourceConfig = $this->resourceManager->getByController($this);
+        $this->resourceConfig = $this->entityManager->getByController($this);
 
         $this->viewData['sidebar'] = app(Sidebar::class);
 
@@ -261,20 +261,20 @@ abstract class AdminController extends BaseController
     //    }
 
     /**
-     * @return ResourceManager
+     * @return EntityManager
      */
-    public function getResourceManager()
+    public function getEntityManager()
     {
-        return $this->resourceManager;
+        return $this->entityManager;
     }
 
     /**
-     * @param ResourceManager $resourceManager
+     * @param EntityManager $entityManager
      * @return AdminController
      */
-    public function setResourceManager($resourceManager)
+    public function setEntityManager($entityManager)
     {
-        $this->resourceManager = $resourceManager;
+        $this->entityManager = $entityManager;
 
         return $this;
     }
