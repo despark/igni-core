@@ -4,6 +4,7 @@
 namespace Despark\Cms\Fields;
 
 
+use Despark\Cms\Illuminate\View\View;
 use Despark\Cms\Models\AdminModel;
 
 /**
@@ -49,20 +50,25 @@ class Custom extends Field
             throw new \Exception('Template is required for field '.$fieldName);
         }
 
-        if (! \View::exists($options['template'])) {
-            throw new \Exception('Template '.$options['template'].' doesn\'t exists.');
+        if (isset($options['template']) && \View::exists($options['template'])) {
+            $this->template = $options['template'];
         }
 
-        $this->template = $options['template'];
 
     }
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return string
+     * @throws \Exception
      */
     public function toHtml()
     {
-        return view($this->getTemplate(), ['field' => $this->getHandler()])->__toString();
+        $template = $this->getTemplate();
+        if (! \View::exists($template)) {
+            throw new \Exception('Template '.$template.' doesn\'t exists.');
+        }
+
+        return view($template, ['field' => $this->getHandler()])->__toString();
     }
 
     /**
