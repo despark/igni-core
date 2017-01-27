@@ -145,7 +145,7 @@ abstract class AdminController extends BaseController
                 $table.'.'.$this->model->getKeyName(),
             ]);
         }
-        $with = [];
+        $with = $this->withEagerLoad();
 
         foreach ($tableColumns as $name => $column) {
             // We already included the primary key so check the column and do nothing if exists.
@@ -176,6 +176,15 @@ abstract class AdminController extends BaseController
         }
 
         return $query;
+    }
+
+    /**
+     * Return relations that should be eager loaded for the index.
+     * @return array
+     */
+    public function withEagerLoad()
+    {
+        return [];
     }
 
     /**
