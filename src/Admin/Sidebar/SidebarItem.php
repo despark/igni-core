@@ -180,7 +180,6 @@ class SidebarItem
             foreach ($this->sidebar->getSidebarItems() as $item) {
                 if ($item->hasParent() && $item->parent == $this->getId()) {
                     $this->children[$item->getId()] = $item;
-                    break;
                 }
             }
         }
