@@ -6,16 +6,25 @@ namespace Despark\Cms\Fields;
 
 use Despark\Cms\Contracts\SourceModel;
 
+/**
+ * Class Select.
+ */
 class Select extends Field
 {
 
+    /**
+     * @var SourceModel
+     */
     protected $sourceModel;
 
 
+    /**
+     * @return array
+     */
     public function getSelectOptions()
     {
         $defaultOption = [null => 'Select '.$this->getLabel()];
-        $options = array_merge($defaultOption, $this->getSourceModel()->toOptionsArray());
+        $options = $defaultOption + $this->getSourceModel()->toOptionsArray();
 
         return $options;
     }
