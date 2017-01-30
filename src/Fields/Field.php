@@ -249,7 +249,6 @@ abstract class Field implements FieldContract
         return $this->getOptions('help');
     }
 
-    public function attachJs() { }
 
     /**
      * @param $name

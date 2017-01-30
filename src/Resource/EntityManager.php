@@ -1,6 +1,6 @@
 <?php
 
-
+// Todo refactor namespace to be Entity.
 namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\FormBuilder;
@@ -223,14 +223,9 @@ class EntityManager
      */
     public function renderForm(Model $model)
     {
-        $resource = $this->getByModel($model);
-        if (! $resource) {
-            throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
-        }
+        $fields = $this->getFields($model);
 
-        if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
-            return $this->formBuilder->render($model, $resource['adminFormFields']);
-        }
+        return $this->formBuilder->render($model, $fields);
     }
 
     /**
@@ -242,16 +237,27 @@ class EntityManager
      */
     public function renderField(Model $model, $fieldId)
     {
+        $fields = $this->getFields($model);
+        foreach ($fields as $field => $config) {
+            if ($fieldId == $field) {
+                return $this->formBuilder->field($model, $field, $config);
+            }
+        }
+    }
+
+    /**
+     * @param Model $model
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getFields(Model $model)
+    {
         $resource = $this->getByModel($model);
         if (! $resource) {
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
-            foreach ($resource['adminFormFields'] as $field => $config) {
-                if ($fieldId == $field) {
-                    return $this->formBuilder->field($model, $field, $config);
-                }
-            }
+            return $resource['adminFormFields'];
         }
     }
 
