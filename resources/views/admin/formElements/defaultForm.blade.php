@@ -22,5 +22,3 @@
         @yield('after.form')
     </div>
 @stop
-
-@push('additionalScripts')

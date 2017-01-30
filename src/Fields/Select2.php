@@ -4,6 +4,7 @@
 namespace Despark\Cms\Fields;
 
 
+use Despark\Cms\Contracts\AjaxSourceContract;
 use Despark\Cms\Models\AdminModel;
 
 /**
@@ -54,10 +55,33 @@ class Select2 extends Select
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getSelectOptions()
     {
         if ($this->isAjax()) {
+            // If we have value we need to try and find the ajaxRoute controller.
+            // Make sure it implements our interface and get the selected values.
+            if (! is_null($this->getValue())) {
+                // We need to populate that value
+                $route = \Route::getRoutes()->getByName($this->ajaxRoute);
+                if ($route) {
+                    $action = $route->getActionName();
+                    if (is_string($action)) {
+                        // Get controller class
+                        $controllerClass = explode('@', $action)[0];
+                        $instance = app($controllerClass);
+                        if ($instance instanceof AjaxSourceContract) {
+                            return $instance->getOptionByValue($this->getValue());
+                        } else {
+                            throw new \Exception('Ajax source route ('.$controllerClass.') must implements '.AjaxSourceContract::class);
+                        }
+                    } else {
+                        throw new \Exception('Ajax source route cannot be closure');
+                    }
+                }
+            }
+
             return [];
         }
 
