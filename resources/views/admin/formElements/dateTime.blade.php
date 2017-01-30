@@ -3,9 +3,9 @@
 $fieldName = $field->getFieldName();
 $elementName = $field->getElementName();
 ?>
-<div class="form-group datepicker {{ $errors->has($fieldName) ? 'has-error' : '' }}">
+<div class="form-group datetimepicker{{ $errors->has($fieldName) ? 'has-error' : '' }}">
     {!! Form::label($elementName, $field->getLabel()) !!}
-    {!! Form::text($elementName, $field->getValue(), $field->getAttributes()) !!}
+    {!! Form::text($elementName, $field->getValue(), $field->getAttributes() ) !!}
     <div class="text-red">
         {{ join($errors->get($fieldName), '<br />') }}
     </div>

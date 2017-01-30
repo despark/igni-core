@@ -24,6 +24,8 @@ class FieldServiceProvider extends ServiceProvider
         'select' => Fields\Select::class,
         'select2' => Fields\Select2::class,
         'custom' => Fields\Custom::class,
+        'date' => Fields\DateTime::class,
+        'datetime' => Fields\DateTime::class,
     ];
 
     /**
@@ -32,8 +34,15 @@ class FieldServiceProvider extends ServiceProvider
     public function register()
     {
         foreach ($this->getFields() as $field => $class) {
-            $this->app->bind($field.'_field', function ($app, $params) use ($class) {
-                return new $class($params['model'], $params['field'], $params['options'], $params['element_name']);
+            $this->app->bind($field.'_field', function ($app, $params) use ($class, $field) {
+                $instance = new $class($params['model'], $params['field'], $params['options'], $params['element_name']);
+                if ($instance instanceof Fields\Field) {
+                    $instance->setFieldType($field);
+                } else {
+                    throw new \Exception($class.' must be instance of '.Fields\Field::class);
+                }
+
+                return $instance;
             });
         }
     }

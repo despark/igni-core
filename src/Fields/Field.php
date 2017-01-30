@@ -36,6 +36,11 @@ abstract class Field implements FieldContract
     protected $elementName;
 
     /**
+     * @var
+     */
+    protected $fieldType;
+
+    /**
      * @var bool
      */
     public $hidden = false;
@@ -86,6 +91,7 @@ abstract class Field implements FieldContract
 
     /**
      * @return string
+     * @todo check if we cannot directly use field type
      */
     public function getFieldIdentifier()
     {
@@ -243,6 +249,8 @@ abstract class Field implements FieldContract
         return $this->getOptions('help');
     }
 
+    public function attachJs() { }
+
     /**
      * @param $name
      * @param $arguments
@@ -297,6 +305,25 @@ abstract class Field implements FieldContract
         if (isset($this->options[$name])) {
             unset($this->options[$name]);
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFieldType()
+    {
+        return $this->fieldType;
+    }
+
+    /**
+     * @param mixed $fieldType
+     * @return $this
+     */
+    public function setFieldType($fieldType)
+    {
+        $this->fieldType = $fieldType;
+
+        return $this;
     }
 
 }
