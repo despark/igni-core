@@ -112,6 +112,17 @@ abstract class AdminController extends BaseController
                                              return $this->getActionButtons($record);
                                          });
 
+            // Check for any fields that needs custom building.
+            foreach ($this->model->getAdminTableColumns() as $column) {
+                $columnName = studly_case($column);
+                $method = 'build'.$columnName.'Column';
+                if (method_exists($this, 'build'.$columnName.'Column')) {
+                    $dataTableEngine->editColumn($column, function ($data) use ($method) {
+                        return call_user_func([$this, $method], $data);
+                    });
+                }
+            }
+
             $this->prepareDataTable($request, $dataTableEngine);
 
             return $dataTableEngine->make(true);
