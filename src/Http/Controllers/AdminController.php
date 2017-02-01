@@ -174,6 +174,8 @@ abstract class AdminController extends BaseController
         }
 
         if (! empty($with)) {
+            // Make sure we have unique relations.
+            $with = array_unique($with);
             $query->with($with);
             // We should refactor this and find actual related field.
             $query->select($table.'.*');
