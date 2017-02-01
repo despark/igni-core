@@ -163,6 +163,10 @@ abstract class AdminController extends BaseController
             if (strstr($column, '.') !== false) {
                 $relation = explode('.', $column);
                 $relationField = array_pop($relation);
+                // We need to make sure we transform the relation to studly camel calse
+                foreach ($relation as &$value) {
+                    $value = camel_case($value);
+                }
                 $with[] = implode('.', $relation);
             } else {
                 $query->addSelect($table.'.'.$column);
