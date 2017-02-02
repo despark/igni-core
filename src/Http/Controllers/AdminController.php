@@ -109,10 +109,14 @@ abstract class AdminController extends BaseController
     public function index(Request $request, Datatables $dataTable)
     {
         if ($request->ajax()) {
-            $dataTableEngine = $dataTable->eloquent($this->prepareModelQuery())
-                                         ->addColumn('action', function ($record) {
-                                             return $this->getActionButtons($record);
-                                         });
+
+            $dataTableEngine = $dataTable->eloquent($this->prepareModelQuery());
+
+            if ($this->hasActionButtons()) {
+                $dataTableEngine->addColumn('action', function ($record) {
+                    return $this->getActionButtons($record);
+                });
+            }
 
             // Check for any fields that needs custom building.
             foreach ($this->model->getAdminTableColumns() as $column) {
@@ -306,6 +310,14 @@ abstract class AdminController extends BaseController
         $container = "<div class='action-btns'>{$editBtn}{$deleteBtn}</div>";
 
         return $container;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasActionButtons()
+    {
+        return isset($this->viewData['editRoute']) || isset($this->viewData['destroyRoute']);
     }
 
     /**
