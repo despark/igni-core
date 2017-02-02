@@ -22,13 +22,14 @@
                                        role="grid" aria-describedby="data-table_info">
                                     <thead>
                                     <tr>
-                                        @foreach($model->getAdminTableColumns() as $col)
-                                            <th class="col-{{ $col }}">{{ $col }}</th>
+                                        @foreach($controller->getDataTableColumns() as $col)
+                                            <th class="col-{{ $col['data'] }}">{{ $col['title'] or $col['data'] }}</th>
                                         @endforeach
-                                        <th class="no-sort actions-col">{{ trans('ignicms::admin.actions') }}</th>
+                                        @if($controller->hasActionButtons())
+                                            <th class="no-sort actions-col">{{ trans('ignicms::admin.actions') }}</th>
+                                        @endif
                                     </tr>
                                     </thead>
-
                                 </table>
                             </div>
                         </div>
@@ -169,9 +170,11 @@
                 defaultContent: ""
             },
                 @endforeach
+                @if($controller->hasActionButtons())
             {
                 data: 'action', name: 'action', orderable: false, searchable: false
             }
+            @endif
         ],
         columnDefs: [
             {
