@@ -77,7 +77,7 @@ abstract class AdminController extends BaseController
 
         $this->viewData['sidebar'] = $this->getSidebar();
 
-        if (! $this->resourceConfig) {
+        if ( ! $this->resourceConfig) {
             // we don't have resource config, so we just return
             return;
         }
@@ -114,8 +114,7 @@ abstract class AdminController extends BaseController
 
             if ($this->hasActionButtons()) {
                 $dataTableEngine->addColumn('action', function ($record) {
-                    return view('ignicms::admin.layouts.datatable.actions',
-                        ['actions' => $this->getActionButtons($record)]);
+                    return $this->getActionButtonsHtml($record);
                 });
             }
 
@@ -191,7 +190,7 @@ abstract class AdminController extends BaseController
             }
         }
 
-        if (! empty($with)) {
+        if ( ! empty($with)) {
             // Make sure we have unique relations.
             $with = array_unique($with);
             $query->with($with);
@@ -236,8 +235,8 @@ abstract class AdminController extends BaseController
     public function forbidden()
     {
         $this->notify([
-            'type' => 'warning',
-            'title' => 'No access!',
+            'type'        => 'warning',
+            'title'       => 'No access!',
             'description' => 'Sorry, you don\'t have access to manage this resources',
         ]);
 
@@ -261,7 +260,7 @@ abstract class AdminController extends BaseController
      */
     public function getDataTableColumns()
     {
-        if (! isset($this->dataTableColumns)) {
+        if ( ! isset($this->dataTableColumns)) {
             foreach ($this->model->getAdminTableColumns() as $idx => $column) {
                 if (strstr($column, '.') !== false) {
                     // We are not interested in the last part
@@ -279,7 +278,7 @@ abstract class AdminController extends BaseController
                     ];
                 }
 
-                if (! is_numeric($idx)) {
+                if ( ! is_numeric($idx)) {
                     $this->dataTableColumns[$idx]['title'] = $idx;
                 }
             }
@@ -308,6 +307,16 @@ abstract class AdminController extends BaseController
         }
 
         return $buttons;
+    }
+
+    /**
+     * @param $record
+     * @return View
+     */
+    public function getActionButtonsHtml($record)
+    {
+        return view('ignicms::admin.layouts.datatable.actions',
+            ['actions' => $this->getActionButtons($record)]);
     }
 
     /**
