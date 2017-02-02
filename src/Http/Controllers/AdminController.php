@@ -75,7 +75,7 @@ abstract class AdminController extends BaseController
 
         $this->resourceConfig = $this->entityManager->getByController($this);
 
-        $this->viewData['sidebar'] = app(Sidebar::class);
+        $this->viewData['sidebar'] = $this->getSidebar();
 
         if (! $this->resourceConfig) {
             // we don't have resource config, so we just return
@@ -398,4 +398,12 @@ abstract class AdminController extends BaseController
      * @param DataTableEngineContract $dataTableEngine
      */
     protected function prepareDataTable(Request $request, DataTableEngineContract $dataTableEngine) { }
+
+    /**
+     * @return Sidebar|\Illuminate\Foundation\Application|mixed
+     */
+    public function getSidebar()
+    {
+        return app(Sidebar::class);
+    }
 }
