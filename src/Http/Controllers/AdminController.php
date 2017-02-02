@@ -114,7 +114,8 @@ abstract class AdminController extends BaseController
 
             if ($this->hasActionButtons()) {
                 $dataTableEngine->addColumn('action', function ($record) {
-                    return $this->getActionButtons($record);
+                    return view('ignicms::admin.layouts.datatable.actions',
+                        ['actions' => $this->getActionButtons($record)]);
                 });
             }
 
@@ -293,23 +294,20 @@ abstract class AdminController extends BaseController
      */
     protected function getActionButtons($record)
     {
-        $editBtn = '';
-        $deleteBtn = '';
+        $buttons = [];
         if (isset($this->viewData['editRoute'])) {
-            $editBtn = '<a href="'.route($this->viewData['editRoute'],
+            $buttons[] = '<a href="'.route($this->viewData['editRoute'],
                     ['id' => $record->id]).'" class="btn btn-primary">'.trans('ignicms::admin.edit').'</a>';
         }
 
         if (isset($this->viewData['destroyRoute'])) {
-            $deleteBtn = '<a href="#"  class="js-open-delete-modal btn btn-danger"
+            $buttons[] = '<a href="#"  class="js-open-delete-modal btn btn-danger"
                     data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->id]).'">
                     '.trans('ignicms::admin.delete').'
                 </a>';
         }
 
-        $container = "<div class='action-btns'>{$editBtn}{$deleteBtn}</div>";
-
-        return $container;
+        return $buttons;
     }
 
     /**
@@ -400,7 +398,7 @@ abstract class AdminController extends BaseController
     protected function prepareDataTable(Request $request, DataTableEngineContract $dataTableEngine) { }
 
     /**
-     * @return Sidebar|\Illuminate\Foundation\Application|mixed
+     * @return Sidebar
      */
     public function getSidebar()
     {
