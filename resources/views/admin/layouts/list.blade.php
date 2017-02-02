@@ -161,11 +161,11 @@
         serverSide: true,
         ajax: "{{ $dataTablesAjaxUrl }}",
         columns: [
-                @foreach ($model->getAdminTableColumns() as $name => $col)
+                @foreach ($controller->getDataTableColumns() as $data)
             {
-                data: '{{ $col }}',
-                name: '{{ $col }}'
-                @if(!is_numeric($name)), title: '{{$name}}'@endif,
+                data: '{{ $data['data'] }}',
+                name: '{{ $data['name'] }}'
+                @if(isset($data['title'])), title: '{{$data['title']}}'@endif,
                 defaultContent: ""
             },
                 @endforeach

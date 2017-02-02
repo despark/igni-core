@@ -94,6 +94,8 @@ abstract class AdminController extends BaseController
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
+        $this->viewData['controller'] = $this;
+
         //Prepare view actions
         $this->prepareActions();
     }
@@ -246,6 +248,39 @@ abstract class AdminController extends BaseController
     public function notify(array $notificationInfo)
     {
         session()->flash('notification', $notificationInfo);
+    }
+
+    /**
+     * Returns an array ready to be fed into data tables.
+     * @return array
+     */
+    public function getDataTableColumns()
+    {
+        if (! isset($this->dataTableColumns)) {
+            foreach ($this->model->getAdminTableColumns() as $idx => $column) {
+                if (strstr($column, '.') !== false) {
+                    // We are not interested in the last part
+                    $relationPath = explode('.', $column);
+                    $relationColumn = array_pop($relationPath);
+                    $relationPath = array_map('camel_case', $relationPath);
+                    $this->dataTableColumns[$idx] = [
+                        'data' => $column,
+                        'name' => implode('.', $relationPath).'.'.$relationColumn,
+                    ];
+                } else {
+                    $this->dataTableColumns[$idx] = [
+                        'data' => $column,
+                        'name' => $column,
+                    ];
+                }
+
+                if (! is_numeric($idx)) {
+                    $this->dataTableColumns[$idx]['title'] = $idx;
+                }
+            }
+        }
+
+        return $this->dataTableColumns;
     }
 
     /**
