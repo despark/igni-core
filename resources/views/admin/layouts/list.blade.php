@@ -17,7 +17,7 @@
                                class="btn btn-success pull-left">+ {{ trans('ignicms::admin.add') }} {{ $pageTitle }}</a>
                         @endif
                         <div class="row">
-                            <div class="col-sm-12">
+                            <div class="col-sm-12" style="overflow: auto">
                                 <table id="data-table" class="table table-bordered table-striped dataTable"
                                        role="grid" aria-describedby="data-table_info">
                                     <thead>
