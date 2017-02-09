@@ -120,7 +120,8 @@ abstract class AdminController extends BaseController
 
             // Check for any fields that needs custom building.
             foreach ($this->model->getAdminTableColumns() as $column) {
-                $columnName = studly_case($column);
+                $columnName = preg_replace('/[^0-9a-zA-Z]+/', '', $column);
+                $columnName = studly_case($columnName);
                 $method = 'build'.$columnName.'Column';
                 if (method_exists($this, 'build'.$columnName.'Column')) {
                     $dataTableEngine->editColumn($column, function ($data) use ($method) {
