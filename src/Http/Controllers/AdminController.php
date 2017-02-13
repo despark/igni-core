@@ -77,12 +77,12 @@ abstract class AdminController extends BaseController
 
         $this->viewData['sidebar'] = $this->getSidebar();
 
-        if (! $this->resourceConfig) {
+        if (!$this->resourceConfig) {
             // we don't have resource config, so we just return
             return;
         }
 
-        $this->model = new $this->resourceConfig['model'];
+        $this->model = new $this->resourceConfig['model']();
 
         $this->paginateLimit = config('ignicms.paginateLimit');
 
@@ -90,7 +90,7 @@ abstract class AdminController extends BaseController
 
         $this->viewData['inputs'] = \Request::all();
 
-        $this->viewData['pageTitle'] = $this->getResourceConfig()['name'] ? : config('ignicms.projectName').' '.'Admin';
+        $this->viewData['pageTitle'] = $this->getResourceConfig()['name'] ?: config('ignicms.projectName').' '.'Admin';
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
@@ -100,16 +100,17 @@ abstract class AdminController extends BaseController
         $this->prepareActions();
     }
 
-
     /**
      * @param Request    $request
      * @param Datatables $dataTable
+     *
      * @return \Illuminate\Http\JsonResponse|View
      */
-    public function index(Request $request, Datatables $dataTable)
+    public function index()
     {
+        $request = app(Request::class);
         if ($request->ajax()) {
-
+            $dataTable = app(Datatables::class);
             $dataTableEngine = $dataTable->eloquent($this->prepareModelQuery($request));
 
             if ($this->hasActionButtons()) {
@@ -142,6 +143,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param Request $request
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function prepareModelQuery(Request $request)
@@ -192,7 +194,7 @@ abstract class AdminController extends BaseController
             }
         }
 
-        if (! empty($with)) {
+        if (!empty($with)) {
             // Make sure we have unique relations.
             $with = array_unique($with);
             $query->with($with);
@@ -205,6 +207,7 @@ abstract class AdminController extends BaseController
 
     /**
      * Return relations that should be eager loaded for the index.
+     *
      * @return array
      */
     public function withEagerLoad()
@@ -258,11 +261,12 @@ abstract class AdminController extends BaseController
 
     /**
      * Returns an array ready to be fed into data tables.
+     *
      * @return array
      */
     public function getDataTableColumns()
     {
-        if (! isset($this->dataTableColumns)) {
+        if (!isset($this->dataTableColumns)) {
             foreach ($this->model->getAdminTableColumns() as $idx => $column) {
                 if (strstr($column, '.') !== false) {
                     // We are not interested in the last part
@@ -280,7 +284,7 @@ abstract class AdminController extends BaseController
                     ];
                 }
 
-                if (! is_numeric($idx)) {
+                if (!is_numeric($idx)) {
                     $this->dataTableColumns[$idx]['title'] = $idx;
                 }
             }
@@ -291,6 +295,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param $record
+     *
      * @return string
      */
     protected function getActionButtons($record)
@@ -313,6 +318,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param $record
+     *
      * @return View
      */
     public function getActionButtonsHtml($record)
@@ -353,6 +359,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param EntityManager $entityManager
+     *
      * @return AdminController
      */
     public function setEntityManager($entityManager)
@@ -372,6 +379,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param mixed $resourceConfig
+     *
      * @return AdminController
      */
     public function setResourceConfig($resourceConfig)
@@ -382,7 +390,8 @@ abstract class AdminController extends BaseController
     }
 
     /**
-     * Prepares controller actions
+     * Prepares controller actions.
+     *
      * @return $this
      */
     protected function prepareActions()
@@ -403,10 +412,13 @@ abstract class AdminController extends BaseController
 
     /**
      * Give chance for children to alter the data table.
+     *
      * @param Request                 $request
      * @param DataTableEngineContract $dataTableEngine
      */
-    protected function prepareDataTable(Request $request, DataTableEngineContract $dataTableEngine) { }
+    protected function prepareDataTable(Request $request, DataTableEngineContract $dataTableEngine)
+    {
+    }
 
     /**
      * @return Sidebar

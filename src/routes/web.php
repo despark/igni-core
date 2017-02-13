@@ -5,13 +5,14 @@
 |--------------------------------------------------------------------------
 */
 
-
 // Admin
 Route::group(['prefix' => 'admin'], function () {
     // Authentication routes...
-    Route::get('login', 'Auth\AuthController@getLogin');
-    Route::post('login', 'Auth\AuthController@postLogin');
-    Route::post('logout', 'Auth\AuthController@getLogout');
+    // Route::get('login', 'Auth\AuthController@getLogin');
+    // Route::post('login', 'Auth\AuthController@postLogin');
+    // Route::post('logout', 'Auth\AuthController@getLogout');
+
+    Auth::routes();
 
     Route::group(['middleware' => 'auth.admin'], function () {
         Route::get('/', ['as' => 'adminHome', 'uses' => 'Admin\DefaultController@adminHome']);

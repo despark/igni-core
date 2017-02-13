@@ -8,17 +8,15 @@ use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
 
-
 /**
  * Class EntityManager.
  */
 class EntityManager
 {
-
     /**
      * @var
      */
-    protected $resources;
+    protected $resources = [];
 
     /**
      * @var array
@@ -32,6 +30,7 @@ class EntityManager
 
     /**
      * EntityManager constructor.
+     *
      * @param FormBuilder $formBuilder
      */
     public function __construct(FormBuilder $formBuilder)
@@ -40,33 +39,16 @@ class EntityManager
     }
 
     /**
-     * Load the resource manager
+     * Load the resource manager.
      */
     public function load()
     {
         // Get all configs
-        $files = \File::allFiles(config('ignicms.paths.entities', config_path('entities')));
+        if (\File::isDirectory(config_path('entities'))) {
+            $files = \File::allFiles(config('ignicms.paths.entities', config_path('entities')));
 
-        foreach ($files as $file) {
-            $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            $resourceConfig = call_user_func(function () use ($file, $resource) {
-                $array = include $file;
-                if (is_array($array)) {
-                    return array_merge(['id' => $resource], $array);
-                }
-
-                return null;
-            });
-            if ($resourceConfig) {
-                $this->resources[$resourceConfig['id']] = $resourceConfig;
-            }
-        }
-
-        // Add igni default resources
-        $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
-        foreach ($localFiles as $file) {
-            $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (! isset($this->resources[$resource])) {
+            foreach ($files as $file) {
+                $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -76,7 +58,26 @@ class EntityManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (! isset($this->resources[$resourceConfig['id']])) {
+                    $this->resources[$resourceConfig['id']] = $resourceConfig;
+                }
+            }
+        }
+
+        // Add igni default resources
+        $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
+        foreach ($localFiles as $file) {
+            $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
+            if (!isset($this->resources[$resource])) {
+                $resourceConfig = call_user_func(function () use ($file, $resource) {
+                    $array = include $file;
+                    if (is_array($array)) {
+                        return array_merge(['id' => $resource], $array);
+                    }
+
+                    return null;
+                });
+                if ($resourceConfig) {
+                    if (!isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -104,6 +105,7 @@ class EntityManager
      * @param      $resource
      * @param null $key
      * @param null $default
+     *
      * @return mixed|null
      */
     public function get($resource, $key = null, $default = null)
@@ -123,6 +125,7 @@ class EntityManager
 
     /**
      * @param Model $model
+     *
      * @return array
      */
     public function getByModel(Model $model)
@@ -137,6 +140,7 @@ class EntityManager
 
     /**
      * @param Controller $controller
+     *
      * @return mixed
      */
     public function getByController(Controller $controller)
@@ -169,6 +173,7 @@ class EntityManager
 
     /**
      * @param $id
+     *
      * @return null|string
      */
     public function getById($id)
@@ -185,7 +190,7 @@ class EntityManager
     }
 
     /**
-     * Generates all the needed routes for resources
+     * Generates all the needed routes for resources.
      */
     public function routes()
     {
@@ -194,7 +199,7 @@ class EntityManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);
 
-            if (! empty($methods)) {
+            if (!empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], ['names' => build_resource_backport($resource)]);
@@ -216,9 +221,12 @@ class EntityManager
     }
 
     /**
-     * Renders entire form
+     * Renders entire form.
+     *
      * @param Model $model
+     *
      * @throws \Exception
+     *
      * @return string
      */
     public function renderForm(Model $model)
@@ -229,10 +237,13 @@ class EntityManager
     }
 
     /**
-     * Renders single field
+     * Renders single field.
+     *
      * @param Model $model
      * @param       $fieldId
+     *
      * @return \Illuminate\View\View|string
+     *
      * @throws \Exception
      */
     public function renderField(Model $model, $fieldId)
@@ -247,13 +258,15 @@ class EntityManager
 
     /**
      * @param Model $model
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getFields(Model $model)
     {
         $resource = $this->getByModel($model);
-        if (! $resource) {
+        if (!$resource) {
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
@@ -263,14 +276,16 @@ class EntityManager
 
     /**
      * @param Model $model
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getFormTemplate(Model $model)
     {
         $resourceConfig = $this->getByModel($model);
         if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
-            if (! \View::exists($resourceConfig['formTemplate'])) {
+            if (!\View::exists($resourceConfig['formTemplate'])) {
                 throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
             }
 
@@ -287,5 +302,4 @@ class EntityManager
     {
         return $this->formBuilder;
     }
-
 }

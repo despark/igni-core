@@ -4,7 +4,7 @@ return [
 
     'name' => 'User',
     'description' => 'User resource',
-    'model' => config('auth.model'),
+    'model' => config('auth.providers.users.model'),
     'controller' => \Despark\Cms\Http\Controllers\UsersController::class,
     'adminColumns' => [
         'name',

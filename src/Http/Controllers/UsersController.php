@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;

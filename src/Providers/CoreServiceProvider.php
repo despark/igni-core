@@ -2,19 +2,19 @@
 
 namespace Despark\Cms\Providers;
 
-use Despark\Cms\Illuminate\View\View;
 use File;
-use Illuminate\Console\AppNamespaceDetectorTrait;
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Contracts\View\View as ViewContract;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Validator;
+use Despark\Cms\Illuminate\View\View;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Contracts\View\View as ViewContract;
 
 class CoreServiceProvider extends ServiceProvider
 {
-    use AppNamespaceDetectorTrait;
+    use DetectsApplicationNamespace;
 
     /**
      * Artisan commands.
@@ -41,15 +41,15 @@ class CoreServiceProvider extends ServiceProvider
 
         // NB:Version dependent
         // Routes
-        $router->group(['namespace' => 'Despark\Cms\Http\Controllers'], function ($router) {
+        $router->group(['namespace' => 'Despark\Cms\Http\Controllers', 'middleware' => ['web']], function ($router) {
             require __DIR__.'/../routes/web.php';
         });
 
         // Add our resource routes
-        $router->group(['prefix' => 'admin', 'middleware' => 'auth.admin'], function ($router) {
+        $router->group(['prefix' => 'admin', 'middleware' => ['web', 'auth.admin']], function ($router) {
             require __DIR__.'/../routes/resources.php';
         });
-        
+
         // Register Assets
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ignicms');
         $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'ignicms');
@@ -102,7 +102,7 @@ class CoreServiceProvider extends ServiceProvider
         $configPaths = config('ignicms.paths');
         if ($configPaths) {
             foreach ($configPaths as $key => $path) {
-                if (! is_dir($path)) {
+                if (!is_dir($path)) {
                     File::makeDirectory($path, 0755, true);
                 }
             }
@@ -124,16 +124,16 @@ class CoreServiceProvider extends ServiceProvider
         $this->app->register(\Cviebrock\EloquentSluggable\ServiceProvider::class);
         // $this->app->register('Roumen\Sitemap\SitemapServiceProvider');
         $this->app->register(\Rutorika\Sortable\SortableServiceProvider::class);
-        //        $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
+        // $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
 
         /*
          * Create aliases for the dependency.
          */
         $loader = AliasLoader::getInstance();
-        $loader->alias('Form', 'Collective\Html\FormFacade');
-        $loader->alias('Html', 'Collective\Html\HtmlFacade');
+        $loader->alias('Form', \Collective\Html\FormFacade::class);
+        $loader->alias('Html', \Collective\Html\HtmlFacade::class);
         // Todo Core considerations
-        $loader->alias('Image', 'Intervention\Image\Facades\Image');
+        $loader->alias('Image', \Intervention\Image\Facades\Image::class);
 
         /*
          * Switch View implementation
@@ -145,8 +145,6 @@ class CoreServiceProvider extends ServiceProvider
 
     /**
      * Register the view environment.
-     *
-     * @return void
      */
     public function registerFactory()
     {
@@ -173,7 +171,8 @@ class CoreServiceProvider extends ServiceProvider
 
     /**
      * Add custom validators.
-     * @todo Create validators with classes.
+     *
+     * @todo Create validators with classes
      */
     public function addValidators()
     {
@@ -181,7 +180,7 @@ class CoreServiceProvider extends ServiceProvider
             /* @var Validator $validator */
 
             if (class_exists($parameters[0])) {
-                $model = new $parameters[0];
+                $model = new $parameters[0]();
                 // we need to build the model
                 $model->fill(request()->all());
                 if (method_exists($model, 'getRequiredImages')) {
