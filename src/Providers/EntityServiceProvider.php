@@ -3,7 +3,7 @@
 
 namespace Despark\Cms\Providers;
 
-
+use Despark\Cms\Admin\Form;
 use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Admin\Sidebar;
 use Despark\Cms\Resource\EntityManager;
@@ -30,7 +30,8 @@ class EntityServiceProvider extends ServiceProvider
         $this->app->singleton(\Despark\Cms\Resource\EntityManager::class, function ($app) {
             // Bring it up
             $formBuilder = new FormBuilder();
-            $entityManager = new EntityManager($formBuilder);
+            $form = new Form();
+            $entityManager = new EntityManager($formBuilder, $form);
             $entityManager->load();
 
             return $entityManager;

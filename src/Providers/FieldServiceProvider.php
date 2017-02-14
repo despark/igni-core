@@ -14,7 +14,7 @@ class FieldServiceProvider extends ServiceProvider
     /**
      * @var bool
      */
-    protected $defer = true;
+    // protected $defer = true;
 
     public function register()
     {

@@ -3,6 +3,7 @@
 namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Admin\Form;
 use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
@@ -28,13 +29,19 @@ class EntityManager
     protected $formBuilder;
 
     /**
+     * @var Form
+     */
+    protected $form;
+
+    /**
      * EntityManager constructor.
      *
      * @param FormBuilder $formBuilder
      */
-    public function __construct(FormBuilder $formBuilder)
+    public function __construct(FormBuilder $formBuilder, Form $form)
     {
         $this->formBuilder = $formBuilder;
+        $this->form = $form;
     }
 
     /**
@@ -232,7 +239,7 @@ class EntityManager
     {
         $fields = $this->getFields($model);
 
-        return $this->formBuilder->render($model, $fields);
+        return $this->form->getRenderedForm($model, $fields);
     }
 
     /**
@@ -300,5 +307,13 @@ class EntityManager
     public function getFormBuilder()
     {
         return $this->formBuilder;
+    }
+
+    /**
+     * @return Form
+     */
+    public function getForm()
+    {
+        return $this->form;
     }
 }
