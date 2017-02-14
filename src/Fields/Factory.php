@@ -46,4 +46,9 @@ class Factory implements FactoryContract
 
         return $instance;
     }
+
+    public function extend($type, string $field)
+    {
+        $this->fields[$type] = $field;
+    }
 }

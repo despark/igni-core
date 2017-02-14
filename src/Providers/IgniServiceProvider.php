@@ -12,7 +12,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Contracts\View\View as ViewContract;
 
-class CoreServiceProvider extends ServiceProvider
+class IgniServiceProvider extends ServiceProvider
 {
     use DetectsApplicationNamespace;
 
@@ -134,6 +134,7 @@ class CoreServiceProvider extends ServiceProvider
         $loader->alias('Html', \Collective\Html\HtmlFacade::class);
         // Todo Core considerations
         $loader->alias('Image', \Intervention\Image\Facades\Image::class);
+        $loader->alias('Field', \Despark\Cms\Fields\Facades\Field::class);
 
         /*
          * Switch View implementation
