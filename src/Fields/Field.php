@@ -132,6 +132,8 @@ abstract class Field implements FieldContract
             $a['class'] = implode(' ', $a['class']);
         }
 
+        $a['id'] = array_get($a, 'id') ?? $this->getElementName();
+
         return $a;
     }
 

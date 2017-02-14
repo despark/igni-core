@@ -6,6 +6,9 @@ class Checkbox extends Field
 {
     public function getAttributes()
     {
-        return isset($this->options['attributes']) ? $this->options['attributes'] : [];
+        $attributes = array_get($this->options, 'attributes', []);
+        $attributes['id'] = array_get($attributes, 'id') ?? $this->getElementName();
+
+        return $attributes;
     }
 }
