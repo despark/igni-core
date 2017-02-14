@@ -61,7 +61,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $userModelClass = config('auth.model');
+        $userModelClass = config('auth.providers.users.model');
 
         return $userModelClass::create([
             'name' => $data['name'],
