@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Despark\Cms\Fields;
-
 
 class DateTime extends Field
 {
-
     /**
      * @return string
      */

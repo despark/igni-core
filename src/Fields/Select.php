@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Despark\Cms\Fields;
-
 
 use Despark\Cms\Contracts\SourceModel;
 
@@ -11,12 +9,10 @@ use Despark\Cms\Contracts\SourceModel;
  */
 class Select extends Field
 {
-
     /**
      * @var SourceModel
      */
     protected $sourceModel;
-
 
     /**
      * @return array
@@ -31,14 +27,15 @@ class Select extends Field
 
     /**
      * @return SourceModel
+     *
      * @throws \Exception
      */
     public function getSourceModel()
     {
-        if (! isset($this->sourceModel) && ($sourceModel = $this->getOptions('sourceModel'))) {
+        if (!isset($this->sourceModel) && ($sourceModel = $this->getOptions('sourceModel'))) {
             if (class_exists($sourceModel)) {
-                $this->sourceModel = new $sourceModel;
-                if (! $this->sourceModel instanceof SourceModel) {
+                $this->sourceModel = new $sourceModel();
+                if (!$this->sourceModel instanceof SourceModel) {
                     throw new \Exception('Source model for field '.$this->getFieldName().' must implement '.SourceModel::class);
                 }
             } else {
@@ -48,5 +45,4 @@ class Select extends Field
 
         return $this->sourceModel;
     }
-
 }

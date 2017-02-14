@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Despark\Cms\Fields;
-
 
 use Despark\Cms\Models\AdminModel;
 
@@ -11,7 +9,6 @@ use Despark\Cms\Models\AdminModel;
  */
 class Custom extends Field
 {
-
     /**
      * @var
      */
@@ -22,13 +19,14 @@ class Custom extends Field
      */
     protected $handler;
 
-
     /**
      * Custom constructor.
+     *
      * @param AdminModel $model
      * @param            $fieldName
      * @param array      $options
      * @param null       $elementName
+     *
      * @throws \Exception
      */
     public function __construct(
@@ -47,25 +45,24 @@ class Custom extends Field
             }
         }
 
-        if (! isset($options['template'])) {
+        if (!isset($options['template'])) {
             throw new \Exception('Template is required for field '.$fieldName);
         }
 
         if (isset($options['template']) && \View::exists($options['template'])) {
             $this->template = $options['template'];
         }
-
-
     }
 
     /**
      * @return string
+     *
      * @throws \Exception
      */
     public function toHtml()
     {
         $template = $this->getTemplate();
-        if (! \View::exists($template)) {
+        if (!\View::exists($template)) {
             throw new \Exception('Template '.$template.' doesn\'t exists.');
         }
 
@@ -82,6 +79,7 @@ class Custom extends Field
 
     /**
      * @param mixed $template
+     *
      * @return $this
      */
     public function setTemplate($template)
@@ -96,7 +94,7 @@ class Custom extends Field
      */
     public function getHandler()
     {
-        if (! $this->handler) {
+        if (!$this->handler) {
             return $this;
         }
 
@@ -110,5 +108,4 @@ class Custom extends Field
     {
         $this->handler = $handler;
     }
-
 }

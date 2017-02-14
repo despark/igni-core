@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Despark\Cms\Providers;
-
 
 use Despark\Cms\Assets\AssetManager;
 use Despark\Cms\Contracts\AssetsContract;
@@ -12,13 +10,10 @@ use Illuminate\Support\ServiceProvider;
 
 class AdminServiceProvider extends ServiceProvider
 {
-
     protected $defer = true;
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
@@ -33,7 +28,7 @@ class AdminServiceProvider extends ServiceProvider
          * Assets manager
          */
         $this->app->singleton(AssetsContract::class, AssetManager::class);
-//
+
 //        /*
 //         * Form Builder singleton
 //         */

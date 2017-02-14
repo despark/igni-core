@@ -1,6 +1,5 @@
 <?php
 
-// Todo refactor namespace to be Entity.
 namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\FormBuilder;

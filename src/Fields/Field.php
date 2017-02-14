@@ -2,10 +2,10 @@
 
 namespace Despark\Cms\Fields;
 
-use Despark\Cms\Contracts\FieldContract;
-use Despark\Cms\Exceptions\Fields\FieldViewNotFoundException;
 use Despark\Cms\Models\AdminModel;
+use Despark\Cms\Contracts\FieldContract;
 use Symfony\Component\Debug\ExceptionHandler;
+use Despark\Cms\Exceptions\Fields\FieldViewNotFoundException;
 
 /**
  * Class Field.
@@ -21,6 +21,7 @@ abstract class Field implements FieldContract
      * @var string
      */
     protected $fieldName;
+
     /**
      * @var array
      */
@@ -30,14 +31,7 @@ abstract class Field implements FieldContract
      * @var string
      */
     protected $viewName;
-    /**
-     * @var null
-     */
-    protected $elementName;
 
-    /**
-     * @var
-     */
     protected $fieldType;
 
     /**
@@ -47,27 +41,27 @@ abstract class Field implements FieldContract
 
     /**
      * Field constructor.
+     *
      * @param AdminModel $model
-     * @param            $fieldName
+     * @param string     $fieldName
      * @param array      $options
-     * @param null       $elementName
      */
-    public function __construct(AdminModel $model, $fieldName, array $options, $elementName = null)
+    public function __construct(AdminModel $model, $fieldName, array $options)
     {
         $this->model = $model;
         $this->fieldName = $fieldName;
         $this->options = $options;
-        $this->elementName = $elementName;
         $this->hidden = isset($options['hidden']) && $options['hidden'];
     }
 
     /**
      * @return string
+     *
      * @throws \Exception
      */
     public function getViewName()
     {
-        if (! isset($this->viewName)) {
+        if (!isset($this->viewName)) {
             // Default view name
             $identifier = $this->getModel()->getIdentifier();
             $fieldName = str_slug($this->fieldName).'--field';
@@ -88,9 +82,9 @@ abstract class Field implements FieldContract
         return $this->viewName;
     }
 
-
     /**
      * @return string
+     *
      * @todo check if we cannot directly use field type
      */
     public function getFieldIdentifier()
@@ -108,6 +102,7 @@ abstract class Field implements FieldContract
 
     /**
      * @param AdminModel $model
+     *
      * @return $this
      */
     public function setModel($model)
@@ -150,17 +145,13 @@ abstract class Field implements FieldContract
             $html = $this->toHtml();
             $html = $this->afterToHtml($html);
         } catch (\Exception $exc) {
-            //TODO Version dependent
             $eh = new ExceptionHandler(env('APP_DEBUG'));
-            die($eh->createResponse($exc)->__toString());
+            die($eh->sendPhpResponse($exc)->__toString());
         }
 
         return $html;
     }
 
-    /**
-     *
-     */
     protected function beforeToHtml()
     {
     }
@@ -175,6 +166,7 @@ abstract class Field implements FieldContract
 
     /**
      * @param $html
+     *
      * @return mixed
      */
     protected function afterToHtml($html)
@@ -196,25 +188,28 @@ abstract class Field implements FieldContract
     public function setFieldName($fieldName)
     {
         $this->fieldName = $fieldName;
+
+        return $this;
     }
 
     /**
-     * @param null $key
-     * @param null $default
-     * @return array
+     * @param mixed|null $key
+     * @param mixed|null $default
+     *
+     * @return mixed|array
      */
     public function getOptions($key = null, $default = null)
     {
         if ($key) {
-            return isset($this->options[$key]) ? $this->options[$key] : $default;
+            return array_get($this->options, $key, $default);
         }
 
         return $this->options;
     }
 
     /**
-     * @param array $options
-     * @param null  $key
+     * @param array      $options
+     * @param mixed|null $key
      */
     public function setOptions($options, $key = null)
     {
@@ -223,22 +218,8 @@ abstract class Field implements FieldContract
         } else {
             $this->options = $options;
         }
-    }
 
-    /**
-     * @return null
-     */
-    public function getElementName()
-    {
-        return $this->elementName;
-    }
-
-    /**
-     * @param null $elementName
-     */
-    public function setElementName($elementName)
-    {
-        $this->elementName = $elementName;
+        return $this;
     }
 
     /**
@@ -249,13 +230,13 @@ abstract class Field implements FieldContract
         return $this->getOptions('help');
     }
 
-
     /**
      * @param $name
      * @param $arguments
+     *
      * @return array
      */
-    function __call($name, $arguments)
+    public function __call($name, $arguments)
     {
         $action = substr($name, 0, 3);
         if ($action == 'get') {
@@ -266,14 +247,16 @@ abstract class Field implements FieldContract
                 return $this->$property;
             }
         }
+
         trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
     }
 
     /**
      * @param $name
+     *
      * @return array
      */
-    function __get($name)
+    public function __get($name)
     {
         return $this->getOptions($name);
     }
@@ -282,16 +265,17 @@ abstract class Field implements FieldContract
      * @param $name
      * @param $value
      */
-    function __set($name, $value)
+    public function __set($name, $value)
     {
         $this->setOptions($value, $name);
     }
 
     /**
      * @param $name
+     *
      * @return bool
      */
-    function __isset($name)
+    public function __isset($name)
     {
         return isset($this->options[$name]);
     }
@@ -299,7 +283,7 @@ abstract class Field implements FieldContract
     /**
      * @param $name
      */
-    function __unset($name)
+    public function __unset($name)
     {
         if (isset($this->options[$name])) {
             unset($this->options[$name]);
@@ -316,6 +300,7 @@ abstract class Field implements FieldContract
 
     /**
      * @param mixed $fieldType
+     *
      * @return $this
      */
     public function setFieldType($fieldType)
@@ -325,4 +310,8 @@ abstract class Field implements FieldContract
         return $this;
     }
 
+    public function getElementName()
+    {
+        return $this->getOptions('elementName', $this->getFieldName());
+    }
 }
