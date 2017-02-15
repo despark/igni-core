@@ -18,6 +18,9 @@ class Factory implements FactoryContract
         'custom' => Custom::class,
         'date' => DateTime::class,
         'datetime' => DateTime::class,
+        'checkbox' => Checkbox::class,
+        'password' => Password::class,
+        'textarea' => Textarea::class,
     ];
 
     /**
@@ -43,5 +46,10 @@ class Factory implements FactoryContract
         }
 
         return $instance;
+    }
+
+    public function extend($type, string $field)
+    {
+        $this->fields[$type] = $field;
     }
 }

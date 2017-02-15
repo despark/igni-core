@@ -7,7 +7,6 @@ use Despark\Cms\Fields\Field;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Contracts\SourceModel;
 use Illuminate\Database\Eloquent\Model;
-use Despark\Cms\Fields\Contracts\Factory as FactoryContract;
 
 /**
  * Class FormBuilder.
@@ -72,7 +71,7 @@ class FormBuilder
 
     public function field($model, $fieldName, $options, $elementName = null)
     {
-        return app(FactoryContract::class)->make($model, $fieldName, $options);
+        return \Field::make($model, $fieldName, $options);
     }
 
     /**

@@ -2,9 +2,6 @@
 
 namespace Despark\Cms\Http\Requests;
 
-use App\Models\User;
-use Despark\Cms\Http\Requests\AdminFormRequest;
-
 class UserUpdateRequest extends UserRequest
 {
     /**
@@ -14,9 +11,8 @@ class UserUpdateRequest extends UserRequest
      */
     public function rules()
     {
-
         $rules = $this->model->getRulesUpdate();
-        $rules['email'] = str_replace('{id}', $this->route()->getParameter('user'), $rules['email']);
+        $rules['email'] = str_replace('{id}', $this->route()->parameter('user'), $rules['email']);
 
         return $rules;
     }

@@ -132,6 +132,8 @@ abstract class Field implements FieldContract
             $a['class'] = implode(' ', $a['class']);
         }
 
+        $a['id'] = array_get($a, 'id') ?? $this->getElementName();
+
         return $a;
     }
 
@@ -161,7 +163,11 @@ abstract class Field implements FieldContract
      */
     public function toHtml()
     {
-        return view($this->getViewName(), ['field' => $this])->__toString();
+        return view($this->getViewName(), [
+            'field' => $this,
+            'fieldName' => $this->getFieldName(),
+            'elementName' => $this->getElementName(),
+        ])->__toString();
     }
 
     /**

@@ -2,11 +2,12 @@
 
 namespace Despark\Cms\Providers;
 
-use Despark\Cms\Assets\AssetManager;
-use Despark\Cms\Contracts\AssetsContract;
-use Despark\Cms\Contracts\ImageContract;
 use Despark\Cms\Models\Image;
+use Despark\Cms\Fields\Factory;
+use Despark\Cms\Assets\AssetManager;
 use Illuminate\Support\ServiceProvider;
+use Despark\Cms\Contracts\ImageContract;
+use Despark\Cms\Contracts\AssetsContract;
 
 class AdminServiceProvider extends ServiceProvider
 {
@@ -29,14 +30,17 @@ class AdminServiceProvider extends ServiceProvider
          */
         $this->app->singleton(AssetsContract::class, AssetManager::class);
 
-//        /*
-//         * Form Builder singleton
-//         */
-//        $this->app->singleton(FormBuilder::class, FormBuilder::class);
+        $this->app->singleton('field', function ($app) {
+            return new Factory($app);
+        });
     }
 
     public function provides()
     {
-        return [ImageContract::class, AssetsContract::class];
+        return [
+            ImageContract::class,
+            AssetsContract::class,
+            'field',
+        ];
     }
 }
