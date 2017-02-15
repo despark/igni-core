@@ -261,7 +261,7 @@ class EntityManager
     public function getForm(Model $model)
     {
         $method = $model->exists ? 'PUT' : 'POST';
-        $actionVerb = $model->exists ? 'edit' : 'create';
+        $actionVerb = $model->exists ? 'update' : 'store';
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
         $action = route($this->getRouteName($model, $actionVerb), $attributes);
 

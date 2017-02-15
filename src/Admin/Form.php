@@ -86,10 +86,9 @@ class Form
         return view($this->getTemplate(), ['form' => $this]);
     }
 
-    /**
-     *
-     */
-    protected function beforeToHtml() { }
+    protected function beforeToHtml()
+    {
+    }
 
     /**
      * @return string
@@ -106,6 +105,7 @@ class Form
     /**
      * @param Field $field
      * @param       $name
+     *
      * @throws \Exception
      */
     public function addField(Field $field, $name)
