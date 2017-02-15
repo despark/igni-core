@@ -35,6 +35,11 @@ class EntityManager
     protected $form;
 
     /**
+     * @var array
+     */
+    protected $routes = [];
+
+    /**
      * EntityManager constructor.
      *
      * @param FormBuilder $formBuilder
@@ -74,7 +79,7 @@ class EntityManager
         $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (! isset($this->resources[$resource])) {
+            if (!isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -84,7 +89,7 @@ class EntityManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (! isset($this->resources[$resourceConfig['id']])) {
+                    if (!isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -101,6 +106,7 @@ class EntityManager
                                 }
                             }
                         }
+
                         $this->resources[$resourceConfig['id']] = $resourceConfig;
                     }
                 }
@@ -206,16 +212,18 @@ class EntityManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);
 
-            if (! empty($methods)) {
+            if (!empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
-                    \Route::resource($resource, $config['controller'], ['names' => build_resource_backport($resource)]);
+                    \Route::resource($resource, $config['controller'], [
+                        'names' => build_resource_backport($resource),
+                    ]);
                 } else {
-                    \Route::resource($resource, $config['controller'],
-                        [
-                            'only' => $methods,
-                            'names' => build_resource_backport($resource, $methods),
-                        ]);
+                    \Route::resource($resource, $config['controller'], [
+                        'only' => $methods,
+                        'names' => build_resource_backport($resource, $methods),
+                    ]);
+
                     \Route::resource($resource, EntityController::class, [
                         'except' => $methods,
                         'names' => build_resource_backport($resource, [], $methods),
@@ -224,7 +232,21 @@ class EntityManager
             } else {
                 \Route::resource($resource, EntityController::class);
             }
+
+            $this->setRoutes($resource, build_resource_backport($resource));
         }
+    }
+
+    public function getModelRoutes(Model $model)
+    {
+        $resource = $this->getByModel($model)['id'];
+
+        return array_get($this->getRoutes(), $resource);
+    }
+
+    public function getRouteName(Model $model, string $action)
+    {
+        return array_get($this->getModelRoutes($model), $action);
     }
 
     /**
@@ -239,18 +261,15 @@ class EntityManager
     public function getForm(Model $model)
     {
         $method = $model->exists ? 'PUT' : 'POST';
-        $config = $model->getResourceConfig();
-        $controller = array_get($config, 'controller');
         $actionVerb = $model->exists ? 'edit' : 'create';
-        $controllerAction = '\\'.$controller.'@'.$actionVerb;
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
-        $action = action($controllerAction, $attributes);
+        $action = route($this->getRouteName($model, $actionVerb), $attributes);
 
         $fields = $this->getFields($model);
         $fieldInstances = [];
         foreach ($fields as $fieldName => $options) {
             $value = $model->getOriginal($fieldName);
-            $fieldInstances[] = Field::make($fieldName, $options, $value);
+            $fieldInstances[] = \Field::make($fieldName, $options, $value);
         }
 
         return $this->form->make([
@@ -290,7 +309,7 @@ class EntityManager
     public function getFields(Model $model)
     {
         $resource = $this->getByModel($model);
-        if (! $resource) {
+        if (!$resource) {
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
@@ -309,7 +328,7 @@ class EntityManager
     {
         $resourceConfig = $this->getByModel($model);
         if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
-            if (! \View::exists($resourceConfig['formTemplate'])) {
+            if (!\View::exists($resourceConfig['formTemplate'])) {
                 throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
             }
 
@@ -325,5 +344,29 @@ class EntityManager
     public function getFormBuilder()
     {
         return $this->formBuilder;
+    }
+
+    /**
+     * Gets the value of routes.
+     *
+     * @return array
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     * Sets the value of routes.
+     *
+     * @param array $routes the routes
+     *
+     * @return self
+     */
+    public function setRoutes($resource, array $routes)
+    {
+        $this->routes[$resource] = $routes;
+
+        return $this;
     }
 }
