@@ -4,7 +4,6 @@ namespace Despark\Cms\Fields;
 
 use Despark\Cms\Contracts\FieldContract;
 use Despark\Cms\Exceptions\Fields\FieldViewNotFoundException;
-use Despark\Cms\Models\AdminModel;
 use Symfony\Component\Debug\ExceptionHandler;
 
 /**
@@ -45,9 +44,9 @@ abstract class Field implements FieldContract
     /**
      * Field constructor.
      *
-     * @param AdminModel $model
-     * @param string     $fieldName
-     * @param array      $options
+     * @param string $fieldName
+     * @param array  $options
+     * @param null   $value
      */
     public function __construct($fieldName, array $options, $value = null)
     {

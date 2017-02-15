@@ -2,8 +2,6 @@
 
 namespace Despark\Cms\Fields;
 
-use Despark\Cms\Models\AdminModel;
-
 /**
  * Class Custom.
  */
@@ -22,19 +20,17 @@ class Custom extends Field
     /**
      * Custom constructor.
      *
-     * @param AdminModel $model
-     * @param            $fieldName
-     * @param array      $options
-     * @param null       $elementName
-     *
+     * @param string $fieldName
+     * @param array  $options
+     * @param null   $value
      * @throws \Exception
+     * @internal param AdminModel $model
+     * @internal param null $elementName
+     *
      */
-    public function __construct(
-        $fieldName,
-        array $options,
-        $elementName = null
-    ) {
-        parent::__construct($model, $fieldName, $options, $elementName);
+    public function __construct($fieldName, array $options, $value = null)
+    {
+        parent::__construct($fieldName, $options, $value);
 
         // Check for handler and use it
         if (isset($options['handler'])) {
@@ -44,7 +40,7 @@ class Custom extends Field
             }
         }
 
-        if (!isset($options['template'])) {
+        if (! isset($options['template'])) {
             throw new \Exception('Template is required for field '.$fieldName);
         }
 
@@ -61,7 +57,7 @@ class Custom extends Field
     public function toHtml()
     {
         $template = $this->getTemplate();
-        if (!\View::exists($template)) {
+        if (! \View::exists($template)) {
             throw new \Exception('Template '.$template.' doesn\'t exists.');
         }
 
@@ -93,7 +89,7 @@ class Custom extends Field
      */
     public function getHandler()
     {
-        if (!$this->handler) {
+        if (! $this->handler) {
             return $this;
         }
 
