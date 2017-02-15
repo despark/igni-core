@@ -2,8 +2,9 @@
 
 namespace Despark\Cms\Resource;
 
-use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Admin\Form;
+use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Fields\Facades\Field;
 use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
@@ -23,10 +24,10 @@ class EntityManager
      */
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
 
-    /** 
-     * @var FormBuilder 
-     */ 
-    protected $formBuilder; 
+    /**
+     * @var FormBuilder
+     */
+    protected $formBuilder;
 
     /**
      * @var Form
@@ -73,7 +74,7 @@ class EntityManager
         $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (!isset($this->resources[$resource])) {
+            if (! isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -83,7 +84,7 @@ class EntityManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (!isset($this->resources[$resourceConfig['id']])) {
+                    if (! isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -205,7 +206,7 @@ class EntityManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);
 
-            if (!empty($methods)) {
+            if (! empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], ['names' => build_resource_backport($resource)]);
@@ -242,14 +243,21 @@ class EntityManager
         $controller = array_get($config, 'controller');
         $actionVerb = $model->exists ? 'edit' : 'create';
         $controllerAction = '\\'.$controller.'@'.$actionVerb;
-        $attributtes = $model->getKey() ? ['id' => $model->getKey()] : [];
-        $action = action($controllerAction, $attributtes);
-        
+        $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
+        $action = action($controllerAction, $attributes);
+
+        $fields = $this->getFields($model);
+        $fieldInstances = [];
+        foreach ($fields as $fieldName => $options) {
+            $value = $model->getOriginal($fieldName);
+            $fieldInstances[] = Field::make($fieldName, $options, $value);
+        }
+
         return $this->form->make([
             'action' => $action,
             'method' => $method,
-            'fields' => $this->getFields($model),
-            ]);
+            'fields' => $fieldInstances,
+        ]);
     }
 
     /**
@@ -282,12 +290,11 @@ class EntityManager
     public function getFields(Model $model)
     {
         $resource = $this->getByModel($model);
-        if (!$resource) {
+        if (! $resource) {
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
-            return $this->model->getOriginal($this->getFieldName()); 
-            $fieldsConfig = $resource['adminFormFields'];
+            return $resource['adminFormFields'];
         }
     }
 
@@ -302,7 +309,7 @@ class EntityManager
     {
         $resourceConfig = $this->getByModel($model);
         if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
-            if (!\View::exists($resourceConfig['formTemplate'])) {
+            if (! \View::exists($resourceConfig['formTemplate'])) {
                 throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
             }
 
@@ -312,11 +319,11 @@ class EntityManager
         return config('ignicms.defaultFormView');
     }
 
-    /** 
-     * @return FormBuilder 
-     */ 
-    public function getFormBuilder() 
-    { 
-        return $this->formBuilder; 
-    } 
+    /**
+     * @return FormBuilder
+     */
+    public function getFormBuilder()
+    {
+        return $this->formBuilder;
+    }
 }

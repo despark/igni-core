@@ -2,7 +2,7 @@
 
 namespace Despark\Cms\Admin;
 
-use Despark\Cms\Fields\Contracts\Factory as FactoryContract;
+use Despark\Cms\Fields\Field;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -50,12 +50,13 @@ class Form
     /**
      * @param array $fields
      *
-     * @return string
+     * @return $this
      */
     public function make($config)
     {
-        foreach($config as $key => $item){
-            if(property_exists($this, $key)){
+        foreach ($config as $key => $item) {
+            if (property_exists($this, $key)) {
+                // Todo set this from method
                 $this->$key = $item;
             }
         }
@@ -63,12 +64,14 @@ class Form
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function renderFields()
     {
         $html = '';
 
-        foreach ($this->fields as $field => $config) {
-            $field = \Field::make($this->model, $field, $config);
+        foreach ($this->fields as $field) {
             $html .= $field->toHtml();
         }
 
@@ -83,6 +86,9 @@ class Form
         return view($this->getTemplate(), ['form' => $this]);
     }
 
+    /**
+     *
+     */
     protected function beforeToHtml() { }
 
     /**
@@ -97,22 +103,26 @@ class Form
         return $html;
     }
 
+    /**
+     * @param Field $field
+     * @param       $name
+     * @throws \Exception
+     */
     public function addField(Field $field, $name)
     {
-        if (isset($name)) 
-        {
+        if (isset($name)) {
             $this->fields[$name] = $field;
-        } 
-        else 
-        {
+        } else {
             throw new \Exception();
         }
     }
 
+    /**
+     * @param $name
+     */
     public function removeField($name)
     {
-        if (isset($this->fields[$name])) 
-        {
+        if (isset($this->fields[$name])) {
             unset($this->fields[$name]);
         }
     }
@@ -233,12 +243,9 @@ class Form
      */
     protected function setTemplate($template)
     {
-        if (View::exists($template)) 
-        {
+        if (\View::exists($template)) {
             $this->template = $template;
-        } 
-        else 
-        {
+        } else {
             throw new \Exception('This template doesn\'t exist');
         }
 
@@ -313,30 +320,6 @@ class Form
     protected function setModel(Model $model)
     {
         $this->model = $model;
-
-        return $this;
-    }
-
-    /**
-     * Gets the value of actionVerb.
-     *
-     * @return actionVerb
-     */
-    public function getActionVerb()
-    {
-        return $this->actionVerb;
-    }
-
-    /**
-     * Sets the value of actionVerb.
-     *
-     * @param actionVerb $actionVerb the action verb
-     *
-     * @return self
-     */
-    protected function setActionVerb($actionVerb)
-    {
-        $this->actionVerb = $actionVerb;
 
         return $this;
     }

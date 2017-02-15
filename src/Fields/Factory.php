@@ -2,9 +2,8 @@
 
 namespace Despark\Cms\Fields;
 
-use Despark\Cms\Models\AdminModel;
-use Illuminate\Contracts\Container\Container;
 use Despark\Cms\Fields\Contracts\Factory as FactoryContract;
+use Illuminate\Contracts\Container\Container;
 
 class Factory implements FactoryContract
 {
@@ -35,10 +34,10 @@ class Factory implements FactoryContract
         $this->container = $container;
     }
 
-    public function make(AdminModel $model, $field, array $options)
+    public function make($field, array $options, $value = null)
     {
         $type = $options['type'];
-        $instance = new $this->fields[$type]($model, $field, $options);
+        $instance = new $this->fields[$type]($field, $options, $value);
         if ($instance instanceof Field) {
             $instance->setFieldType($type);
         } else {

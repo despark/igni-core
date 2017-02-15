@@ -30,7 +30,6 @@ class Custom extends Field
      * @throws \Exception
      */
     public function __construct(
-        AdminModel $model,
         $fieldName,
         array $options,
         $elementName = null

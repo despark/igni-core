@@ -4,8 +4,8 @@
 @section('content')
     @yield('before.form')
     <div class="default-form">
-        {{-- TODO action verb --}}
         <h3 class="box-title">{{ $pageTitle }}</h3>
+        {{-- TODO action verb --}}
         {!!  Form::open([
             'url' => $form->getAction(),
             'method' => $form->getMethod(),

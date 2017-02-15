@@ -2,21 +2,16 @@
 
 namespace Despark\Cms\Fields;
 
-use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Contracts\FieldContract;
-use Symfony\Component\Debug\ExceptionHandler;
 use Despark\Cms\Exceptions\Fields\FieldViewNotFoundException;
+use Despark\Cms\Models\AdminModel;
+use Symfony\Component\Debug\ExceptionHandler;
 
 /**
  * Class Field.
  */
 abstract class Field implements FieldContract
 {
-    /**
-     * @var AdminModel
-     */
-    protected $model;
-
     /**
      * @var string
      */
@@ -32,7 +27,15 @@ abstract class Field implements FieldContract
      */
     protected $viewName;
 
+    /**
+     * @var
+     */
     protected $fieldType;
+
+    /**
+     * @var mixed
+     */
+    protected $value;
 
     /**
      * @var bool
@@ -46,9 +49,9 @@ abstract class Field implements FieldContract
      * @param string     $fieldName
      * @param array      $options
      */
-    public function __construct(AdminModel $model, $fieldName, array $options)
+    public function __construct($fieldName, array $options, $value = null)
     {
-        $this->model = $model;
+        $this->value = $value;
         $this->fieldName = $fieldName;
         $this->options = $options;
         $this->hidden = isset($options['hidden']) && $options['hidden'];
@@ -61,7 +64,7 @@ abstract class Field implements FieldContract
      */
     public function getViewName()
     {
-        if (!isset($this->viewName)) {
+        if (! isset($this->viewName)) {
             // Default view name
             $identifier = $this->getModel()->getIdentifier();
             $fieldName = str_slug($this->fieldName).'--field';
@@ -93,31 +96,22 @@ abstract class Field implements FieldContract
     }
 
     /**
-     * @return AdminModel
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
-     * @param AdminModel $model
-     *
-     * @return $this
-     */
-    public function setModel($model)
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getValue()
     {
-        return $this->model->getOriginal($this->getFieldName());
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
     }
 
     /**
