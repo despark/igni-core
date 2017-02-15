@@ -3,6 +3,7 @@
 namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Admin\Form;
 use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
@@ -22,19 +23,25 @@ class EntityManager
      */
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
 
+    /** 
+     * @var FormBuilder 
+     */ 
+    protected $formBuilder; 
+
     /**
-     * @var FormBuilder
+     * @var Form
      */
-    protected $formBuilder;
+    protected $form;
 
     /**
      * EntityManager constructor.
      *
      * @param FormBuilder $formBuilder
      */
-    public function __construct(FormBuilder $formBuilder)
+    public function __construct(FormBuilder $formBuilder, Form $form)
     {
         $this->formBuilder = $formBuilder;
+        $this->form = $form;
     }
 
     /**
@@ -228,11 +235,11 @@ class EntityManager
      *
      * @return string
      */
-    public function renderForm(Model $model)
+    public function getForm(Model $model)
     {
         $fields = $this->getFields($model);
 
-        return $this->formBuilder->render($model, $fields);
+        return $this->form->make($model, $fields);
     }
 
     /**
@@ -294,11 +301,11 @@ class EntityManager
         return config('ignicms.defaultFormView');
     }
 
-    /**
-     * @return FormBuilder
-     */
-    public function getFormBuilder()
-    {
-        return $this->formBuilder;
-    }
+    /** 
+     * @return FormBuilder 
+     */ 
+    public function getFormBuilder() 
+    { 
+        return $this->formBuilder; 
+    } 
 }
