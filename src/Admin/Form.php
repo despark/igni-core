@@ -3,6 +3,7 @@
 namespace Despark\Cms\Admin;
 
 use Despark\Cms\Fields\Contracts\Factory as FactoryContract;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Form.
@@ -51,13 +52,13 @@ class Form
      *
      * @return string
      */
-    public function make($model, $fields)
+    public function make($config)
     {
-        $this->setFields($fields)
-             ->setAction($model)
-             ->setMethod($model);
-
-        $this->model = $model;
+        foreach($config as $key => $item){
+            if(property_exists($this, $key)){
+                $this->$key = $item;
+            }
+        }
 
         return $this;
     }
@@ -133,15 +134,9 @@ class Form
      *
      * @return self
      */
-    protected function setAction($model)
+    protected function setAction($action)
     {
-        $config = $model->getResourceConfig();
-        $controller = array_get($config, 'controller');
-        $action = $model->exists ? 'edit' : 'create';
-        
-        $this->setActionVerb(ucfirst($action));
-
-        $this->action = '\\'.$controller.'@'.$action;
+        $this->action = $action;
 
         return $this;
     }
@@ -163,10 +158,9 @@ class Form
      *
      * @return self
      */
-    protected function setMethod($model)
+    protected function setMethod($method)
     {
-        $method = $model->exists ? 'PUT' : 'POST';
-
+        // TODO validation
         $this->method = $method;
 
         return $this;

@@ -237,9 +237,19 @@ class EntityManager
      */
     public function getForm(Model $model)
     {
-        $fields = $this->getFields($model);
-
-        return $this->form->make($model, $fields);
+        $method = $model->exists ? 'PUT' : 'POST';
+        $config = $model->getResourceConfig();
+        $controller = array_get($config, 'controller');
+        $actionVerb = $model->exists ? 'edit' : 'create';
+        $controllerAction = '\\'.$controller.'@'.$actionVerb;
+        $attributtes = $model->getKey() ? ['id' => $model->getKey()] : [];
+        $action = action($controllerAction, $attributtes);
+        
+        return $this->form->make([
+            'action' => $action,
+            'method' => $method,
+            'fields' => $this->getFields($model),
+            ]);
     }
 
     /**
@@ -276,7 +286,8 @@ class EntityManager
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
-            return $resource['adminFormFields'];
+            return $this->model->getOriginal($this->getFieldName()); 
+            $fieldsConfig = $resource['adminFormFields'];
         }
     }
 
