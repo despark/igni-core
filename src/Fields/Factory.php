@@ -20,6 +20,7 @@ class Factory implements FactoryContract
         'datetime' => DateTime::class,
         'checkbox' => Checkbox::class,
         'password' => Password::class,
+        'textarea' => Textarea::class,
     ];
 
     /**

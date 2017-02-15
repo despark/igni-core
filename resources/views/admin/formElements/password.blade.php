@@ -1,8 +1,3 @@
-<?php
-    $elementName = $field->getElementName();
-    $fieldName = $field->getFieldName();
-?>
-
 <div class="form-group {{ $errors->has($fieldName) ? 'has-error' : '' }}">
     {!! Form::label($elementName, $field->getLabel()) !!}
     {!! Form::password($elementName, $field->getAttributes()) !!}

@@ -1,7 +1,3 @@
-<?php
-$elementName = $field->getElementName();
-$fieldName = $field->getFieldName();
-?>
 <div class="form-group">
     <div class="checkbox">
         <label for="{{ $elementName }}">
