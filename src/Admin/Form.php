@@ -2,7 +2,6 @@
 
 namespace Despark\Cms\Admin;
 
-use Illuminate\Database\Eloquent\Model;
 use Despark\Cms\Fields\Contracts\Factory as FactoryContract;
 
 /**
@@ -38,17 +37,41 @@ class Form
      * @var string
      */
     protected $enctype;
+    /**
+     * @var Model
+     */
+    protected $model;
+    /**
+     * @var string
+     */
+    protected $actionVerb;
 
     /**
      * @param array $fields
      *
      * @return string
      */
-    public function make($field)
+    public function make($model, $fields)
     {
-        $this->setFields($field);
+        $this->setFields($fields)
+             ->setAction($model)
+             ->setMethod($model);
+
+        $this->model = $model;
 
         return $this;
+    }
+
+    public function renderFields()
+    {
+        $html = '';
+
+        foreach ($this->fields as $field => $config) {
+            $field = \Field::make($this->model, $field, $config);
+            $html .= $field->toHtml();
+        }
+
+        return $html;
     }
 
     /**
@@ -110,9 +133,15 @@ class Form
      *
      * @return self
      */
-    protected function setAction($action)
+    protected function setAction($model)
     {
-        $this->action = $action;
+        $config = $model->getResourceConfig();
+        $controller = array_get($config, 'controller');
+        $action = $model->exists ? 'edit' : 'create';
+        
+        $this->setActionVerb(ucfirst($action));
+
+        $this->action = '\\'.$controller.'@'.$action;
 
         return $this;
     }
@@ -266,6 +295,54 @@ class Form
     protected function setFields(array $fields)
     {
         $this->fields = $fields;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of model.
+     *
+     * @return mixed
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Sets the value of model.
+     *
+     * @param Model $model the model
+     *
+     * @return self
+     */
+    protected function setModel(Model $model)
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of actionVerb.
+     *
+     * @return actionVerb
+     */
+    public function getActionVerb()
+    {
+        return $this->actionVerb;
+    }
+
+    /**
+     * Sets the value of actionVerb.
+     *
+     * @param actionVerb $actionVerb the action verb
+     *
+     * @return self
+     */
+    protected function setActionVerb($actionVerb)
+    {
+        $this->actionVerb = $actionVerb;
 
         return $this;
     }

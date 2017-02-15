@@ -4,20 +4,18 @@
 @section('content')
     @yield('before.form')
     <div class="default-form">
-        <h3 class="box-title">{{ $pageTitle }} - {{ $actionVerb or 'Edit'  }}</h3>
+        <h3 class="box-title">{{ $pageTitle }} - {{ $form->getActionVerb() }}</h3>
         {!!  Form::open([
-            'url' => route($form->getAction()),
-            'method' => (isset($form->getMethod())) ? $form->getMethod() : 'POST',
+            'url' => action($form->getAction(), ['id' => $form->getModel()->getKey()]),
+            'method' => $form->getMethod(),
             'role' => $form->getRole(),
-            'enctype'=> (isset($form->getEnctype())) ? $form->getEnctype() : 'multipart/form-data', ]
+            'enctype'=> $form->getEnctype() ?? 'multipart/form-data', ]
         ) !!}
-       {{--  {!! $record->buildForm() !!} --}}
-        @foreach ($form->getFields() as $field)
-            {!! $field->toHtml() !!}
-        @endforeach
-
+       
+       {!! $form->renderFields() !!}
+       
         <button type="submit" class="btn btn-primary">Save</button>
-        {!! $record->adminPreviewButton() !!}
+        {{-- {!! $record->adminPreviewButton() !!} --}}
 
         {!! Form::close() !!}
     </div>
