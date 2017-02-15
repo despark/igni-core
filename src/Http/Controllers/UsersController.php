@@ -4,6 +4,7 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
 use Despark\Cms\Http\Requests\UserUpdateRequest;
+use Despark\Cms\Resource\EntityManager;
 use Illuminate\Http\Request;
 use Response;
 
@@ -16,11 +17,14 @@ class UsersController extends AdminController
      */
     public function create()
     {
-        $this->viewData['record'] = $this->model;
+        $entityManager = app(EntityManager::class);
+        $form = $entityManager->getForm($this->model);
 
-        $this->viewData['actionVerb'] = 'Create';
-        $this->viewData['formMethod'] = 'POST';
-        $this->viewData['formAction'] = 'user.store';
+        $this->viewData['form'] = $form;
+
+        // $this->viewData['actionVerb'] = 'Create';
+        // $this->viewData['formMethod'] = 'POST';
+        // $this->viewData['formAction'] = 'user.store';
 
         return view($this->defaultFormView, $this->viewData);
     }
@@ -55,25 +59,6 @@ class UsersController extends AdminController
         ]);
 
         return redirect(route('user.edit', ['id' => $record->id]));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function edit($id)
-    {
-        $record = $this->model->findOrFail($id);
-
-        $this->viewData['record'] = $record;
-
-        $this->viewData['formMethod'] = 'PUT';
-        $this->viewData['formAction'] = 'user.update';
-
-        return view($this->defaultFormView, $this->viewData);
     }
 
     /**
