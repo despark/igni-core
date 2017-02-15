@@ -35,6 +35,10 @@ class FormBuilder
      * @var array
      */
     private $options = [];
+    /**
+     * @var array
+     */
+    protected $rendered = [];
     
     /**
      * @param string $view
@@ -64,5 +68,46 @@ class FormBuilder
             'options' => $this->options,
             'sourceModel' => $this->sourceModel,
         ]);
+    }
+
+    public function field($model, $fieldName, $options, $elementName = null)
+    {
+        return app(FactoryContract::class)->make($model, $fieldName, $options);
+    }
+
+    /**
+     * @param Model $model
+     * @param       $field
+     *
+     * @return bool
+     */
+    public function isRendered(Model $model, $field)
+    {
+        $modelClass = get_class($model);
+        if (isset($this->rendered[$modelClass])) {
+            return in_array($field, $this->rendered[$modelClass]);
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRendered()
+    {
+        return $this->rendered;
+    }
+
+    /**
+     * @param array $rendered
+     *
+     * @return Form
+     */
+    public function setRendered($rendered)
+    {
+        $this->rendered = $rendered;
+
+        return $this;
     }
 }

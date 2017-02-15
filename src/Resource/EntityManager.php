@@ -23,10 +23,10 @@ class EntityManager
      */
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
 
-    /**
-     * @var FormBuilder
-     */
-    protected $formBuilder;
+    /** 
+     * @var FormBuilder 
+     */ 
+    protected $formBuilder; 
 
     /**
      * @var Form
@@ -235,11 +235,11 @@ class EntityManager
      *
      * @return string
      */
-    public function renderForm(Model $model)
+    public function getForm(Model $model)
     {
         $fields = $this->getFields($model);
 
-        return $this->form->getRenderedForm($model, $fields);
+        return $this->form->make($model, $fields);
     }
 
     /**
@@ -301,19 +301,11 @@ class EntityManager
         return config('ignicms.defaultFormView');
     }
 
-    /**
-     * @return FormBuilder
-     */
-    public function getFormBuilder()
-    {
-        return $this->formBuilder;
-    }
-
-    /**
-     * @return Form
-     */
-    public function getForm()
-    {
-        return $this->form;
-    }
+    /** 
+     * @return FormBuilder 
+     */ 
+    public function getFormBuilder() 
+    { 
+        return $this->formBuilder; 
+    } 
 }

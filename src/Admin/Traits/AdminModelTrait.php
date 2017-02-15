@@ -188,7 +188,7 @@ trait AdminModelTrait
      */
     public function buildForm()
     {
-        return $this->getEntityManager()->renderForm($this);
+        return $this->getEntityManager()->getForm($this);
     }
 
     /**

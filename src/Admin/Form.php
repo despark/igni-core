@@ -11,93 +11,261 @@ use Despark\Cms\Fields\Contracts\Factory as FactoryContract;
 class Form
 {
     /**
-     * @var string
+     * @var array
      */
-    protected $elementName;
-    /**
-     * @var Model
-     */
-    protected $model;
+    protected $fields = [];
     /**
      * @var string
      */
-    protected $field;
+    protected $action;
+    /**
+     * @var string
+     */
+    protected $method;
+    /**
+     * @var string
+     */
+    protected $role = 'form';
     /**
      * @var array
      */
-    private $options = [];
-
+    protected $attributes = [];
     /**
-     * @var array
+     * @var string
      */
-    protected $rendered = [];
+    protected $template = 'ignicms::admin.formElements.defaultForm';
+    /**
+     * @var string
+     */
+    protected $enctype;
 
     /**
-     * @param Model $model
      * @param array $fields
      *
      * @return string
      */
-    public function getRenderedForm(Model $model, array $fields)
+    public function make($field)
     {
-        $html = '';
-        foreach ($fields as $field => $options) {
-            // Check if field is not already rendered
-            if (!$this->isRendered($model, $field)) {
-                $elementName = isset($options['name']) ? $options['name'] : $field;
-                $fieldInstance = $this->field($model, $field, $options, $elementName);
-                if ($fieldInstance instanceof Field) {
-                    // We don't render fields marked as hidden
-                    if ($fieldInstance->hidden == true) {
-                        continue;
-                    }
-                }
+        $this->setFields($field);
 
-                $this->rendered[get_class($model)][] = $field;
-                $html .= $fieldInstance;
-            }
-        }
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function toHtml()
+    {
+        return view($this->getTemplate(), ['form' => $this]);
+    }
+
+    protected function beforeToHtml() { }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $this->beforeToHtml();
+        $html = $this->toHtml();
+        $this->afterHtml($html);
 
         return $html;
     }
 
-    public function field($model, $fieldName, $options, $elementName = null)
+    public function addField(Field $field, $name)
     {
-        return app(FactoryContract::class)->make($model, $fieldName, $options);
-    }
-
-    /**
-     * @param Model $model
-     * @param       $field
-     *
-     * @return bool
-     */
-    public function isRendered(Model $model, $field)
-    {
-        $modelClass = get_class($model);
-        if (isset($this->rendered[$modelClass])) {
-            return in_array($field, $this->rendered[$modelClass]);
+        if (isset($name)) 
+        {
+            $this->fields[$name] = $field;
+        } 
+        else 
+        {
+            throw new \Exception();
         }
+    }
 
-        return false;
+    public function removeField($name)
+    {
+        if (isset($this->fields[$name])) 
+        {
+            unset($this->fields[$name]);
+        }
     }
 
     /**
+     * Gets the value of action.
+     *
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * Sets the value of action.
+     *
+     * @param string $action the action
+     *
+     * @return self
+     */
+    protected function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of method.
+     *
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     * Sets the value of method.
+     *
+     * @param string $model the Model
+     *
+     * @return self
+     */
+    protected function setMethod($model)
+    {
+        $method = $model->exists ? 'PUT' : 'POST';
+
+        $this->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of role.
+     *
+     * @return string
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * Sets the value of role.
+     *
+     * @param string $role the role
+     *
+     * @return self
+     */
+    protected function setRole($role)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of attributes.
+     *
      * @return array
      */
-    public function getRendered()
+    public function getAttributes()
     {
-        return $this->rendered;
+        return $this->attributes;
     }
 
     /**
-     * @param array $rendered
+     * Sets the value of attributes.
      *
-     * @return FormBuilder
+     * @param array $attributes the attributes
+     *
+     * @return self
      */
-    public function setRendered($rendered)
+    protected function setAttributes(array $attributes)
     {
-        $this->rendered = $rendered;
+        $this->attributes = $attributes;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of template.
+     *
+     * @return string
+     */
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
+    /**
+     * Sets the value of template.
+     *
+     * @param string $template the template
+     *
+     * @return self
+     */
+    protected function setTemplate($template)
+    {
+        if (View::exists($template)) 
+        {
+            $this->template = $template;
+        } 
+        else 
+        {
+            throw new \Exception('This template doesn\'t exist');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of enctype.
+     *
+     * @return string
+     */
+    public function getEnctype()
+    {
+        return $this->enctype;
+    }
+
+    /**
+     * Sets the value of enctype.
+     *
+     * @param string $enctype the enctype
+     *
+     * @return self
+     */
+    protected function setEnctype($enctype)
+    {
+        $this->enctype = $enctype;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of fields.
+     *
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * Sets the value of fields.
+     *
+     * @param array $fields the fields
+     *
+     * @return self
+     */
+    protected function setFields(array $fields)
+    {
+        $this->fields = $fields;
 
         return $this;
     }

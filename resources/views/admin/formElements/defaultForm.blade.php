@@ -6,12 +6,15 @@
     <div class="default-form">
         <h3 class="box-title">{{ $pageTitle }} - {{ $actionVerb or 'Edit'  }}</h3>
         {!!  Form::open([
-            'url'=>route($formAction, ['id' => $record->id]),
-            'method' => (isset($formMethod)) ? $formMethod : 'POST',
-            'role' => 'form',
-            'enctype'=> 'multipart/form-data', ]
+            'url' => route($form->getAction()),
+            'method' => (isset($form->getMethod())) ? $form->getMethod() : 'POST',
+            'role' => $form->getRole(),
+            'enctype'=> (isset($form->getEnctype())) ? $form->getEnctype() : 'multipart/form-data', ]
         ) !!}
-        {!! $record->buildForm() !!}
+       {{--  {!! $record->buildForm() !!} --}}
+        @foreach ($form->getFields() as $field)
+            {!! $field->toHtml() !!}
+        @endforeach
 
         <button type="submit" class="btn btn-primary">Save</button>
         {!! $record->adminPreviewButton() !!}
