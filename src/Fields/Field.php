@@ -3,7 +3,6 @@
 namespace Despark\Cms\Fields;
 
 use Despark\Cms\Contracts\FieldContract;
-use Despark\Cms\Exceptions\Fields\FieldViewNotFoundException;
 use Symfony\Component\Debug\ExceptionHandler;
 
 /**
@@ -24,7 +23,7 @@ abstract class Field implements FieldContract
     /**
      * @var string
      */
-    protected $viewName;
+    protected $template;
 
     /**
      * @var
@@ -61,27 +60,24 @@ abstract class Field implements FieldContract
      *
      * @throws \Exception
      */
-    public function getViewName()
+    public function getTemplate()
     {
-        if (! isset($this->viewName)) {
-            // Default view name
-            $identifier = $this->getModel()->getIdentifier();
-            $fieldName = str_slug($this->fieldName).'--field';
-            $field = $this->getFieldIdentifier();
-
-            // First check if there is a rewrite on specific field type
-            if (\View::exists('resources.'.$identifier.'.formElements.'.$fieldName)) {
-                $this->viewName = 'resources.'.$identifier.'.formElements.'.$fieldName;
-            } elseif (\View::exists('resources.'.$identifier.'.formElements.'.$field)) {
-                $this->viewName = 'resources.'.$identifier.'.formElements.'.$field;
-            } elseif (\View::exists('ignicms::admin.formElements.'.$field)) {
-                $this->viewName = 'ignicms::admin.formElements.'.$field;
-            } else {
-                throw new FieldViewNotFoundException('View not found for field '.$this->fieldName);
-            }
+        if (! isset($this->template)) {
+            $this->template = 'ignicms::admin.formElements.'.$this->getFieldIdentifier();
         }
 
-        return $this->viewName;
+        return $this->template;
+    }
+
+    /**
+     * @param string $template
+     * @return $this
+     */
+    public function setTemplate(string $template)
+    {
+        $this->template = $template;
+
+        return $this;
     }
 
     /**
@@ -156,7 +152,7 @@ abstract class Field implements FieldContract
      */
     public function toHtml()
     {
-        return view($this->getViewName(), [
+        return view($this->getTemplate(), [
             'field' => $this,
             'fieldName' => $this->getFieldName(),
             'elementName' => $this->getElementName(),
