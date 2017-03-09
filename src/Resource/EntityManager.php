@@ -209,8 +209,9 @@ class EntityManager
     {
         foreach ($this->all() as $resource => $config) {
             $availableMethods = $this->routeMethods;
+            $classMethods = get_class_methods($config['controller']) ?? [];
             // Get the implementing controller and check for rewritten routes
-            $methods = array_intersect(get_class_methods($config['controller']), $availableMethods);
+            $methods = array_intersect($classMethods, $availableMethods);
 
             if (!empty($methods)) {
                 // If all routes are rewritten we use the config one
