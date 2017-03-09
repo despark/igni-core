@@ -15,11 +15,7 @@ class EntityController extends AdminController
      */
     public function create()
     {
-        $this->viewData['record'] = $this->model;
-
-        $this->viewData['actionVerb'] = 'Create';
-        $this->viewData['formMethod'] = 'POST';
-        $this->viewData['formAction'] = $this->getResourceConfig()['id'].'.store';
+        $this->viewData['form'] = $this->entityManager->getForm($this->model);
 
         return view($this->defaultFormView, $this->viewData);
     }
