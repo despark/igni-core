@@ -51,13 +51,8 @@ class EntityController extends AdminController
      */
     public function edit($id)
     {
-        $record = $this->model->findOrFail($id);
-
-        $this->viewData['record'] = $record;
-
-        $this->viewData['formMethod'] = 'PUT';
-        $this->viewData['formAction'] = $this->getResourceConfig()['id'].'.update';
-
+        $this->viewData['form'] = $this->entityManager->getForm($this->model->findOrFail($id));
+        
         return view($this->defaultFormView, $this->viewData);
     }
 
