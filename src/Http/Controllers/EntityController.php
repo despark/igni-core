@@ -43,20 +43,6 @@ class EntityController extends AdminController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function edit($id)
-    {
-        $this->viewData['form'] = $this->entityManager->getForm($this->model->findOrFail($id));
-        
-        return view($this->defaultFormView, $this->viewData);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param AdminFormRequest $request
