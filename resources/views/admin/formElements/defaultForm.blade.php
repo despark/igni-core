@@ -4,9 +4,10 @@
 @section('content')
     @yield('before.form')
     <div class="default-form">
-        <h3 class="box-title">{{ $pageTitle }} - {{ $form->getActionVerb() }}</h3>
+        <h3 class="box-title">{{ $pageTitle }}</h3>
+        {{-- TODO action verb --}}
         {!!  Form::open([
-            'url' => action($form->getAction(), ['id' => $form->getModel()->getKey()]),
+            'url' => $form->getAction(),
             'method' => $form->getMethod(),
             'role' => $form->getRole(),
             'enctype'=> $form->getEnctype() ?? 'multipart/form-data', ]

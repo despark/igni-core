@@ -2,18 +2,12 @@
 
 namespace Despark\Cms\Fields;
 
-use Despark\Cms\Models\AdminModel;
-
 class Text extends Field
 {
-    public function __construct(
-        AdminModel $model,
-        $fieldName,
-        array $options,
-        $elementName = null
-    ) {
+    public function __construct($fieldName, array $options, $value = null)
+    {
         $options['attributes']['placeholder'] = $options['label'];
-        $options['attributes']['id'] = $elementName;
-        parent::__construct($model, $fieldName, $options, $elementName);
+        $options['attributes']['id'] = $fieldName;
+        parent::__construct($fieldName, $options, $value);
     }
 }

@@ -220,16 +220,7 @@ abstract class AdminController extends BaseController
      */
     public function edit($id)
     {
-        $entityManager = app(EntityManager::class);
-        $form = $entityManager->getForm($this->model->findOrFail($id));
-        // TODO VERSION DEPENDANT + ROUTE BINDING
-        // if (is_object($id) && $id instanceof Model) {
-        //     $this->viewData['form'] = $id;
-        // } else {
-        //     $this->viewData['form'] = $this->model->findOrFail($id);
-        // }
-        $this->viewData['form'] = $form;
-        // $this->viewData['formAction'] = $this->getResourceConfig()['id'].'.update';
+        $this->viewData['form'] = \Entity::getForm($this->model->findOrFail($id));
 
         return view($this->defaultFormView, $this->viewData);
     }

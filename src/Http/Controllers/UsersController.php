@@ -4,7 +4,6 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
 use Despark\Cms\Http\Requests\UserUpdateRequest;
-use Despark\Cms\Resource\EntityManager;
 use Illuminate\Http\Request;
 use Response;
 
@@ -17,14 +16,7 @@ class UsersController extends AdminController
      */
     public function create()
     {
-        $entityManager = app(EntityManager::class);
-        $form = $entityManager->getForm($this->model);
-
-        $this->viewData['form'] = $form;
-
-        // $this->viewData['actionVerb'] = 'Create';
-        // $this->viewData['formMethod'] = 'POST';
-        // $this->viewData['formAction'] = 'user.store';
+        $this->viewData['form'] = \Entity::getForm($this->model);
 
         return view($this->defaultFormView, $this->viewData);
     }

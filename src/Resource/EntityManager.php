@@ -2,8 +2,9 @@
 
 namespace Despark\Cms\Resource;
 
-use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Admin\Form;
+use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Fields\Facades\Field;
 use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
@@ -23,15 +24,20 @@ class EntityManager
      */
     protected $routeMethods = ['index', 'create', 'show', 'edit', 'store', 'destroy', 'update'];
 
-    /** 
-     * @var FormBuilder 
-     */ 
-    protected $formBuilder; 
+    /**
+     * @var FormBuilder
+     */
+    protected $formBuilder;
 
     /**
      * @var Form
      */
     protected $form;
+
+    /**
+     * @var array
+     */
+    protected $routes = [];
 
     /**
      * EntityManager constructor.
@@ -100,6 +106,7 @@ class EntityManager
                                 }
                             }
                         }
+
                         $this->resources[$resourceConfig['id']] = $resourceConfig;
                     }
                 }
@@ -208,13 +215,15 @@ class EntityManager
             if (!empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
-                    \Route::resource($resource, $config['controller'], ['names' => build_resource_backport($resource)]);
+                    \Route::resource($resource, $config['controller'], [
+                        'names' => build_resource_backport($resource),
+                    ]);
                 } else {
-                    \Route::resource($resource, $config['controller'],
-                        [
-                            'only' => $methods,
-                            'names' => build_resource_backport($resource, $methods),
-                        ]);
+                    \Route::resource($resource, $config['controller'], [
+                        'only' => $methods,
+                        'names' => build_resource_backport($resource, $methods),
+                    ]);
+
                     \Route::resource($resource, EntityController::class, [
                         'except' => $methods,
                         'names' => build_resource_backport($resource, [], $methods),
@@ -223,7 +232,21 @@ class EntityManager
             } else {
                 \Route::resource($resource, EntityController::class);
             }
+
+            $this->setRoutes($resource, build_resource_backport($resource));
         }
+    }
+
+    public function getModelRoutes(Model $model)
+    {
+        $resource = $this->getByModel($model)['id'];
+
+        return array_get($this->getRoutes(), $resource);
+    }
+
+    public function getRouteName(Model $model, string $action)
+    {
+        return array_get($this->getModelRoutes($model), $action);
     }
 
     /**
@@ -237,9 +260,23 @@ class EntityManager
      */
     public function getForm(Model $model)
     {
-        $fields = $this->getFields($model);
+        $method = $model->exists ? 'PUT' : 'POST';
+        $actionVerb = $model->exists ? 'update' : 'store';
+        $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
+        $action = route($this->getRouteName($model, $actionVerb), $attributes);
 
-        return $this->form->make($model, $fields);
+        $fields = $this->getFields($model);
+        $fieldInstances = [];
+        foreach ($fields as $fieldName => $options) {
+            $value = $model->getOriginal($fieldName);
+            $fieldInstances[] = \Field::make($fieldName, $options, $value);
+        }
+
+        return $this->form->make([
+            'action' => $action,
+            'method' => $method,
+            'fields' => $fieldInstances,
+        ]);
     }
 
     /**
@@ -301,11 +338,35 @@ class EntityManager
         return config('ignicms.defaultFormView');
     }
 
-    /** 
-     * @return FormBuilder 
-     */ 
-    public function getFormBuilder() 
-    { 
-        return $this->formBuilder; 
-    } 
+    /**
+     * @return FormBuilder
+     */
+    public function getFormBuilder()
+    {
+        return $this->formBuilder;
+    }
+
+    /**
+     * Gets the value of routes.
+     *
+     * @return array
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     * Sets the value of routes.
+     *
+     * @param array $routes the routes
+     *
+     * @return self
+     */
+    public function setRoutes($resource, array $routes)
+    {
+        $this->routes[$resource] = $routes;
+
+        return $this;
+    }
 }

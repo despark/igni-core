@@ -135,6 +135,7 @@ class IgniServiceProvider extends ServiceProvider
         // Todo Core considerations
         $loader->alias('Image', \Intervention\Image\Facades\Image::class);
         $loader->alias('Field', \Despark\Cms\Fields\Facades\Field::class);
+        $loader->alias('Entity', \Despark\Cms\Resource\Facades\EntityManager::class);
 
         /*
          * Switch View implementation

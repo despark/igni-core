@@ -3,7 +3,6 @@
 namespace Despark\Cms\Fields;
 
 use Despark\Cms\Contracts\AjaxSourceContract;
-use Despark\Cms\Models\AdminModel;
 
 /**
  * Class Select2.
@@ -18,36 +17,31 @@ class Select2 extends Select
     /**
      * Select2 constructor.
      *
-     * @param AdminModel $model
-     * @param            $fieldName
-     * @param array      $options
-     * @param null       $elementName
+     * @param string $fieldName
+     * @param array  $options
+     * @param null   $value
      */
-    public function __construct(
-        AdminModel $model,
-        $fieldName,
-        array $options,
-        $elementName = null
-    ) {
+    public function __construct($fieldName, array $options, $value = null)
+    {
         // we need to check if we have ajax enabled select2
         if (isset($options['ajaxRoute'])) {
             $this->ajax = true;
-            if (!isset($options['attributes'])) {
+            if (! isset($options['attributes'])) {
                 $options['attributes'] = [];
             }
-            if (!isset($options['attributes']['class'])) {
+            if (! isset($options['attributes']['class'])) {
                 $options['attributes']['class'] = [];
             }
             $options['attributes']['class'][] = 'ajax-enabled';
         }
         // Add unique id
-        if (!isset($options['attributes']['id'])) {
+        if (! isset($options['attributes']['id'])) {
             $options['attributes']['id'] = uniqid($fieldName);
         }
-        if (!isset($options['attributes']['placeholder'])) {
+        if (! isset($options['attributes']['placeholder'])) {
             $options['attributes']['placeholder'] = 'Select '.$options['label'];
         }
-        parent::__construct($model, $fieldName, $options, $elementName);
+        parent::__construct($fieldName, $options, $value);
     }
 
     /**
@@ -60,7 +54,7 @@ class Select2 extends Select
         if ($this->isAjax()) {
             // If we have value we need to try and find the ajaxRoute controller.
             // Make sure it implements our interface and get the selected values.
-            if (!is_null($this->getValue())) {
+            if (! is_null($this->getValue())) {
                 // We need to populate that value
                 $route = \Route::getRoutes()->getByName($this->ajaxRoute);
                 if ($route) {
