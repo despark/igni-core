@@ -266,7 +266,7 @@ class EntityManager
         $actionVerb = $model->exists ? 'update' : 'store';
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
         $action = route($this->getRouteName($model, $actionVerb), $attributes);
-        $translatable = method_exists($model, 'getTranslatable') ? $model->getTranslatable() : null;
+        $translatable = ($model instanceof Translatable) ? $model->getTranslatable() : null;
         $locale = app('request')->get('locale', \App::getLocale());
 
         $fields = $this->getFields($model);
