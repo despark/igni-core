@@ -285,6 +285,7 @@ class EntityManager
             'action' => $action,
             'method' => $method,
             'fields' => $fieldInstances,
+            'translatable' => $translatable,
         ]);
     }
 
