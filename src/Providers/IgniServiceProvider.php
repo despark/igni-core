@@ -2,15 +2,14 @@
 
 namespace Despark\Cms\Providers;
 
-use File;
-use Illuminate\Routing\Router;
-use Illuminate\Validation\Validator;
 use Despark\Cms\Illuminate\View\View;
-use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Console\Scheduling\Schedule;
+use File;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Validator;
 
 class IgniServiceProvider extends ServiceProvider
 {
@@ -24,7 +23,6 @@ class IgniServiceProvider extends ServiceProvider
     protected $commands = [
         \Despark\Cms\Console\Commands\InstallCommand::class,
         \Despark\Cms\Console\Commands\Admin\ResourceCommand::class,
-        \Despark\Cms\Console\Commands\File\ClearTemp::class,
         \Despark\Cms\Console\Commands\Image\Rebuild::class,
     ];
 
@@ -33,13 +31,6 @@ class IgniServiceProvider extends ServiceProvider
      */
     public function boot(Router $router)
     {
-        // Schedule commands after boot
-        $this->app->booted(function () {
-            $schedule = $this->app->make(Schedule::class);
-            $schedule->command('igni:file:clear')->weeklyOn(6);
-        });
-
-        // NB:Version dependent
         // Routes
         $router->group(['namespace' => 'Despark\Cms\Http\Controllers', 'middleware' => ['web']], function ($router) {
             require __DIR__.'/../routes/web.php';
@@ -56,7 +47,6 @@ class IgniServiceProvider extends ServiceProvider
 
         // Register config
         $this->mergeConfigFrom(__DIR__.'/../../config/ignicms.php', 'ignicms');
-      //  $this->mergeConfigFrom(__DIR__.'/../../config/admin/sidebar.php', 'admin.sidebar');
         $this->mergeConfigFrom(__DIR__.'/../../config/entities/user.php', 'resources.user');
 
         // Register the application commands
@@ -64,7 +54,6 @@ class IgniServiceProvider extends ServiceProvider
 
         // Publish the Resources
 
-        // TODO VERSION DEPENDANT
         // Migrations
         $this->publishes([
             __DIR__.'/../../database/migrations' => database_path('migrations'),
@@ -72,7 +61,7 @@ class IgniServiceProvider extends ServiceProvider
         // Configs
         $this->publishes([
             __DIR__.'/../../config/' => config_path(),
-        ], 'config');
+        ], 'configs');
         // Resources
         $this->publishes([
             __DIR__.'/../../resources/assets' => base_path('/resources/assets'),
@@ -80,16 +69,8 @@ class IgniServiceProvider extends ServiceProvider
             __DIR__.'/../../resources/icomoon.json' => base_path('/resources/icomoon.json'),
         ], 'resources');
 
-        // Gulp
         $this->publishes([
             __DIR__.'/../../gulp/' => base_path('/gulp'),
-        ], 'gulp');
-        // Public
-        $this->publishes([
-            __DIR__.'/../../public/' => public_path(),
-        ], 'public');
-
-        $this->publishes([
             __DIR__.'/../../package.json' => base_path('package.json'),
             __DIR__.'/../../bower.json' => base_path('bower.json'),
             __DIR__.'/../../.bowerrc' => base_path('.bowerrc'),
@@ -97,12 +78,12 @@ class IgniServiceProvider extends ServiceProvider
             __DIR__.'/../../.eslintrc' => base_path('.eslintrc'),
             __DIR__.'/../../.editorconfig' => base_path('.editorconfig'),
             __DIR__.'/../../gulpfile.js' => base_path('gulpfile.js'),
-        ], 'fe');
+        ], 'igni-frontend');
 
         $configPaths = config('ignicms.paths');
         if ($configPaths) {
             foreach ($configPaths as $key => $path) {
-                if (!is_dir($path)) {
+                if (! is_dir($path)) {
                     File::makeDirectory($path, 0755, true);
                 }
             }
@@ -122,9 +103,7 @@ class IgniServiceProvider extends ServiceProvider
         $this->app->register(\Collective\Html\HtmlServiceProvider::class);
         $this->app->register(\Intervention\Image\ImageServiceProvider::class);
         $this->app->register(\Cviebrock\EloquentSluggable\ServiceProvider::class);
-        // $this->app->register('Roumen\Sitemap\SitemapServiceProvider');
         $this->app->register(\Rutorika\Sortable\SortableServiceProvider::class);
-        // $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
 
         /*
          * Create aliases for the dependency.
@@ -132,10 +111,10 @@ class IgniServiceProvider extends ServiceProvider
         $loader = AliasLoader::getInstance();
         $loader->alias('Form', \Collective\Html\FormFacade::class);
         $loader->alias('Html', \Collective\Html\HtmlFacade::class);
+        $loader->alias('Entity', \Despark\Cms\Resource\Facades\EntityManager::class);
         // Todo Core considerations
         $loader->alias('Image', \Intervention\Image\Facades\Image::class);
         $loader->alias('Field', \Despark\Cms\Fields\Facades\Field::class);
-        $loader->alias('Entity', \Despark\Cms\Resource\Facades\EntityManager::class);
 
         /*
          * Switch View implementation

@@ -199,9 +199,12 @@ abstract class AdminModel extends Model
     /**
      * @return array
      */
-    public function getRulesUpdate()
+    public function getRulesUpdate(): array
     {
-        return array_merge($this->rules, $this->rulesUpdate);
+        $array = array_merge($this->rules, $this->rulesUpdate);
+        if (! is_array($array)) {
+            return [];
+        }
     }
 
     /**

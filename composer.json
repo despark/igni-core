@@ -8,6 +8,23 @@
         "cms",
         "core"
     ],
+    "authors": [
+        {
+            "name": "Alexander Stoimenov",
+            "email": "astoimenov@despark.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Ludmil Simeonov",
+            "email": "lsimeonov@despark.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Anton Geshev",
+            "email": "ageshev@despark.com",
+            "role": "Developer"
+        }
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -18,7 +35,8 @@
         "cviebrock/eloquent-sluggable": "^4.1",
         "rutorika/sortable": "^2.3",
         "doctrine/dbal": "^2.5",
-        "yajra/laravel-datatables-oracle": "~6.0"
+        "yajra/laravel-datatables-oracle": "~6.0",
+        "spatie/laravel-permission": "^1.11"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.1",

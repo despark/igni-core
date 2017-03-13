@@ -2,12 +2,12 @@
 
 namespace Despark\Cms\Providers;
 
-use Despark\Cms\Models\Image;
-use Despark\Cms\Fields\Factory;
 use Despark\Cms\Assets\AssetManager;
-use Illuminate\Support\ServiceProvider;
-use Despark\Cms\Contracts\ImageContract;
 use Despark\Cms\Contracts\AssetsContract;
+use Despark\Cms\Contracts\ImageContract;
+use Despark\Cms\Fields\Factory;
+use Despark\Cms\Models\Image;
+use Illuminate\Support\ServiceProvider;
 
 class AdminServiceProvider extends ServiceProvider
 {
@@ -26,6 +26,11 @@ class AdminServiceProvider extends ServiceProvider
         });
 
         /*
+         * Route Middleware
+         */
+        $this->app->singleton('auth.admin', config('ignicms.auth.admin'));
+
+        /*
          * Assets manager
          */
         $this->app->singleton(AssetsContract::class, AssetManager::class);
@@ -41,6 +46,7 @@ class AdminServiceProvider extends ServiceProvider
             ImageContract::class,
             AssetsContract::class,
             'field',
+            'auth.admin',
         ];
     }
 }

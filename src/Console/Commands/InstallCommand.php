@@ -47,10 +47,11 @@ class InstallCommand extends Command
                 return false;
             }
             // First publish the commands
-            $this->info('Publishing migrations..'.PHP_EOL);
+            $this->info('Publishing Igni CMS artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
-                '--provider' => 'Despark\Cms\Providers\CoreServiceProvider',
-                '--tag' => ['migrations'],
+                '--provider' => \Despark\Cms\Providers\IgniServiceProvider::class,
+                '--tag' => ['migrations', 'resources', 'configs'],
+
             ]);
 
             $this->info(PHP_EOL.'Dumping autoloader..');
@@ -58,6 +59,21 @@ class InstallCommand extends Command
 
             $this->info('Migrating..'.PHP_EOL);
             $this->call('migrate');
+
+            // Publish frontend
+            $this->info('Publishing frontend artifacts..'.PHP_EOL);
+            $this->call('vendor:publish', [
+                '--force' => 1,
+                '--tag' => ['igni-frontend'],
+            ]);
+
+            // Build FE
+            $this->info(PHP_EOL.'Building frontend..'.PHP_EOL);
+            exec('packages/despark/igni-core/scripts/frontend.sh '.base_path(), $output, $exitCode);
+            if ($exitCode > 0) {
+                $this->warn('Frontend build failed. Please run manually.');
+                $this->info('Reason: '.implode(PHP_EOL, $output).PHP_EOL);
+            }
 
             $this->info(PHP_EOL.'--- Admin setup ---');
 

@@ -5,6 +5,9 @@ return [
     'defaultFormView' => 'ignicms::admin.formElements.defaultForm',
     'paginateLimit' => 15,
     'logo' => 'images/logo.png',
+    'auth' => [
+        'admin' => \Despark\Cms\Http\Middleware\AdminAuth::class,
+    ],
     'paths' => [
         'model' => app_path('Models'),
         'request' => app_path('Http/Requests/Admin'),
