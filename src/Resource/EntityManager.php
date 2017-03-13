@@ -5,6 +5,7 @@ namespace Despark\Cms\Resource;
 use Despark\Cms\Admin\Form;
 use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Fields\Facades\Field;
+use Despark\Cms\Fields\Hidden;
 use Despark\Cms\Http\Controllers\EntityController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
@@ -265,9 +266,16 @@ class EntityManager
         $actionVerb = $model->exists ? 'update' : 'store';
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
         $action = route($this->getRouteName($model, $actionVerb), $attributes);
+        $translatable = method_exists($model, 'getTranslatable') ? $model->getTranslatable() : null;
+        $locale = app('request')->get('locale', \App::getLocale());
 
         $fields = $this->getFields($model);
         $fieldInstances = [];
+        if ($translatable) 
+        {
+            $fieldInstances[] = new Hidden('locale', [], $locale);
+        }
+        
         foreach ($fields as $fieldName => $options) {
             $value = $model->getOriginal($fieldName);
             $fieldInstances[] = \Field::make($fieldName, $options, $value);
