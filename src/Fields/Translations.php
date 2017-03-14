@@ -6,8 +6,6 @@ use Despark\Cms\Contracts\FieldContract;
 
 class Translations implements FieldContract
 {
-
-
     /**
      * @var string
      */
@@ -24,22 +22,19 @@ class Translations implements FieldContract
     public function toHtml()
     {
         $languages = config('ignicms.languages');
-
-        $currentUrl = url()->current();
-        list($path, $originalQuery) = $this->extractQueryString(url()->current());
-
-        if ($originalQuery) {
-            $query = $originalQuery.'&'.$this->currentLocale;
-            $url = str_replace($originalQuery, $query, $currentUrl);
-        } else {
-            $url = $currentUrl.'?'.$this->currentLocale;
+        foreach ($languages as &$language)
+        {
+            if ($language['locale'] === config('app.locale'))
+            {
+                $language['name'] .= ' (default)';
+            }
+            $language['url'] = $this->generateLanguageUrl($language['locale']);
         }
-
+        
         if (count($languages) > 1) {
-            return view('admin.formElements.translations', [
-                'languages' => config('ignicms.languages'),
+            return view('ignicms::admin.formElements.translations', [
+                'languages' => $languages,
                 'locale' => $this->currentLocale,
-                'url' => $url,
             ])->render();
         }
 
@@ -62,5 +57,20 @@ class Translations implements FieldContract
         }
 
         return [$path, ''];
+    }
+
+    protected function generateLanguageUrl($locale)
+    {
+        $currentUrl = url()->current();
+        list($path, $originalQuery) = $this->extractQueryString(url()->current());
+
+        if ($originalQuery) {
+            $query = $originalQuery.'&locale='.$locale;
+            $url = str_replace($originalQuery, $query, $currentUrl);
+        } else {
+            $url = $currentUrl.'?locale='.$locale;
+        }
+
+        return $url;
     }
 }

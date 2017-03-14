@@ -5,7 +5,7 @@
     @yield('before.form')
     <div class="default-form">
         <h3 class="box-title">{{ $pageTitle }}</h3>
-        @include('admin.formElements.form')
+        @include('ignicms::admin.formElements.form')
     </div>
     <div class="after-default-form">
         @yield('after.form')

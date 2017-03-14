@@ -267,7 +267,7 @@ class EntityManager
         $actionVerb = $model->exists ? 'update' : 'store';
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
         $action = route($this->getRouteName($model, $actionVerb), $attributes);
-
+        
         $translatable = ($model instanceof Translatable) ? $model->getTranslatable() : null;
         $locale = app('request')->get('locale', \App::getLocale());
 
@@ -287,7 +287,7 @@ class EntityManager
             }
             $fieldInstances[] = \Field::make($fieldName, $options, $value);
         }
-
+        
         return $this->form->make([
             'action' => $action,
             'method' => $method,

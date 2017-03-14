@@ -1,10 +1,5 @@
-<div role="tabpanel">
-    <ul class="nav nav-tabs" role="tablist">
-        @foreach($languages as $i18n)
-            <li role="presentation" class="{{ $locale === $i18n['locale'] ? 'active' : '' }}">
-                <a href="{{ $url }}" aria-controls="{{ $i18n['locale'] }}" role="tab"
-                   data-toggle="tab">{{ $i18n['name'] }}</a>
-            </li>
-        @endforeach
-    </ul>
+<div>
+    @foreach($languages as $i18n)
+        <a href="{{ $i18n['url'] }}" class="btn btn-info {{ $locale === $i18n['locale'] ? 'active' : '' }}" role="button">{{ $i18n['name'] }}</a>
+    @endforeach
 </div>
