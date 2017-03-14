@@ -4,10 +4,10 @@ namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\Form;
 use Despark\Cms\Admin\FormBuilder;
-use Despark\Cms\Fields\Facades\Field;
 use Despark\Cms\Fields\Hidden;
 use Despark\Cms\Fields\Translations;
 use Despark\Cms\Http\Controllers\EntityController;
+use Despark\LaravelDbLocalization\Contracts\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
 
@@ -81,7 +81,7 @@ class EntityManager
         $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (!isset($this->resources[$resource])) {
+            if (! isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -91,7 +91,7 @@ class EntityManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (!isset($this->resources[$resourceConfig['id']])) {
+                    if (! isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -215,7 +215,7 @@ class EntityManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect($classMethods, $availableMethods);
 
-            if (!empty($methods)) {
+            if (! empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], [
@@ -267,35 +267,27 @@ class EntityManager
         $actionVerb = $model->exists ? 'update' : 'store';
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
         $action = route($this->getRouteName($model, $actionVerb), $attributes);
-        $translatable = ($model instanceof \Despark\LaravelDbLocalization\Contracts\Translatable) ? $model->getTranslatable() : null;
+
+        $translatable = ($model instanceof Translatable) ? $model->getTranslatable() : null;
         $locale = app('request')->get('locale', \App::getLocale());
 
         $fields = $this->getFields($model);
         $fieldInstances = [];
 
-        if ($translatable) 
-        {
-            foreach ($translatable as $translate)
-            {
-                $fieldInstances[] = new Translations($translate, [], $locale);
-            }
+        if ($translatable) {
+            $fieldInstances[] = new Translations($locale);
             $fieldInstances[] = new Hidden('locale', [], $locale);
-        }
-        else
-        {
-
         }
 
         foreach ($fields as $fieldName => $options) {
-            if ($translatable) {
-                $value = $model->getTranslation();
-            }
-            else {
+            if ($translatable && $model->isTranslatable($fieldName)) {
+                $value = $model->getTranslation($fieldName, $locale);
+            } else {
                 $value = $model->getOriginal($fieldName);
             }
             $fieldInstances[] = \Field::make($fieldName, $options, $value);
         }
-        
+
         return $this->form->make([
             'action' => $action,
             'method' => $method,
@@ -333,7 +325,7 @@ class EntityManager
     public function getFields(Model $model)
     {
         $resource = $this->getByModel($model);
-        if (!$resource) {
+        if (! $resource) {
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
@@ -352,7 +344,7 @@ class EntityManager
     {
         $resourceConfig = $this->getByModel($model);
         if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
-            if (!\View::exists($resourceConfig['formTemplate'])) {
+            if (! \View::exists($resourceConfig['formTemplate'])) {
                 throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
             }
 
