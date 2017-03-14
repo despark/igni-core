@@ -5,6 +5,7 @@ namespace Despark\Cms\Http\Controllers;
 
 
 use Despark\Cms\Http\Requests\AdminFormRequest;
+use Despark\LaravelDbLocalization\Contracts\Translatable;
 
 class EntityController extends AdminController
 {
@@ -30,7 +31,10 @@ class EntityController extends AdminController
     public function store(AdminFormRequest $request)
     {
         $input = $request->all();
-
+        if ($this->model instanceof Translatable)
+        {
+            $this->model->setActiveLocale($input['locale']);
+        }
         $record = $this->model->create($input);
 
         $this->notify([
@@ -53,6 +57,11 @@ class EntityController extends AdminController
     public function update(AdminFormRequest $request, $id)
     {
         $input = $request->all();
+
+        if ($this->model instanceof Translatable)
+        {
+            $this->model->setActiveLocale($input['locale']);
+        }
 
         $record = $this->model->findOrFail($id);
 
