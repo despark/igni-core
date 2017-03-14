@@ -32,6 +32,13 @@ return [
         'disable_alt_title_fields' => false,
         'require_alt_title_fields' => true,
     ],
+    'languages' => [
+        // Add languages that you will use in your app.
+        [
+            'locale' => 'en',
+            'name' => 'English',
+        ],
+    ],
     'admin_assets' => [
         'js' => [
             'js/admin.js',

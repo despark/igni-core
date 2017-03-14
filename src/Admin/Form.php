@@ -46,10 +46,6 @@ class Form
      * @var string
      */
     protected $actionVerb;
-    /**
-     * @var array
-     */
-    protected $translatable = [];
 
     /**
      * @param array $fields
@@ -328,27 +324,5 @@ class Form
         return $this;
     }
 
-     /**
-     * Gets the value of translatable.
-     *
-     * @return array
-     */
-    public function getTranslatable()
-    {
-        return $this->translatable;
-    }
 
-    /**
-     * Sets the value of translatable.
-     *
-     * @param array $translatable the translatable
-     *
-     * @return self
-     */
-    protected function setTranslatable(array $translatable)
-    {
-        $this->translatable = $translatable;
-
-        return $this;
-    }
 }

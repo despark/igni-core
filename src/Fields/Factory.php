@@ -20,6 +20,8 @@ class Factory implements FactoryContract
         'checkbox' => Checkbox::class,
         'password' => Password::class,
         'textarea' => Textarea::class,
+        'hidden' => Hidden::class,
+        'translations' => Translations::class,
     ];
 
     /**
