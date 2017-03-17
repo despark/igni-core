@@ -167,7 +167,16 @@
                 data: '{{ $data['data'] }}',
                 name: '{{ $data['name'] }}'
                 @if(isset($data['title'])), title: '{{$data['title']}}'@endif,
-                defaultContent: ""
+                defaultContent: "",
+                render: function(data, type, full, meta) {
+                    if (data === 1) {
+                        return 'Yes';
+                    } else if (data === 0) {
+                        return 'No';
+                    }
+
+                    return data;
+                }
             },
                 @endforeach
                 @if($controller->hasActionButtons())
