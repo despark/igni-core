@@ -36,10 +36,15 @@ class Factory implements FactoryContract
         $this->container = $container;
     }
 
-    public function make($field, array $options, $value = null)
+    public function make(array $data)
     {
+        extract($data);
+
+        if (! isset($options, $field, $options['type'])) {
+            throw new \Exception('Required properties missing.');
+        }
         $type = $options['type'];
-        $instance = new $this->fields[$type]($field, $options, $value);
+        $instance = new $this->fields[$type]($field, $options, $value ?? null);
         if ($instance instanceof Field) {
             $instance->setFieldType($type);
         } else {

@@ -77,7 +77,7 @@ class Custom extends Field
      *
      * @return $this
      */
-    public function setTemplate($template)
+    public function setTemplate(string $template)
     {
         $this->template = $template;
 

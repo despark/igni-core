@@ -4,5 +4,5 @@ namespace Despark\Cms\Fields\Contracts;
 
 interface Factory
 {
-    public function make($field, array $options, $value = null);
+    public function make(array $data);
 }

@@ -4,12 +4,15 @@ namespace Despark\Cms\Resource;
 
 use Despark\Cms\Admin\Form;
 use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Events\EntityManager\AfterFieldsMake;
+use Despark\Cms\Fields\Contracts\Factory;
 use Despark\Cms\Fields\Hidden;
 use Despark\Cms\Fields\Translations;
 use Despark\Cms\Http\Controllers\EntityController;
 use Despark\LaravelDbLocalization\Contracts\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
 
 /**
  * Class EntityManager.
@@ -267,27 +270,39 @@ class EntityManager
         $actionVerb = $model->exists ? 'update' : 'store';
         $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
         $action = route($this->getRouteName($model, $actionVerb), $attributes);
-        
+
         $translatable = ($model instanceof Translatable) ? $model->getTranslatable() : null;
         $locale = app('request')->get('locale', \App::getLocale());
 
         $fields = $this->getFields($model);
-        $fieldInstances = [];
+        $fieldInstances = new Collection();
 
         if ($translatable) {
-            $fieldInstances[] = new Translations($locale);
-            $fieldInstances[] = new Hidden('locale', [], $locale);
+            $fieldInstances->push(new Translations($locale));
+            $fieldInstances->push(new Hidden('locale', [], $locale));
         }
 
-        foreach ($fields as $fieldName => $options) {
-            if ($translatable && $model->isTranslatable($fieldName)) {
-                $value = $model->getTranslation($fieldName, $locale);
+        foreach ($fields as $field => $options) {
+            // Check if we have custom factory provided. This wil bring up the field as a custom.
+            if (isset($options['factory']) && is_a($options['factory'], Factory::class, true)) {
+                $factory = new $options['factory'];
+                $data = compact('field', 'options', 'value', 'model');
+                $fieldInstances->push($factory->make($data));
             } else {
-                $value = $model->getOriginal($fieldName);
+                // We use the default factory.
+                if ($translatable && $model->isTranslatable($field)) {
+                    $value = $model->getTranslation($field, $locale);
+                } else {
+                    $value = $model->getOriginal($field);
+                }
+
+                $data = compact('options', 'value', 'field');
+                $fieldInstances->push(\Field::make($data));
             }
-            $fieldInstances[] = \Field::make($fieldName, $options, $value);
         }
-        
+
+        event(new AfterFieldsMake($fieldInstances, $model));
+
         return $this->form->make([
             'action' => $action,
             'method' => $method,
