@@ -22,15 +22,13 @@ class Translations implements FieldContract
     public function toHtml()
     {
         $languages = config('ignicms.languages');
-        foreach ($languages as &$language)
-        {
-            if ($language['locale'] === config('app.locale'))
-            {
+        foreach ($languages as &$language) {
+            if ($language['locale'] === config('app.fallback_locale')) {
                 $language['name'] .= ' (default)';
             }
             $language['url'] = $this->generateLanguageUrl($language['locale']);
         }
-        
+
         if (count($languages) > 1) {
             return view('ignicms::admin.formElements.translations', [
                 'languages' => $languages,
@@ -44,7 +42,8 @@ class Translations implements FieldContract
     /**
      * Extract the query string from the given path.
      *
-     * @param  string $path
+     * @param string $path
+     *
      * @return array
      */
     protected function extractQueryString($path)
