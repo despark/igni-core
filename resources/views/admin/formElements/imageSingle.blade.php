@@ -24,8 +24,8 @@
         'placeholder' => $field->getLabel(),
     ] ) !!}
 
-    @if(isset($options['help']))
-        <div class="help-text">{{ $options['help']}}</div>
+    @if($field->getHelp())
+        <div class="help-text">{{ $field->getHelp() }}</div>
     @elseif($dimensions = $field->getModel()->getMinDimensions($fieldName, true))
         <div class="help-text">{{ trans('ignicms::admin.images.min_dimensions' , ['dimensions' => $dimensions]) }}</div>
     @endif
