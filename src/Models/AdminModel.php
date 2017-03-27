@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * Class AdminModel.
+ *
  * @method MorphMany videos();
  */
 abstract class AdminModel extends Model
@@ -18,7 +19,7 @@ abstract class AdminModel extends Model
     use AdminModelTrait;
 
     /**
-     * @var array Files to save.
+     * @var array files to save
      */
     protected $files = [];
 
@@ -53,7 +54,13 @@ abstract class AdminModel extends Model
     protected $entityManager;
 
     /**
+     * @var array
+     */
+    protected $resourceConfig;
+
+    /**
      * AdminModel constructor.
+     *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
@@ -76,9 +83,12 @@ abstract class AdminModel extends Model
 
     /**
      * Override set attributes so we can check for empty strings.
+     *
      * @todo We need a different way to achieve this
+     *
      * @param string $key
      * @param mixed  $value
+     *
      * @return $this
      */
     public function setAttribute($key, $value)
@@ -94,7 +104,9 @@ abstract class AdminModel extends Model
 
     /**
      * @param array $attributes
+     *
      * @return Model
+     *
      * @throws \Exception
      */
     public function fill(array $attributes)
@@ -140,6 +152,7 @@ abstract class AdminModel extends Model
 
     /**
      * Override is dirty so we can trigger update if we have dirty images.
+     *
      * @return array
      */
     public function getDirty()
@@ -187,6 +200,7 @@ abstract class AdminModel extends Model
 
     /**
      * @param array $rules
+     *
      * @return AdminModel
      */
     public function setRules($rules)
@@ -205,12 +219,13 @@ abstract class AdminModel extends Model
         if (! is_array($array)) {
             return [];
         }
-        
+
         return $array;
     }
 
     /**
      * @param array $rulesUpdate
+     *
      * @return AdminModel
      */
     public function setRulesUpdate($rulesUpdate)
@@ -223,7 +238,8 @@ abstract class AdminModel extends Model
     /**
      * @param       $input
      * @param       $attribute
-     * @param array $additional Additonal data to be written to the new record.
+     * @param array $additional additonal data to be written to the new record
+     *
      * @return array|int|mixed
      */
     public static function createIfMissing($input, $attribute, array $additional = [])
@@ -256,6 +272,7 @@ abstract class AdminModel extends Model
 
     /**
      * @param EntityManager $entityManager
+     *
      * @return $this
      */
     public function setEntityManager($entityManager)

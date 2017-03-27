@@ -22,6 +22,7 @@ class Factory implements FactoryContract
         'textarea' => Textarea::class,
         'hidden' => Hidden::class,
         'translations' => Translations::class,
+        'imageSingle' => ImageSingle::class,
     ];
 
     /**
@@ -44,11 +45,15 @@ class Factory implements FactoryContract
             throw new \Exception('Required properties missing.');
         }
         $type = $options['type'];
-        $instance = new $this->fields[$type]($field, $options, $value ?? null);
+        $instance = new $this->fields[$type]($field, $options, $value ?? null, $elementName ?? null);
         if ($instance instanceof Field) {
             $instance->setFieldType($type);
         } else {
             throw new \Exception($this->fields[$type].' must be instance of '.Field::class);
+        }
+
+        if (method_exists($instance, 'setModel')) {
+            $instance->setModel($model);
         }
 
         return $instance;

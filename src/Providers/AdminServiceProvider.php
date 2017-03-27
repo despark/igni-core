@@ -22,7 +22,7 @@ class AdminServiceProvider extends ServiceProvider
          * Image contract implementation
          */
         $this->app->bind(ImageContract::class, function ($app, $attributes = []) {
-            return new Image($attributes);
+            return new Image();
         });
 
         /*
