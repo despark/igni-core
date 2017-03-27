@@ -45,7 +45,7 @@ class Factory implements FactoryContract
             throw new \Exception('Required properties missing.');
         }
         $type = $options['type'];
-        $instance = new $this->fields[$type]($field, $options, $value ?? null, $elementName ?? null);
+        $instance = new $this->fields[$type]($field, $options, $value ?? null);
         if ($instance instanceof Field) {
             $instance->setFieldType($type);
         } else {

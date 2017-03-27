@@ -73,6 +73,7 @@ class FormBuilder
     {
         $field = $fieldName;
         $options['elementName'] = $elementName;
+
         $data = compact('options', 'field', 'model');
 
         return \Field::make($data);

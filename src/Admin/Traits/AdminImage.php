@@ -11,12 +11,12 @@ use Despark\Cms\Exceptions\ModelSanityException;
 use Despark\Cms\Helpers\FileHelper;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Models\File\Temp;
+use Despark\Cms\Models\Image as ImageModel;
 use File as FileFacade;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Image;
-use Despark\Cms\Models\Image as ImageModel;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -691,8 +691,8 @@ trait AdminImage
         foreach ($fields as $metaFieldName => $options) {
             $new = $isNew ? '[new]' : '';
             $elementName = '_files'.$new.'[image]['.$actualFieldName.']['.$fileId.'][meta]['.$metaFieldName.']';
-            // $html .= $formBuilder->field($imageModel, $metaFieldName, $options, $elementName)->render();
-            $html .= $formBuilder->field($imageModel, $metaFieldName, $options, $elementName);
+            $data = compact('options[type]', 'imageModel', 'metaFieldName', 'options', 'elementName');
+            $html .= \Field::make(['type' => $options['type'], 'value' => $imageModel->$metaFieldName, 'field' => $elementName, 'options' => $options]);
         }
 
         return $html;
