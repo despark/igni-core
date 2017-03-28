@@ -129,7 +129,11 @@ trait AdminImage
         $this->setRetinaFactor(config('ignicms.images.retina_factor'));
 
         foreach ($imageFields as $fieldName => $field) {
-            $model->prepareImageRules($model, 'rules', $fieldName, $field);
+            $image = request()->file($fieldName);
+
+            if (! is_null($image) && $image->getClientMimeType() !== 'image/svg+xml') {
+                $model->prepareImageRules($model, 'rules', $fieldName, $field);
+            }
         }
     }
 
@@ -361,18 +365,39 @@ trait AdminImage
                             $image->delete();
                         }
 
-                        $images = $this->manipulateImage($file, $options);
+                        if ($file->getClientMimeType() !== 'image/svg+xml') {
+                            $images = $this->manipulateImage($file, $options);
 
-                        // We will save just the source one as a relation.
-                        /** @var \Illuminate\Http\File $sourceFile */
-                        $sourceFile = $images['original']['source'];
+                            // We will save just the source one as a relation.
+                            /** @var \Illuminate\Http\File $sourceFile */
+                            $sourceFile = $images['original']['source'];
 
-                        $imageModel = new ImageModel([
-                            'original_image' => $sourceFile->getFilename(),
-                            'retina_factor' => $this->getRetinaFactor() === false ? null : $this->getRetinaFactor(),
-                            'image_type' => $imageType,
-                        ]);
+                            $imageModel = new ImageModel([
+                                'original_image' => $sourceFile->getFilename(),
+                                'retina_factor' => $this->getRetinaFactor() === false ? null : $this->getRetinaFactor(),
+                                'image_type' => $imageType,
+                            ]);
+                        } else {
+                            $sanitizedFilename = $this->sanitizeFilename($file->getClientOriginalName());
+                            $images = [];
+                            $pathParts = pathinfo($sanitizedFilename);
+                            // Move uploaded file and rename it as source file if this is needed.
+                            // We need to generate unique name if the name is already in use.
+                            if (! isset($sourceFile)) {
+                                $filename = $pathParts['filename'].'.'.$pathParts['extension'];
+                                $sourceFile = $file->move($this->getThumbnailPath(), $filename);
+                            }
+                            $images['original']['source'] = $sourceFile;
 
+                            $sourceFile = $images['original']['source'];
+                            // $sourceFile = $file;
+
+                            $imageModel = new ImageModel([
+                                'original_image' => $sourceFile->getFilename(),
+                                'retina_factor' => null,
+                                'image_type' => $imageType,
+                            ]);
+                        }
                         unset($this->attributes[$imageType]);
 
                         $this->images()->save($imageModel);

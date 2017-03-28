@@ -5,7 +5,11 @@
         <div class="form-group">
             @foreach($field->getModel()->getImages($fieldName) as $image)
                 <div class="image-row">
-                    {!! Html::image($image->getOriginalImagePath('admin'), $image->alt, ['title' => $image->title]) !!}
+                    @if (pathinfo($image->getOriginalImagePath('original'), PATHINFO_EXTENSION) === 'svg')
+                        {!! Html::image($image->getOriginalImagePath('original'), $image->alt, ['title' => $image->title]) !!}
+                    @else
+                        {!! Html::image($image->getOriginalImagePath('admin'), $image->alt, ['title' => $image->title]) !!}
+                    @endif
                 </div>
                 {!! $field->getModel()->getImageMetaFieldsHtml($fieldName, $image) !!}
             @endforeach
