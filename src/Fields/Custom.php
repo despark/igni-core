@@ -23,10 +23,11 @@ class Custom extends Field
      * @param string $fieldName
      * @param array  $options
      * @param null   $value
+     *
      * @throws \Exception
+     *
      * @internal param AdminModel $model
      * @internal param null $elementName
-     *
      */
     public function __construct($fieldName, array $options, $value = null)
     {
@@ -36,7 +37,7 @@ class Custom extends Field
         if (isset($options['handler'])) {
             if (class_exists($options['handler'])) {
                 // Todo make this to resolve through IOC
-                $this->handler = new $options['handler']($this);
+                $this->handler = new $options['handler']($fieldName, $options, $value);
             }
         }
 

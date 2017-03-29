@@ -285,10 +285,12 @@ class EntityManager
 
         foreach ($fields as $field => $options) {
             // Check if we have custom factory provided. This wil bring up the field as a custom.
-            if (isset($options['factory']) && is_a($options['factory'], Factory::class, true)) {
+            if (isset($options['factory'])) {
                 $factory = new $options['factory']();
-                $data = compact('field', 'options', 'value', 'model');
-                $fieldInstances->push($factory->make($data));
+                if (is_a($options['factory'], Factory::class, true)) {
+                    $data = compact('field', 'options', 'value', 'model');
+                    $fieldInstances->push($factory->make($data));
+                }
             } else {
                 // We use the default factory.
                 if ($translatable && $model->isTranslatable($field)) {
