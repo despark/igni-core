@@ -383,14 +383,13 @@ trait AdminImage
                             $pathParts = pathinfo($sanitizedFilename);
                             // Move uploaded file and rename it as source file if this is needed.
                             // We need to generate unique name if the name is already in use.
-                            if (! isset($sourceFile)) {
-                                $filename = $pathParts['filename'].'.'.$pathParts['extension'];
-                                $sourceFile = $file->move($this->getThumbnailPath(), $filename);
-                            }
+
+                            $filename = $pathParts['filename'].'.'.$pathParts['extension'];
+                            $sourceFile = $file->move($this->getThumbnailPath(), $filename);
+
                             $images['original']['source'] = $sourceFile;
 
                             $sourceFile = $images['original']['source'];
-                            // $sourceFile = $file;
 
                             $imageModel = new ImageModel([
                                 'original_image' => $sourceFile->getFilename(),
@@ -398,6 +397,7 @@ trait AdminImage
                                 'image_type' => $imageType,
                             ]);
                         }
+
                         unset($this->attributes[$imageType]);
 
                         $this->images()->save($imageModel);
