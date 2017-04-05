@@ -23,6 +23,7 @@ class Factory implements FactoryContract
         'hidden' => Hidden::class,
         'translations' => Translations::class,
         'imageSingle' => ImageSingle::class,
+        'wysiwyg' => Wysiwyg::class,
     ];
 
     /**
