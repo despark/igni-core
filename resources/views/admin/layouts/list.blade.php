@@ -169,9 +169,9 @@
                 @if(isset($data['title'])), title: '{{$data['title']}}'@endif,
                 defaultContent: "",
                 render: function(data, type, full, meta) {
-                    if (data === 1) {
+                    if (data == 1) {
                         return 'Yes';
-                    } else if (data === 0) {
+                    } else if (data == 0) {
                         return 'No';
                     }
 
