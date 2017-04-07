@@ -35,7 +35,7 @@
         "cviebrock/eloquent-sluggable": "^4.1",
         "rutorika/sortable": "^2.3",
         "doctrine/dbal": "^2.5",
-        "yajra/laravel-datatables-oracle": "~6.0",
+        "yajra/laravel-datatables-oracle": "~7.0",
         "spatie/laravel-permission": "^1.11"
     },
     "require-dev": {
