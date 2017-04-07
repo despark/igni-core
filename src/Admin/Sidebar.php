@@ -33,12 +33,12 @@ class Sidebar
     {
         $this->entityManager = $entityManager;
         // We need to build the sidebar items.
-        foreach ($entityManager->all() as $configs) {
+        foreach ($entityManager->all() as $entityId => $configs) {
             if (isset($configs['adminMenu'])) {
                 foreach ($configs['adminMenu'] as $key => $config) {
                     $sidebarItem = new SidebarItem($this, $config);
                     $sidebarItem->setId($key);
-                    $sidebarItem->setActive(true);
+                    $sidebarItem->setEntityId($entityId);
                     $this->add($sidebarItem);
                 }
             }
