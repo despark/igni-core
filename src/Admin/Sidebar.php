@@ -1,19 +1,17 @@
 <?php
 
-
 namespace Despark\Cms\Admin;
-
 
 use Despark\Cms\Admin\Sidebar\SidebarItem;
 use Despark\Cms\Resource\EntityManager;
 
 /**
  * Class Sidebar.
+ *
  * @todo Make the menu items separate file again. Keep the possibility entities to define menu items
  */
 class Sidebar
 {
-
     /**
      * @var EntityManager
      */
@@ -28,6 +26,7 @@ class Sidebar
 
     /**
      * Sidebar constructor.
+     *
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
@@ -36,16 +35,14 @@ class Sidebar
         // We need to build the sidebar items.
         foreach ($entityManager->all() as $configs) {
             if (isset($configs['adminMenu'])) {
-
                 foreach ($configs['adminMenu'] as $key => $config) {
                     $sidebarItem = new SidebarItem($this, $config);
                     $sidebarItem->setId($key);
+                    $sidebarItem->setActive(true);
                     $this->add($sidebarItem);
                 }
             }
         }
-
-
     }
 
     /**
@@ -76,9 +73,6 @@ class Sidebar
         });
     }
 
-    /**
-     *
-     */
     public function __toString()
     {
         return $this->toHtml();
@@ -94,6 +88,7 @@ class Sidebar
 
     /**
      * @param EntityManager $entityManager
+     *
      * @return Sidebar
      */
     public function setEntityManager($entityManager)
@@ -113,6 +108,7 @@ class Sidebar
 
     /**
      * @param SidebarItem[] $sidebarItems
+     *
      * @return Sidebar
      */
     public function setSidebarItems($sidebarItems)
@@ -132,6 +128,7 @@ class Sidebar
 
     /**
      * @param string $template
+     *
      * @return Sidebar
      */
     public function setTemplate($template)
@@ -140,6 +137,4 @@ class Sidebar
 
         return $this;
     }
-
-
 }
