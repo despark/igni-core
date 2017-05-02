@@ -14,8 +14,14 @@
 <script src="{{ asset('/admin_assets/plugins/tinymce/tinymce.min.js') }}"></script>
 
 <script type="text/javascript">
+    function merge_options(obj1, obj2) {
+        var obj3 = {};
+        for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+        for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+        return obj3;
+    }
 
-    tinymce.init({
+    var defaultOptions = {
         selector: ".wysiwyg",
         skin: "despark-cms",
         plugins: [
@@ -60,6 +66,10 @@
             }
         ],
         end_container_on_empty_block: true
-    });
+    };
+
+    var additionalOptions = {!! json_encode($field->getOptions('additional_options')) !!};
+
+    tinymce.init(merge_options(defaultOptions, additionalOptions));
 </script>
 @endpush
