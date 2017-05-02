@@ -2,20 +2,17 @@
 
 namespace Despark\Cms\Http\Requests\Image;
 
-use Despark\Cms\Http\Requests\File\FileUploadRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
-class ImageUploadRequest extends FileUploadRequest
+class ImageUploadRequest extends FormRequest
 {
     public function rules()
     {
-        $rules = parent::rules();
-//        // We need to get the dimensions
-//
-//        $rules = array_merge($rules, [
-//            'file' => 'required|image|',
-//            'fieldName' => 'required',
-//            'modelClass' => 'required',
-//        ]);
-        return $rules;
+        return [];
+    }
+
+    public function authorize()
+    {
+        return true;
     }
 }

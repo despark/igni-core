@@ -2,22 +2,22 @@
 
 namespace Despark\Cms\Admin\Traits;
 
-use Despark\Cms\Admin\FormBuilder;
-use Despark\Cms\Admin\Observers\ImageObserver;
-use Despark\Cms\Contracts\AssetsContract;
-use Despark\Cms\Contracts\ImageContract;
-use Despark\Cms\Exceptions\ModelNotPersistedException;
-use Despark\Cms\Exceptions\ModelSanityException;
-use Despark\Cms\Helpers\FileHelper;
-use Despark\Cms\Models\AdminModel;
-use Despark\Cms\Models\File\Temp;
-use Despark\Cms\Models\Image as ImageModel;
 use File as FileFacade;
-use Illuminate\Database\Eloquent\Collection;
+use Despark\Cms\Models\Image;
+use Despark\Cms\Models\File\Temp;
+use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Models\AdminModel;
+use Despark\Cms\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Image;
+use Despark\Cms\Contracts\ImageContract;
+use Despark\Cms\Contracts\AssetsContract;
+use Despark\Cms\Models\Image as ImageModel;
+use Illuminate\Database\Eloquent\Collection;
+use Despark\Cms\Admin\Observers\ImageObserver;
 use Symfony\Component\HttpFoundation\File\File;
+use Despark\Cms\Exceptions\ModelSanityException;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Despark\Cms\Exceptions\ModelNotPersistedException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -255,6 +255,52 @@ trait AdminImage
         }
 
         return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFormFields()
+    {
+        if (! isset($this->adminFormFields)) {
+            $this->adminFormFields = config('admin.'.$this->getIdentifier().'.adminFormFields', []);
+        }
+
+        return $this->adminFormFields;
+    }
+
+    /**
+     * @param $formFieldName
+     *
+     * @return mixed
+     */
+    public function getFormField($formFieldName)
+    {
+        if (isset($this->getFormFields()[$formFieldName])) {
+            return $this->getFormFields()[$formFieldName];
+        }
+    }
+
+    /**
+     * @param array $formFields
+     *
+     * @return $this
+     */
+    public function setFormFields(array $formFields)
+    {
+        $this->adminFormFields = $formFields;
+
+        return $this;
+    }
+
+    /**
+     * @param $fieldName
+     */
+    public function getAdminFormField($fieldName)
+    {
+        if (isset($this->getFormFields()[$fieldName])) {
+            return $this->getFormFields()[$fieldName];
+        }
     }
 
     /**
