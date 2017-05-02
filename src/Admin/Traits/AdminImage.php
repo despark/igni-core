@@ -2,8 +2,8 @@
 
 namespace Despark\Cms\Admin\Traits;
 
+use Image;
 use File as FileFacade;
-use Despark\Cms\Models\Image;
 use Despark\Cms\Models\File\Temp;
 use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Models\AdminModel;
