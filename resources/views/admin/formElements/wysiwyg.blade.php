@@ -26,12 +26,12 @@
         skin: "despark-cms",
         plugins: [
             "advlist autolink lists link image charmap print preview anchor",
-            "searchreplace visualblocks code fullscreen responsivefilemanager",
+            "searchreplace visualblocks code fullscreen responsivefilemanager template",
             "insertdatetime media table contextmenu paste imagetools jbimages"
         ],
         content_css: "/css/styles.css",
         menubar: false,
-        toolbar: "code undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image jbimages | media",
+        toolbar: "code undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image jbimages | media | template",
         image_advtab: true,
         relative_urls: false,
         remove_script_host: false,
