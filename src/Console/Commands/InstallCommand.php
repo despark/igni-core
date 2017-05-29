@@ -50,8 +50,7 @@ class InstallCommand extends Command
             $this->info('Publishing Igni CMS artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
                 '--provider' => \Despark\Cms\Providers\IgniServiceProvider::class,
-                '--tag' => ['migrations', 'resources', 'configs'],
-
+                '--tag' => ['migrations', 'configs'],
             ]);
 
             $this->info(PHP_EOL.'Dumping autoloader..');
@@ -64,19 +63,18 @@ class InstallCommand extends Command
             $this->info('Publishing frontend artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
                 '--force' => 1,
-                '--tag' => ['igni-frontend'],
+                '--tag' => ['igni-frontend', 'resources'],
             ]);
 
             // Build FE
             $this->info(PHP_EOL.'Building frontend..'.PHP_EOL);
-            exec('packages/despark/igni-core/scripts/frontend.sh '.base_path(), $output, $exitCode);
+            exec(__DIR__.'/../../../scripts/frontend.sh '.base_path(), $output, $exitCode);
             if ($exitCode > 0) {
                 $this->warn('Frontend build failed. Please run manually.');
                 $this->info('Reason: '.implode(PHP_EOL, $output).PHP_EOL);
             }
 
             $this->info(PHP_EOL.'--- Admin setup ---');
-
         }
 
         if (! isset($data['name'])) {
@@ -101,12 +99,10 @@ class InstallCommand extends Command
             return $this->handle(true, $data);
         }
 
-
         $this->info('Seeding user..'.PHP_EOL);
         $this->seedUser($data);
 
         $this->output->success('Installation complete!');
-
     }
 
     /**
@@ -127,7 +123,9 @@ class InstallCommand extends Command
 
     /**
      * @param $email
+     *
      * @return bool
+     *
      * @throws \Exception
      */
     public function validateEmail($email)
@@ -138,7 +136,6 @@ class InstallCommand extends Command
 
         return $email;
     }
-
 
     /**
      * @return bool
