@@ -463,6 +463,7 @@ trait AdminImage
      */
     public function manipulateImage($file, array $options)
     {
+        $this->setRetinaFactor(config('ignicms.images.retina_factor'));
         // Detect file type
         if ($file instanceof Temp) {
             $sanitizedFilename = $this->sanitizeFilename($file->filename);
@@ -485,7 +486,6 @@ trait AdminImage
             $sourceFile = $file->move($this->getThumbnailPath(), $filename);
         }
         $images['original']['source'] = $sourceFile;
-
         // If we have retina factor
         if ($this->getRetinaFactor()) {
             // Generate retina image by just copying the source.
@@ -517,7 +517,8 @@ trait AdminImage
             }
         } else {
             // Copy source file.
-            $filename = $this->sanitizeFilename($file->getFilename());
+            $filename = $this->sanitizeFilename($file->getClientOriginalName());
+
             FileFacade::copy($sourceFile->getRealPath(), $this->getThumbnailPath().$filename);
             $images['original']['original_file'] = Image::make($this->getThumbnailPath().$filename);
 
@@ -798,6 +799,7 @@ trait AdminImage
      */
     public function getMinAllowedImageSize($field)
     {
+        $this->setRetinaFactor(config('ignicms.images.retina_factor'));
         if (is_string($field)) {
             if (isset($this->getImageFields()[$field])) {
                 $field = $this->getImageFields()[$field];
