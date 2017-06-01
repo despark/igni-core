@@ -1,10 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddIsAdminToUsers extends Migration
+class RenameUsersTable extends Migration
 {
     protected $tableName;
 
@@ -18,9 +17,9 @@ class AddIsAdminToUsers extends Migration
      */
     public function up()
     {
-        Schema::table($this->tableName, function (Blueprint $table) {
-            $table->boolean('is_admin')->after('password');
-        });
+        if ($this->tableName !== 'users') {
+            Schema::rename('users', $this->tableName);
+        }
     }
 
     /**
@@ -28,8 +27,8 @@ class AddIsAdminToUsers extends Migration
      */
     public function down()
     {
-        Schema::table($this->tableName, function (Blueprint $table) {
-            $table->dropColumn('is_admin');
-        });
+        if ($this->tableName !== 'users') {
+            Schema::rename($this->tableName, 'users');
+        }
     }
 }

@@ -6,12 +6,19 @@ use Illuminate\Database\Migrations\Migration;
 
 class ChangeMetaColumnTypeInImagesTable extends Migration
 {
+    protected $tableName;
+
+    public function __construct()
+    {
+        $this->tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_images' : 'images';
+    }
+
     /**
      * Run the migrations.
      */
     public function up()
     {
-        DB::statement('ALTER TABLE `images` CHANGE `meta` `meta` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NULL;');
+        DB::statement('ALTER TABLE '.$this->tableName.' CHANGE `meta` `meta` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NULL;');
     }
 
     /**
@@ -19,7 +26,7 @@ class ChangeMetaColumnTypeInImagesTable extends Migration
      */
     public function down()
     {
-        Schema::table('images', function (Blueprint $table) {
+        Schema::table($this->tableName, function (Blueprint $table) {
         });
     }
 }

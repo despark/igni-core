@@ -5,12 +5,19 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateImagableTable extends Migration
 {
+    protected $tableName;
+
+    public function __construct()
+    {
+        $this->tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_imageables' : 'imageables';
+    }
+
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::create('imageables', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('imageable_id');
             $table->string('imageable_type', 45);
@@ -25,6 +32,6 @@ class CreateImagableTable extends Migration
      */
     public function down()
     {
-        Schema::drop('imageables');
+        Schema::drop($this->tableName);
     }
 }

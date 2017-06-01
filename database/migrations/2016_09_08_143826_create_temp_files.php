@@ -6,12 +6,19 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateTempFiles extends Migration
 {
+    protected $tableName;
+
+    public function __construct()
+    {
+        $this->tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_temp_files' : 'temp_files';
+    }
+
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::create('temp_files', function (Blueprint $table) {
+        Schema::create($this->tableName, function (Blueprint $table) {
             $table->increments('id');
             $table->string('filename');
             $table->string('temp_filename');
@@ -25,6 +32,6 @@ class CreateTempFiles extends Migration
      */
     public function down()
     {
-        Schema::drop('temp_files');
+        Schema::drop($this->tableName);
     }
 }

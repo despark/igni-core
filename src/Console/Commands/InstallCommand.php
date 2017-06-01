@@ -110,6 +110,7 @@ class InstallCommand extends Command
      */
     public function seedUser($data)
     {
+        $tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_users' : 'users';
         $data = array_merge(array_only($data, ['password', 'email', 'name']), [
             'is_admin' => 1,
             'created_at' => Carbon::now(),
@@ -118,7 +119,7 @@ class InstallCommand extends Command
 
         $data['password'] = bcrypt($data['password']);
 
-        \DB::table('users')->insert($data);
+        \DB::table($tableName)->insert($data);
     }
 
     /**

@@ -8,6 +8,8 @@ return [
     'auth' => [
         'admin' => \Despark\Cms\Http\Middleware\AdminAuth::class,
     ],
+    // Make it null or false if you don't want any prefix
+    'databasePrefix' => null,
     'paths' => [
         'model' => app_path('Models'),
         'request' => app_path('Http/Requests/Admin'),

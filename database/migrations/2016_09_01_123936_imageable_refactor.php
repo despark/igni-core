@@ -5,13 +5,23 @@ use Illuminate\Database\Migrations\Migration;
 
 class ImageableRefactor extends Migration
 {
+    protected $oldTableName;
+
+    protected $newTableName;
+
+    public function __construct()
+    {
+        $this->oldTableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_imageables' : 'imageables';
+        $this->newTableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_images' : 'images';
+    }
+
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::rename('imageables', 'images');
-        Schema::table('images', function (Blueprint $table) {
+        Schema::rename($this->oldTableName, $this->newTableName);
+        Schema::table($this->newTableName, function (Blueprint $table) {
             /*
              * `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
              * `imageable_id` int(11) NOT NULL,
@@ -35,8 +45,8 @@ class ImageableRefactor extends Migration
      */
     public function down()
     {
-        Schema::rename('images', 'imageables');
-        Schema::table('imageables', function (Blueprint $table) {
+        Schema::rename($this->newTableName, $this->oldTableName);
+        Schema::table($this->oldTableName, function (Blueprint $table) {
             $table->renameColumn('resource_id', 'imageable_id');
             $table->renameColumn('resource_model', 'imageable_type');
             $table->renameColumn('original_image', 'file');
