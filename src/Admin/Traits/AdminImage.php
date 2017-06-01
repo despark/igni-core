@@ -517,7 +517,7 @@ trait AdminImage
             }
         } else {
             // Copy source file.
-            $filename = $this->sanitizeFilename($file->getClientOriginalName());
+            $filename = $this->sanitizeFilename($file instanceof Temp ? $file->filename : $file->getClientOriginalName());
 
             FileFacade::copy($sourceFile->getRealPath(), $this->getThumbnailPath().$filename);
             $images['original']['original_file'] = Image::make($this->getThumbnailPath().$filename);
