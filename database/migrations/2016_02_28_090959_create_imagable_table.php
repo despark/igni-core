@@ -1,6 +1,6 @@
 <?php
 
-use Despark\Cms\Migrations\IgniMigration;
+use Despark\Cms\Models\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
 
 class CreateImagableTable extends IgniMigration

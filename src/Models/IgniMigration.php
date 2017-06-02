@@ -1,6 +1,6 @@
 <?php
 
-namespace Despark\Cms\Migrations;
+namespace Despark\Cms\Models;
 
 use Illuminate\Database\Migrations\Migration;
 

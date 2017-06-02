@@ -52,8 +52,7 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "Despark\\Cms\\": "src/",
-            "Despark\\Cms\\Migrations\\": "databse/migrations/Models/"
+            "Despark\\Cms\\": "src/"
         }
     },
     "autoload-dev": {
