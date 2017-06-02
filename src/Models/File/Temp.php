@@ -13,11 +13,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 class Temp extends Model
 {
     /**
-     * @var string
-     */
-    protected $table = 'temp_files';
-
-    /**
      * @var array
      */
     protected $fillable = ['filename', 'temp_filename', 'file_type'];
@@ -30,11 +25,12 @@ class Temp extends Model
     /**
      * @param $path
      * @param $filename
+     *
      * @return static
      */
     public static function createFromFile($path, $filename)
     {
-        $model = new static;
+        $model = new static();
 
         return $model->create([
             'filename' => $filename,
@@ -45,6 +41,7 @@ class Temp extends Model
 
     /**
      * @return mixed|File
+     *
      * @throws FileNotFoundException
      */
     public function getFile()
@@ -74,8 +71,10 @@ class Temp extends Model
 
     /**
      * File move wrapper.
+     *
      * @param $directory
      * @param null $name
+     *
      * @return File
      */
     public function move($directory, $name = null)
@@ -89,5 +88,15 @@ class Temp extends Model
     public function getFileName()
     {
         return $this->filename;
+    }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_temp_files' : 'temp_files';
     }
 }

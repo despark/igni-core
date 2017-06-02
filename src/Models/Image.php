@@ -455,4 +455,14 @@ class Image extends Model implements ImageContract
             return isset($this->meta[$key]);
         }
     }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_images' : 'images';
+    }
 }
