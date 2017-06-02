@@ -9,7 +9,7 @@ class CreateImagableTable extends Migration
 
     public function __construct()
     {
-        $this->tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_imageables' : 'imageables';
+        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_imageables' : 'imageables';
     }
 
     /**

@@ -46,7 +46,16 @@ class InstallCommand extends Command
 
                 return false;
             }
-            // First publish the commands
+            // Ask for database prefix
+            if ($this->confirm('Do you wish to add prefix to the CMS tables?')) {
+                $prefix = $this->ask('Enter prefix for the CMS tables:', 'igni');
+                $variable = PHP_EOL.PHP_EOL.'IGNI_TABLES_PREFIX='.$prefix;
+                $env = base_path('.env');
+                file_put_contents($env, $variable, FILE_APPEND | LOCK_EX);
+                config(['ignicms.igniTablesPrefix' => $prefix]);
+            }
+
+            // Publish the commands
             $this->info('Publishing Igni CMS artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
                 '--provider' => \Despark\Cms\Providers\IgniServiceProvider::class,
@@ -110,7 +119,7 @@ class InstallCommand extends Command
      */
     public function seedUser($data)
     {
-        $tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_users' : 'users';
+        $tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_users' : 'users';
         $data = array_merge(array_only($data, ['password', 'email', 'name']), [
             'is_admin' => 1,
             'created_at' => Carbon::now(),

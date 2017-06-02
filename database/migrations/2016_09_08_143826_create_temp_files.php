@@ -10,7 +10,7 @@ class CreateTempFiles extends Migration
 
     public function __construct()
     {
-        $this->tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_temp_files' : 'temp_files';
+        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_temp_files' : 'temp_files';
     }
 
     /**

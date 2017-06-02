@@ -468,6 +468,8 @@ class Image extends Model implements ImageContract
      */
     public function getTable()
     {
-        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_'.$this->table : $this->table;
+        parent::getTable();
+
+        return config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_'.$this->table : $this->table;
     }
 }

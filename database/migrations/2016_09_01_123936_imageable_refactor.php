@@ -11,8 +11,8 @@ class ImageableRefactor extends Migration
 
     public function __construct()
     {
-        $this->oldTableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_imageables' : 'imageables';
-        $this->newTableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_images' : 'images';
+        $this->oldTableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_imageables' : 'imageables';
+        $this->newTableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_images' : 'images';
     }
 
     /**

@@ -10,7 +10,7 @@ class AddIsAdminToUsers extends Migration
 
     public function __construct()
     {
-        $this->tableName = config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_users' : 'users';
+        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_users' : 'users';
     }
 
     /**
