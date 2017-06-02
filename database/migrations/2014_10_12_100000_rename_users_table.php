@@ -1,24 +1,17 @@
 <?php
 
+use Despark\Cms\Migrations\IgniMigration;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Migrations\Migration;
 
-class RenameUsersTable extends Migration
+class RenameUsersTable extends IgniMigration
 {
-    protected $tableName;
-
-    public function __construct()
-    {
-        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_users' : 'users';
-    }
-
     /**
      * Run the migrations.
      */
     public function up()
     {
-        if ($this->tableName !== 'users') {
-            Schema::rename('users', $this->tableName);
+        if ($this->getTableName('users') !== 'users') {
+            Schema::rename('users', $this->getTableName('users'));
         }
     }
 
@@ -27,8 +20,8 @@ class RenameUsersTable extends Migration
      */
     public function down()
     {
-        if ($this->tableName !== 'users') {
-            Schema::rename($this->tableName, 'users');
+        if ($this->getTableName('users') !== 'users') {
+            Schema::rename($this->getTableName('users'), 'users');
         }
     }
 }

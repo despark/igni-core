@@ -1,23 +1,16 @@
 <?php
 
+use Despark\Cms\Migrations\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
-class CreateImagableTable extends Migration
+class CreateImagableTable extends IgniMigration
 {
-    protected $tableName;
-
-    public function __construct()
-    {
-        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_imageables' : 'imageables';
-    }
-
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::create($this->tableName, function (Blueprint $table) {
+        Schema::create($this->getTableName('imageables'), function (Blueprint $table) {
             $table->increments('id');
             $table->integer('imageable_id');
             $table->string('imageable_type', 45);
@@ -32,6 +25,6 @@ class CreateImagableTable extends Migration
      */
     public function down()
     {
-        Schema::drop($this->tableName);
+        Schema::drop($this->getTableName('imageables'));
     }
 }

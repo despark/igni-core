@@ -1,27 +1,17 @@
 <?php
 
+use Despark\Cms\Migrations\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
-class ImageableRefactor extends Migration
+class ImageableRefactor extends IgniMigration
 {
-    protected $oldTableName;
-
-    protected $newTableName;
-
-    public function __construct()
-    {
-        $this->oldTableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_imageables' : 'imageables';
-        $this->newTableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_images' : 'images';
-    }
-
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::rename($this->oldTableName, $this->newTableName);
-        Schema::table($this->newTableName, function (Blueprint $table) {
+        Schema::rename($this->getTableName('imageables'), $this->getTableName('images'));
+        Schema::table($this->getTableName('images'), function (Blueprint $table) {
             /*
              * `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
              * `imageable_id` int(11) NOT NULL,
@@ -45,8 +35,8 @@ class ImageableRefactor extends Migration
      */
     public function down()
     {
-        Schema::rename($this->newTableName, $this->oldTableName);
-        Schema::table($this->oldTableName, function (Blueprint $table) {
+        Schema::rename($this->getTableName('images'), $this->getTableName('imageables'));
+        Schema::table($this->getTableName('imageables'), function (Blueprint $table) {
             $table->renameColumn('resource_id', 'imageable_id');
             $table->renameColumn('resource_model', 'imageable_type');
             $table->renameColumn('original_image', 'file');

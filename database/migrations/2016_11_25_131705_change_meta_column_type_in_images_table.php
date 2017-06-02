@@ -1,24 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Despark\Cms\Migrations\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class ChangeMetaColumnTypeInImagesTable extends Migration
+class ChangeMetaColumnTypeInImagesTable extends IgniMigration
 {
-    protected $tableName;
-
-    public function __construct()
-    {
-        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_images' : 'images';
-    }
-
     /**
      * Run the migrations.
      */
     public function up()
     {
-        DB::statement('ALTER TABLE '.$this->tableName.' CHANGE `meta` `meta` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NULL;');
+        DB::statement('ALTER TABLE '.$this->getTableName('images').' CHANGE `meta` `meta` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NULL;');
     }
 
     /**
@@ -26,7 +19,7 @@ class ChangeMetaColumnTypeInImagesTable extends Migration
      */
     public function down()
     {
-        Schema::table($this->tableName, function (Blueprint $table) {
+        Schema::table($this->getTableName('images'), function (Blueprint $table) {
         });
     }
 }

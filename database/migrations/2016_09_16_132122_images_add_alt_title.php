@@ -1,24 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Despark\Cms\Migrations\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class ImagesAddAltTitle extends Migration
+class ImagesAddAltTitle extends IgniMigration
 {
-    protected $tableName;
-
-    public function __construct()
-    {
-        $this->tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_images' : 'images';
-    }
-
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::table($this->tableName, function (Blueprint $table) {
+        Schema::table($this->getTableName('images'), function (Blueprint $table) {
             $table->string('title')->nullable()->after('order');
             $table->string('alt')->nullable()->after('order');
         });
@@ -29,7 +22,7 @@ class ImagesAddAltTitle extends Migration
      */
     public function down()
     {
-        Schema::table($this->tableName, function (Blueprint $table) {
+        Schema::table($this->getTableName('images'), function (Blueprint $table) {
             $table->dropColumn(['title', 'alt']);
         });
     }
