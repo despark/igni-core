@@ -59,7 +59,7 @@ class InstallCommand extends Command
             $this->info('Publishing Igni CMS artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
                 '--provider' => \Despark\Cms\Providers\IgniServiceProvider::class,
-                '--tag' => ['migrations', 'configs'],
+                '--tag' => ['migrations', 'configs', 'user-model'],
             ]);
 
             $this->info(PHP_EOL.'Dumping autoloader..');
@@ -67,6 +67,9 @@ class InstallCommand extends Command
 
             $this->info('Migrating..'.PHP_EOL);
             $this->call('migrate');
+
+            // Fix User Model namespace
+            file_put_contents(base_path('app/Models/User.php'), str_replace('namespace Despark\Cms\\', 'namespace '.app()->getNamespace(), file_get_contents(base_path('app/Models/User.php'))));
 
             // Publish frontend
             $this->info('Publishing frontend artifacts..'.PHP_EOL);
