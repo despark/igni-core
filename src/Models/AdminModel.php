@@ -281,4 +281,14 @@ abstract class AdminModel extends Model
 
         return $this;
     }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_'.$this->table : $this->table;
+    }
 }

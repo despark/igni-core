@@ -44,6 +44,11 @@ class Image extends Model implements ImageContract
     protected $imageAttributeFields = ['alt', 'title'];
 
     /**
+     * @var string
+     */
+    protected $table = 'images';
+
+    /**
      * @var array
      */
     protected $fillable = [
@@ -463,6 +468,6 @@ class Image extends Model implements ImageContract
      */
     public function getTable()
     {
-        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_images' : 'images';
+        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_'.$this->table : $this->table;
     }
 }

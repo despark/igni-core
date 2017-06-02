@@ -13,6 +13,11 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 class Temp extends Model
 {
     /**
+     * @var string
+     */
+    protected $table = 'temp_files';
+
+    /**
      * @var array
      */
     protected $fillable = ['filename', 'temp_filename', 'file_type'];
@@ -97,6 +102,6 @@ class Temp extends Model
      */
     public function getTable()
     {
-        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_temp_files' : 'temp_files';
+        return config('ignicms.databasePrefix') ? config('ignicms.databasePrefix').'_'.$this->table : $this->table;
     }
 }
