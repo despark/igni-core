@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use Despark\Cms\Models\IgniMigration;
+use Illuminate\Support\Facades\Schema;
 
-class :migration_class extends Migration
+class :migration_class extends IgniMigration
 {
     /**
      * Run the migrations.
@@ -12,7 +13,7 @@ class :migration_class extends Migration
      */
     public function up()
     {
-        Schema::create(':table_name', function (Blueprint $table) {
+        Schema::create($this->getTableName(':table_name'), function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
         });
@@ -25,6 +26,6 @@ class :migration_class extends Migration
      */
     public function down()
     {
-        Schema::drop(':table_name');
+        Schema::dropIfExists($this->getTableName(':table_name'));
     }
 }

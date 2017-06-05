@@ -1,11 +1,11 @@
 <?php
 
-namespace Despark\Cms\Console\Commands\Admin;
+namespace Despark\Cms\Console\Commands;
 
+use Despark\Cms\Console\Commands\Compilers\ResourceCompiler;
 use File;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Despark\Cms\Console\Commands\Compilers\ResourceCompiler;
 
 /**
  * Class AdminResourceCommand.
@@ -17,35 +17,34 @@ class ResourceCommand extends Command
      *
      * @var string
      */
-    protected $name = 'igni:admin:resource';
-
+    protected $name = 'igni:resource';
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Create necessary files for CMS resource.';
-
     /**
      * @var
      */
     protected $identifier;
-
+    /**
+     * @var
+     */
+    protected $configIdentifier;
     /**
      * @var
      */
     protected $compiler;
-
     /**
      * @var array
      */
     protected $resourceOptions = [
         'image_uploads' => false,
-        'file_uploads'  => false,
-        'migration'     => false,
-        'create'        => false,
-        'edit'          => false,
-        'destroy'       => false,
+        'migration' => false,
+        'create' => false,
+        'edit' => false,
+        'destroy' => false,
     ];
 
     /**
@@ -62,19 +61,14 @@ class ResourceCommand extends Command
     public function handle()
     {
         $this->identifier = self::normalize($this->argument('identifier'));
-
+        $this->configIdentifier = $this->generateConfigIdentifier();
         $this->askImageUploads();
-        $this->askFileUploads();
         $this->askMigration();
         $this->askActions();
-
-        $this->compiler = new ResourceCompiler($this, $this->identifier, $this->resourceOptions);
-
-        $this->createResource('config');
+        $this->compiler = new ResourceCompiler($this, $this->identifier, $this->configIdentifier, $this->resourceOptions);
+        $this->createResource('entities');
         $this->createResource('model');
-        $this->createResource('request');
         $this->createResource('controller');
-
         if ($this->resourceOptions['migration']) {
             $this->createResource('migration');
         }
@@ -94,31 +88,28 @@ class ResourceCommand extends Command
 
     /**
      * @param $str
+     *
      * @return mixed|string
      */
     public static function normalize($str)
     {
         return snake_case($str);
+        $str[0] = strtolower($str[0]);
+        $func = create_function('$c', 'return "_".strtolower($c[1]);');
+        $snake = preg_replace_callback('/([A-Z])/', $func, $str);
+
+        return str_replace(' ', '', $snake);
     }
 
     protected function askImageUploads()
     {
         $answer = $this->confirm('Do you need image uploads?');
-
         $this->resourceOptions['image_uploads'] = $answer;
-    }
-
-    protected function askFileUploads()
-    {
-        $answer = $this->confirm('Do you need file uploads?');
-
-        $this->resourceOptions['file_uploads'] = $answer;
     }
 
     protected function askMigration()
     {
         $answer = $this->confirm('Do you need migration?');
-
         $this->resourceOptions['migration'] = $answer;
     }
 
@@ -127,7 +118,6 @@ class ResourceCommand extends Command
         $options = ['create', 'edit', 'destroy'];
         $answer = $this->ask('Which actions do you need? ['.implode(', ', $options).', all]', 'all');
         $answer = str_replace(' ', '', $answer);
-
         if ($answer == 'all') {
             foreach ($options as $action) {
                 $this->resourceOptions[$action] = true;
@@ -145,11 +135,12 @@ class ResourceCommand extends Command
 
     /**
      * @param $type
+     *
      * @return string
      */
     public function getTemplate($type)
     {
-        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.$type.'.stub');
+        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.$type.'.stub');
     }
 
     /**
@@ -160,19 +151,20 @@ class ResourceCommand extends Command
     protected function saveResult($template, $path, $filename)
     {
         $file = $path.DIRECTORY_SEPARATOR.$filename;
+
         if (File::exists($file)) {
             $result = $this->confirm('File "'.$filename.'" already exist. Overwrite?', false);
-            if ( ! $result) {
+            if (! $result) {
                 return;
             }
         }
-
         File::put($file, $template);
         $this->info('File "'.$filename.'" was created.');
     }
 
     /**
      * @return string
+     *
      * @todo this is not needed in the command we should move it into the compiler
      */
     public function model_name()
@@ -183,17 +175,9 @@ class ResourceCommand extends Command
     /**
      * @return mixed
      */
-    public function config_name()
+    public function entities_name()
     {
-        return $this->identifier;
-    }
-
-    /**
-     * @return string
-     */
-    public function request_name()
-    {
-        return str_plural(studly_case($this->identifier)).'Request';
+        return $this->configIdentifier;
     }
 
     /**
@@ -236,7 +220,28 @@ class ResourceCommand extends Command
     protected function getOptions()
     {
         return [
-
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function generateConfigIdentifier()
+    {
+        $identifier = explode('_', $this->identifier);
+
+        foreach ($identifier as $key => $value) {
+            if ($key != 0) {
+                if (end($identifier) === $value) {
+                    $string .= ucfirst(str_plural($value));
+                } else {
+                    $string .= ucfirst($value);
+                }
+            } else {
+                $string = $value;
+            }
+        }
+
+        return $string;
     }
 }
