@@ -5,19 +5,20 @@ namespace Despark\Cms\Admin\Traits;
 use Image;
 use File as FileFacade;
 use Despark\Cms\Models\File\Temp;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Model;
 use Despark\Cms\Contracts\ImageContract;
 use Despark\Cms\Contracts\AssetsContract;
-use Despark\Cms\Admin\Helpers\FormBuilder;
+use Despark\Cms\Models\Image as ImageModel;
 use Illuminate\Database\Eloquent\Collection;
 use Despark\Cms\Admin\Observers\ImageObserver;
 use Symfony\Component\HttpFoundation\File\File;
 use Despark\Cms\Exceptions\ModelSanityException;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Despark\Cms\Exceptions\ModelNotPersistedException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class AdminImage.
@@ -75,7 +76,6 @@ trait AdminImage
     public function images()
     {
         $imageModel = app(ImageContract::class);
-
         /* @var Model $this */
         return $this->morphMany(get_class($imageModel), 'image', 'resource_model', 'resource_id')
                     ->orderBy('order', 'ASC');
@@ -95,11 +95,12 @@ trait AdminImage
         $assetManager->addJs('js/sortable/Sortable.min.js');
 
         // We need to listen for booted event and modify the model.
-        static::$dispatcher->listen('igni.model.booted: '.static::class, [new static, 'bootstrapModel']);
+        static::$dispatcher->listen('igni.model.booted: '.static::class, [new static(), 'bootstrapModel']);
     }
 
     /**
      * @param $model
+     *
      * @throws ModelSanityException
      */
     public function bootstrapModel($model)
@@ -128,7 +129,11 @@ trait AdminImage
         $this->setRetinaFactor(config('ignicms.images.retina_factor'));
 
         foreach ($imageFields as $fieldName => $field) {
-            $model->prepareImageRules($model, 'rules', $fieldName, $field);
+            $image = request()->file($fieldName);
+
+            if (! is_null($image) && $image->getClientMimeType() !== 'image/svg+xml') {
+                $model->prepareImageRules($model, 'rules', $fieldName, $field);
+            }
         }
     }
 
@@ -137,6 +142,7 @@ trait AdminImage
      * @param       $property
      * @param       $fieldName
      * @param       $field
+     *
      * @throws \Exception
      */
     protected function prepareImageRules(Model $model, $property, $fieldName, $field)
@@ -216,6 +222,7 @@ trait AdminImage
 
     /**
      * @param $field
+     *
      * @return bool
      */
     public function hasFieldValue($field)
@@ -236,7 +243,7 @@ trait AdminImage
                 $fileCount = count($files);
                 foreach ($files as $file) {
                     if ($file['delete']) {
-                        $deleted++;
+                        ++$deleted;
                     }
                 }
                 if ($fileCount == $deleted) {
@@ -248,6 +255,52 @@ trait AdminImage
         }
 
         return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFormFields()
+    {
+        if (! isset($this->adminFormFields)) {
+            $this->adminFormFields = config('admin.'.$this->getIdentifier().'.adminFormFields', []);
+        }
+
+        return $this->adminFormFields;
+    }
+
+    /**
+     * @param $formFieldName
+     *
+     * @return mixed
+     */
+    public function getFormField($formFieldName)
+    {
+        if (isset($this->getFormFields()[$formFieldName])) {
+            return $this->getFormFields()[$formFieldName];
+        }
+    }
+
+    /**
+     * @param array $formFields
+     *
+     * @return $this
+     */
+    public function setFormFields(array $formFields)
+    {
+        $this->adminFormFields = $formFields;
+
+        return $this;
+    }
+
+    /**
+     * @param $fieldName
+     */
+    public function getAdminFormField($fieldName)
+    {
+        if (isset($this->getFormFields()[$fieldName])) {
+            return $this->getFormFields()[$fieldName];
+        }
     }
 
     /**
@@ -300,7 +353,7 @@ trait AdminImage
                     /** @var \Illuminate\Http\File $sourceFile */
                     $sourceFile = $images['original']['source'];
 
-                    $imageModel = app(ImageContract::class, [
+                    $imageModel = new ImageModel([
                         'original_image' => $sourceFile->getFilename(),
                         'retina_factor' => $this->getRetinaFactor() === false ? null : $this->getRetinaFactor(),
                         'image_type' => $fieldName,
@@ -340,6 +393,7 @@ trait AdminImage
                 }
             }
         }
+
         // Now we process single files
         if (isset($this->files['_single']) && $files = $this->files['_single']) {
             $imageFields = $this->getImageFields();
@@ -357,18 +411,41 @@ trait AdminImage
                             $image->delete();
                         }
 
-                        $images = $this->manipulateImage($file, $options);
+                        if ($file->getClientMimeType() !== 'image/svg+xml') {
+                            $images = $this->manipulateImage($file, $options);
 
-                        // We will save just the source one as a relation.
-                        /** @var \Illuminate\Http\File $sourceFile */
-                        $sourceFile = $images['original']['source'];
+                            // We will save just the source one as a relation.
+                            /** @var \Illuminate\Http\File $sourceFile */
+                            $sourceFile = $images['original']['source'];
 
-                        $imageModel = app(ImageContract::class, [
-                            'original_image' => $sourceFile->getFilename(),
-                            'retina_factor' => $this->getRetinaFactor() === false ? null : $this->getRetinaFactor(),
-                            'image_type' => $imageType,
-                        ]);
+                            $imageModel = new ImageModel([
+                                'original_image' => $sourceFile->getFilename(),
+                                'retina_factor' => $this->getRetinaFactor() === false ? null : $this->getRetinaFactor(),
+                                'image_type' => $imageType,
+                            ]);
+                        } else {
+                            $sanitizedFilename = $this->sanitizeFilename($file->getClientOriginalName());
+                            $images = [];
+                            $pathParts = pathinfo($sanitizedFilename);
+                            // Move uploaded file and rename it as source file if this is needed.
+                            // We need to generate unique name if the name is already in use.
+
+                            $filename = $pathParts['filename'].'.'.$pathParts['extension'];
+                            $sourceFile = $file->move($this->getThumbnailPath(), $filename);
+
+                            $images['original']['source'] = $sourceFile;
+
+                            $sourceFile = $images['original']['source'];
+
+                            $imageModel = new ImageModel([
+                                'original_image' => $sourceFile->getFilename(),
+                                'retina_factor' => null,
+                                'image_type' => $imageType,
+                            ]);
+                        }
+
                         unset($this->attributes[$imageType]);
+
                         $this->images()->save($imageModel);
                     }
                 }
@@ -379,11 +456,14 @@ trait AdminImage
     /**
      * @param Temp|UploadedFile|File $file
      * @param array                  $options
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function manipulateImage($file, array $options)
     {
+        $this->setRetinaFactor(config('ignicms.images.retina_factor'));
         // Detect file type
         if ($file instanceof Temp) {
             $sanitizedFilename = $this->sanitizeFilename($file->filename);
@@ -406,7 +486,6 @@ trait AdminImage
             $sourceFile = $file->move($this->getThumbnailPath(), $filename);
         }
         $images['original']['source'] = $sourceFile;
-
         // If we have retina factor
         if ($this->getRetinaFactor()) {
             // Generate retina image by just copying the source.
@@ -438,7 +517,8 @@ trait AdminImage
             }
         } else {
             // Copy source file.
-            $filename = $this->sanitizeFilename($file->getFilename());
+            $filename = $this->sanitizeFilename($file instanceof Temp ? $file->filename : $file->getClientOriginalName());
+
             FileFacade::copy($sourceFile->getRealPath(), $this->getThumbnailPath().$filename);
             $images['original']['original_file'] = Image::make($this->getThumbnailPath().$filename);
 
@@ -456,13 +536,15 @@ trait AdminImage
 
     /**
      * @param string $sourceImagePath Source image path
-     * @param string $thumbName Thumbnail name
+     * @param string $thumbName       Thumbnail name
      * @param        $newFileName
-     * @param null   $width Desired width for resize
-     * @param null   $height Desired height for resize
-     * @param string $resizeType Resize type
+     * @param null   $width           Desired width for resize
+     * @param null   $height          Desired height for resize
+     * @param string $resizeType      Resize type
      * @param null   $color
+     *
      * @return \Intervention\Image\Image
+     *
      * @todo allow upsize and aspect ratio to be configurable
      */
     public function createThumbnail(
@@ -511,7 +593,9 @@ trait AdminImage
 
     /**
      * @param $type
+     *
      * @return Collection
+     *
      * @throws \Exception
      */
     public function getImagesOfType($type)
@@ -526,6 +610,7 @@ trait AdminImage
 
     /**
      * @param $filename
+     *
      * @return string
      */
     protected function sanitizeFilename($filename)
@@ -535,6 +620,7 @@ trait AdminImage
 
     /**
      * @param $filename
+     *
      * @return string
      */
     public function generateRetinaName($filename)
@@ -546,6 +632,7 @@ trait AdminImage
 
     /**
      * @param string $thumbnailType
+     *
      * @return string
      */
     public function getThumbnailPath($thumbnailType = 'original')
@@ -560,6 +647,7 @@ trait AdminImage
     /**
      * @param        $fieldName
      * @param string $thumbnailType
+     *
      * @return bool|string
      */
     public function getImageThumbnailPath($fieldName, $thumbnailType = 'original')
@@ -590,7 +678,8 @@ trait AdminImage
                     'type' => config('ignicms.images.admin_thumb_type', 'fit'),
                 ],
             ];
-            $this->imageFields = config('resources.'.$this->identifier.'.image_fields', []);
+            // $identifier = str_slug(class_basename(get_class($this->getModel())), '-');
+            $this->imageFields = config('entities.'.$this->identifier.'.image_fields', []);
             foreach ($this->imageFields as &$imageField) {
                 if (! array_key_exists('admin', $imageField['thumbnails'])) {
                     $imageField['thumbnails'] = array_merge($imageField['thumbnails'], $adminThumb);
@@ -603,6 +692,7 @@ trait AdminImage
 
     /**
      * @param $imageFieldName
+     *
      * @return array
      */
     public function getImageMetaFields($imageFieldName)
@@ -640,12 +730,14 @@ trait AdminImage
      * @param               $fieldName
      * @param ImageContract $imageModel
      * @param null          $actualFieldName
+     *
      * @return string
+     *
      * @todo improve this and remove actualFieldName so we can relieve the problem with different configs..
      */
-    public function getImageMetaFieldsHtml($fieldName, ImageContract $imageModel = null, $actualFieldName = null)
+    public function getImageMetaFieldsHtml($fieldName, ImageModel $imageModel = null, $actualFieldName = null)
     {
-        $formBuilder = new FormBuilder();
+        $formBuilder = app(FormBuilder::class);
         $fields = $this->getImageMetaFields($fieldName);
         $html = '';
 
@@ -671,7 +763,8 @@ trait AdminImage
         foreach ($fields as $metaFieldName => $options) {
             $new = $isNew ? '[new]' : '';
             $elementName = '_files'.$new.'[image]['.$actualFieldName.']['.$fileId.'][meta]['.$metaFieldName.']';
-            $html .= $formBuilder->field($imageModel, $metaFieldName, $options, $elementName)->render();
+            $data = compact('options[type]', 'imageModel', 'metaFieldName', 'options', 'elementName');
+            $html .= \Field::make(['type' => $options['type'], 'value' => $imageModel->$metaFieldName, 'field' => $elementName, 'options' => $options]);
         }
 
         return $html;
@@ -679,6 +772,7 @@ trait AdminImage
 
     /**
      * @param $imageFieldName
+     *
      * @return null|array
      */
     public function getImageField($imageFieldName)
@@ -698,11 +792,14 @@ trait AdminImage
 
     /**
      * @param $field
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function getMinAllowedImageSize($field)
     {
+        $this->setRetinaFactor(config('ignicms.images.retina_factor'));
         if (is_string($field)) {
             if (isset($this->getImageFields()[$field])) {
                 $field = $this->getImageFields()[$field];
@@ -729,6 +826,7 @@ trait AdminImage
 
     /**
      * @return array|mixed|string
+     *
      * @throws ModelNotPersistedException
      */
     public function getCurrentUploadDir()
@@ -744,6 +842,7 @@ trait AdminImage
 
     /**
      * @param null $type
+     *
      * @return bool
      */
     public function hasImages($type = null)
@@ -756,11 +855,12 @@ trait AdminImage
             }
         }
 
-        return (bool)count($this->images);
+        return (bool) count($this->images);
     }
 
     /**
      * @param null $type
+     *
      * @return mixed
      */
     public function getImages($type = null)
@@ -787,11 +887,10 @@ trait AdminImage
     {
         $minDimensions = isset($this->minDimensions[$field]) ? $this->minDimensions[$field] : null;
         if (is_null($minDimensions)) {
-
             // Get image fields from the model and try to find the image field
             // Todo make this detection a method!
             $imageFields = $this->getImageFields();
-            $imageField = array_get($imageFields, (string)$field);
+            $imageField = array_get($imageFields, (string) $field);
 
             if (! $imageField) {
                 // We try the admin form field config
@@ -818,11 +917,11 @@ trait AdminImage
                 }
 
                 if (isset($minDimensions['width']) && $minDimensions['width']) {
-                    return $minDimensions['width'].'px '.trans('admin.images.width');
+                    return $minDimensions['width'].'px '.trans('ignicms::admin.images.width');
                 }
 
                 if (isset($minDimensions['height']) && $minDimensions['height']) {
-                    return $minDimensions['height'].'px '.trans('admin.images.height');
+                    return $minDimensions['height'].'px '.trans('ignicms::admin.images.height');
                 }
             }
 
@@ -834,6 +933,7 @@ trait AdminImage
 
     /**
      * @param $field
+     *
      * @return int
      */
     public function getMinWidth($field)
@@ -845,6 +945,7 @@ trait AdminImage
 
     /**
      * @param $field
+     *
      * @return int
      */
     public function getMinHeight($field)
@@ -856,6 +957,7 @@ trait AdminImage
 
     /**
      * @param mixed $minDimensions
+     *
      * @return AdminImage
      */
     public function setMinDimensions($field, $minDimensions)
@@ -879,6 +981,7 @@ trait AdminImage
 
     /**
      * @param ImageContract|\Despark\Cms\Models\Image $imageModel
+     *
      * @return $this
      */
     public function setImageModel($imageModel)
@@ -898,6 +1001,7 @@ trait AdminImage
 
     /**
      * @param $factor
+     *
      * @return $this
      */
     public function setRetinaFactor($factor)

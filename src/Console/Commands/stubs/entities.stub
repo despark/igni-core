@@ -1,0 +1,20 @@
+<?php
+
+return [
+    'name' => ':model_config_name',
+    'description' => ':model_config_name resource',
+    'model' => :app_namespaceModels\:model_name::class,
+    'controller' => :app_namespaceHttp\Controllers\Admin\:controller_name::class,
+    'adminColumns' => [],
+    'actions' => [:actions],
+    'adminFormFields' => [],
+    :image_fields
+    'adminMenu' => [
+        ':identifier' => [
+            'name' => ':model_config_name',
+            'iconClass' => 'fa-star',
+            'link' => ':index_route',
+        ],
+    ],
+];
+

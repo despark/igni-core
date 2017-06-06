@@ -2,9 +2,6 @@
 
 namespace Despark\Cms\Http\Requests;
 
-use App\Models\User;
-use Despark\Cms\Http\Requests\AdminFormRequest;
-
 class UserRequest extends AdminFormRequest
 {
     /**
@@ -12,8 +9,8 @@ class UserRequest extends AdminFormRequest
      */
     public function __construct()
     {
-        $userModelClass = config('auth.model');
-        $this->model = new $userModelClass;
+        $userModelClass = config('auth.providers.users.model');
+        $this->model = new $userModelClass();
     }
 
     /**

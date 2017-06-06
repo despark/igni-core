@@ -2,13 +2,12 @@
 
 namespace Despark\Cms\Http\Controllers\Auth;
 
-use App\User;
 use Auth;
-use Illuminate\Http\Request;
 use Validator;
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Http\Request;
+use Despark\Cms\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class AuthController extends Controller
 {
@@ -23,8 +22,7 @@ class AuthController extends Controller
     |
     */
 
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
+    use AuthenticatesUsers;
 
     protected $loginPath = 'admin/login';
 
@@ -34,8 +32,6 @@ class AuthController extends Controller
 
     /**
      * Create a new authentication controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -45,7 +41,8 @@ class AuthController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array $data
+     * @param array $data
+     *
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -60,72 +57,18 @@ class AuthController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array $data
-     * @return User
+     * @param array $data
+     *
+     * @return Authenticatable
      */
     protected function create(array $data)
     {
-        return User::create([
+        $userModelClass = config('auth.providers.users.model');
+
+        return $userModelClass::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
-    }
-
-    /**
-     * Handle a login request to the application.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function postLogin(Request $request)
-    {
-        $this->validate($request, [
-            $this->loginUsername() => 'required',
-            'password' => 'required',
-        ]);
-
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
-        $throttles = $this->isUsingThrottlesLoginsTrait();
-
-        if ($throttles && $this->hasTooManyLoginAttempts($request)) {
-            return $this->sendLockoutResponse($request);
-        }
-
-        $credentials = $this->getCredentials($request);
-
-        // First check if user is admin
-        $user = Auth::getProvider()->retrieveByCredentials($credentials);
-
-        // We trigger two request to database, maybe we need custom auth provider.
-        if ($user && $user->is_admin) {
-            if (Auth::attempt($credentials, $request->has('remember'))) {
-                return $this->handleUserWasAuthenticated($request, $throttles);
-            }
-        }
-        // If the login attempt was unsuccessful we will increment the number of attempts
-        // to login and redirect the user back to the login form. Of course, when this
-        // user surpasses their maximum number of attempts they will get locked out.
-        if ($throttles) {
-            $this->incrementLoginAttempts($request);
-        }
-
-        return redirect($this->loginPath())
-            ->withInput($request->only($this->loginUsername(), 'remember'))
-            ->withErrors([
-                $this->loginUsername() => $this->getFailedLoginMessage(),
-            ]);
-    }
-
-    /**
-     * Show the application login form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getLogin()
-    {
-        return view('ignicms::admin.auth.login');
     }
 }

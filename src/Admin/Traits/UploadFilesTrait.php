@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class UploadFilesTrait.
+ *
  * @deprecated
  */
 trait UploadFilesTrait
@@ -54,6 +55,7 @@ trait UploadFilesTrait
 
     /**
      * @param $dirName
+     *
      * @return string
      */
     private function getFileSavePath($dirName)
@@ -66,6 +68,8 @@ trait UploadFilesTrait
      */
     public function getFileFields()
     {
-        return config('resources.'.$this->identifier.'.file_fields');
+        $config = $this->getResourceConfig();
+
+        return $config['image_fields'] ?: null;
     }
 }

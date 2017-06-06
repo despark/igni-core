@@ -1,11 +1,12 @@
-<div class="form-group {{ $errors->has($fieldName) ? 'has-error' : '' }}">
-    {!! Form::label($elementName, $options['label']) !!}
-    {!! Form::text($elementName, $record->$fieldName, array_merge([
-    'id' =>  $elementName,
-    'class' => "form-control ".$options['class'],
-    'placeholder' => $options['label'],
-], array_get($options, 'attributes', []))) !!}
+<div class="form-group {{ $errors->has($elementName) ? 'has-error' : '' }}">
+    {!! Form::label($elementName, $field->getLabel()) !!}
+    {!! Form::text($elementName, $field->getValue(), $field->getAttributes()) !!}
+    @if($field->getHelp())
+        <p class="help-text">
+            {{$field->getHelp()}}
+        </p>
+    @endif
     <div class="text-red">
-        {{ join($errors->get($fieldName), '<br />') }}
+        {{ join($errors->get($elementName), '<br />') }}
     </div>
 </div>

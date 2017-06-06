@@ -30,11 +30,12 @@ class Temp extends Model
     /**
      * @param $path
      * @param $filename
+     *
      * @return static
      */
     public static function createFromFile($path, $filename)
     {
-        $model = new static;
+        $model = new static();
 
         return $model->create([
             'filename' => $filename,
@@ -45,6 +46,7 @@ class Temp extends Model
 
     /**
      * @return mixed|File
+     *
      * @throws FileNotFoundException
      */
     public function getFile()
@@ -74,8 +76,10 @@ class Temp extends Model
 
     /**
      * File move wrapper.
+     *
      * @param $directory
      * @param null $name
+     *
      * @return File
      */
     public function move($directory, $name = null)
@@ -89,5 +93,17 @@ class Temp extends Model
     public function getFileName()
     {
         return $this->filename;
+    }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        parent::getTable();
+
+        return config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_'.$this->table : $this->table;
     }
 }

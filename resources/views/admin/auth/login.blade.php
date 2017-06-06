@@ -5,7 +5,7 @@
 @section('content')
     <div class="login-box">
         <div class="login-logo">
-            <img src="{{ asset('images/logo.png') }}" class="admin-logo" alt="Logo"/>
+            <img src="{{ asset(config('ignicms.logo')) }}" class="admin-logo" alt="Logo"/>
             <h4 class="uppercase">Website Administration</h4>
         </div>
 

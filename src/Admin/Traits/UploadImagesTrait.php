@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class UploadImagesTrait.
+ *
  * @deprecated
  */
 trait UploadImagesTrait
@@ -54,7 +55,7 @@ trait UploadImagesTrait
 
                     $thumbnailPath = $this->getThumbnailPath($thumbnailName);
 
-                    if ( ! File::isDirectory($thumbnailPath)) {
+                    if (! File::isDirectory($thumbnailPath)) {
                         File::makeDirectory($thumbnailPath);
                     }
 
@@ -85,6 +86,7 @@ trait UploadImagesTrait
 
     /**
      * @param string $thumbnailType
+     *
      * @return string
      */
     public function getThumbnailPath($thumbnailType = 'original')
@@ -95,17 +97,18 @@ trait UploadImagesTrait
     /**
      * @param        $fieldName
      * @param string $thumbnailType
+     *
      * @return bool|string
      */
     public function getImageThumbnailPath($fieldName, $thumbnailType = 'original')
     {
         $modelImageFields = $this->getImageFields();
 
-        if ( ! array_key_exists($fieldName, $modelImageFields)) {
+        if (! array_key_exists($fieldName, $modelImageFields)) {
             return false;
         }
 
-        if ( ! array_key_exists($thumbnailType, $modelImageFields[$fieldName]['thumbnails'])) {
+        if (! array_key_exists($thumbnailType, $modelImageFields[$fieldName]['thumbnails'])) {
             $thumbnailType = 'original';
         }
 

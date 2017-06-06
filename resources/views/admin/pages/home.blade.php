@@ -6,7 +6,7 @@
     <section id="introduction">
         <div class="titles-section">
             <h1>
-                <img src="{{ asset('images/logo.png') }}" alt="Logo"/>
+                <img src="{{ asset(config('ignicms.logo')) }}" alt="Logo"/>
             </h1>
             <h2>
                 Welcome to Despark Content Managment System

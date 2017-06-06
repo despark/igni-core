@@ -5,11 +5,13 @@ namespace Despark\Cms\Models;
 use Despark\Cms\Admin\Interfaces\UploadImageInterface;
 use Despark\Cms\Admin\Traits\AdminModelTrait;
 use Despark\Cms\Observers\AdminModelObserver;
+use Despark\Cms\Resource\EntityManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * Class AdminModel.
+ *
  * @method MorphMany videos();
  */
 abstract class AdminModel extends Model
@@ -17,7 +19,7 @@ abstract class AdminModel extends Model
     use AdminModelTrait;
 
     /**
-     * @var array Files to save.
+     * @var array files to save
      */
     protected $files = [];
 
@@ -39,11 +41,6 @@ abstract class AdminModel extends Model
     /**
      * @var string
      */
-    protected $identifier;
-
-    /**
-     * @var string
-     */
     protected $uploadType;
 
     /**
@@ -52,12 +49,25 @@ abstract class AdminModel extends Model
     protected $videoSupport;
 
     /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    /**
+     * @var array
+     */
+    protected $resourceConfig;
+
+    /**
      * AdminModel constructor.
+     *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
+
+        $this->entityManager = app(EntityManager::class);
 
         static::$dispatcher->fire('igni.model.booted: '.static::class, $this);
     }
@@ -68,14 +78,17 @@ abstract class AdminModel extends Model
     public static function boot()
     {
         parent::boot();
-        static::observe(AdminModelObserver::class, - 10);
+        static::observe(AdminModelObserver::class, -10);
     }
 
     /**
      * Override set attributes so we can check for empty strings.
+     *
      * @todo We need a different way to achieve this
+     *
      * @param string $key
      * @param mixed  $value
+     *
      * @return $this
      */
     public function setAttribute($key, $value)
@@ -91,7 +104,9 @@ abstract class AdminModel extends Model
 
     /**
      * @param array $attributes
+     *
      * @return Model
+     *
      * @throws \Exception
      */
     public function fill(array $attributes)
@@ -137,12 +152,13 @@ abstract class AdminModel extends Model
 
     /**
      * Override is dirty so we can trigger update if we have dirty images.
+     *
      * @return array
      */
     public function getDirty()
     {
         $dirty = parent::getDirty();
-        if ( ! empty($this->files)) {
+        if (! empty($this->files)) {
             // We just set the ID to the same value to trigger the update.
             $dirty[$this->getKeyName()] = $this->getKey();
         }
@@ -184,6 +200,7 @@ abstract class AdminModel extends Model
 
     /**
      * @param array $rules
+     *
      * @return AdminModel
      */
     public function setRules($rules)
@@ -198,11 +215,17 @@ abstract class AdminModel extends Model
      */
     public function getRulesUpdate()
     {
-        return array_merge($this->rules, $this->rulesUpdate);
+        $array = array_merge($this->rules, $this->rulesUpdate);
+        if (! is_array($array)) {
+            return [];
+        }
+
+        return $array;
     }
 
     /**
      * @param array $rulesUpdate
+     *
      * @return AdminModel
      */
     public function setRulesUpdate($rulesUpdate)
@@ -213,17 +236,10 @@ abstract class AdminModel extends Model
     }
 
     /**
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    /**
      * @param       $input
      * @param       $attribute
-     * @param array $additional Additonal data to be written to the new record.
+     * @param array $additional additonal data to be written to the new record
+     *
      * @return array|int|mixed
      */
     public static function createIfMissing($input, $attribute, array $additional = [])
@@ -244,5 +260,37 @@ abstract class AdminModel extends Model
         } else {
             return $input;
         }
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
+    /**
+     * @param EntityManager $entityManager
+     *
+     * @return $this
+     */
+    public function setEntityManager($entityManager)
+    {
+        $this->entityManager = $entityManager;
+
+        return $this;
+    }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        parent::getTable();
+
+        return config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_'.$this->table : $this->table;
     }
 }

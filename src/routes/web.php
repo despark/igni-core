@@ -5,26 +5,27 @@
 |--------------------------------------------------------------------------
 */
 
-
 // Admin
 Route::group(['prefix' => 'admin'], function () {
     // Authentication routes...
-    Route::get('login', 'Auth\AuthController@getLogin');
-    Route::post('login', 'Auth\AuthController@postLogin');
-    Route::post('logout', 'Auth\AuthController@getLogout');
+    // Route::get('login', 'Auth\AuthController@getLogin');
+    // Route::post('login', 'Auth\AuthController@postLogin');
+    // Route::post('logout', 'Auth\AuthController@getLogout');
+
+    Auth::routes();
 
     Route::group(['middleware' => 'auth.admin'], function () {
-        Route::get('/', ['as' => 'adminHome', 'uses' => 'AdminController@adminHome']);
-        Route::get('/403', ['as' => 'adminForbidden', 'uses' => 'AdminController@forbidden']);
-        
-        Route::resource('user', 'UsersController',
-            [
-                'names' => build_resource_backport('user'),
-            ]
-        );
+        Route::get('/', ['as' => 'adminHome', 'uses' => 'Admin\DefaultController@adminHome']);
+        Route::get('/403', ['as' => 'adminForbidden', 'uses' => 'Admin\DefaultController@forbidden']);
 
-        //        Route::post('file/{file}', 'FileController@get')->name('file.get');
-        //        Route::match(['get', 'post'], 'image/upload', 'Admin\ImageController@upload')->name('image.upload');
-        //        Route::get('image/preview/{temp_image?}', 'Admin\ImageController@preview')->name('image.preview');
+        //        Route::resource('user', 'UsersController',
+        //            [
+        //                'names' => build_resource_backport('user'),
+        //            ]
+        //        );
+
+               // Route::post('file/{file}', 'FileController@get')->name('file.get');
+        Route::match(['get', 'post'], 'image/upload', 'Admin\ImageController@upload')->name('image.upload');
+        Route::get('image/preview/{temp_image?}', 'Admin\ImageController@preview')->name('image.preview');
     });
 });
