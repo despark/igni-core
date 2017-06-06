@@ -43,7 +43,6 @@ class ResourceCompiler
         ':traits' => [],
         ':table_name' => '',
         ':implementations' => [],
-        ':identifier' => '',
     ];
 
     /**
@@ -77,21 +76,6 @@ class ResourceCompiler
         ':table_name' => '',
         ':migration_class' => '',
     ];
-
-    /**
-     * @var array
-     */
-    protected $routeActions = [
-        'index',
-        'store',
-        'create',
-        'update',
-        'show',
-        'destroy',
-        'edit',
-    ];
-
-    protected $routeNames = [];
 
     /**
      * @param Command $command

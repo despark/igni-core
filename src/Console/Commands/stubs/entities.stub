@@ -12,7 +12,7 @@ return [
     'adminMenu' => [
         ':identifier' => [
             'name' => ':model_config_name',
-            'iconClass' => 'fa fa-star',
+            'iconClass' => 'fa-star',
             'link' => ':index_route',
         ],
     ],

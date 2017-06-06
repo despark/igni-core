@@ -23,6 +23,7 @@ class IgniServiceProvider extends ServiceProvider
     protected $commands = [
         \Despark\Cms\Console\Commands\InstallCommand::class,
         \Despark\Cms\Console\Commands\ResourceCommand::class,
+        \Despark\Cms\Console\Commands\PagesResourceCommand::class,
         \Despark\Cms\Console\Commands\Image\Rebuild::class,
     ];
 
