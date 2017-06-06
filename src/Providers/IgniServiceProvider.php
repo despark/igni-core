@@ -76,10 +76,6 @@ class IgniServiceProvider extends ServiceProvider
             __DIR__.'/../../resources/lang' => base_path('/resources/lang/vendor/ignicms'),
             __DIR__.'/../../resources/icomoon.json' => base_path('/resources/icomoon.json'),
         ], 'resources');
-        // User Model
-        $this->publishes([
-            __DIR__.'/../../src/Models/User.php' => base_path('/app/Models/User.php'),
-        ], 'user-model');
 
         $this->publishes([
             __DIR__.'/../../gulp/' => base_path('/gulp'),
