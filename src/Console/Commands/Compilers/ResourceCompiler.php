@@ -152,7 +152,7 @@ class ResourceCompiler
         $this->entitiesReplacements[':table_name'] = str_plural($this->identifier);
         $this->entitiesReplacements[':model_name'] = $this->command->model_name($this->identifier);
         $this->entitiesReplacements[':controller_name'] = $this->command->controller_name($this->identifier);
-        $this->entitiesReplacements[':identifier'] = $this->configIdentifier;
+        $this->entitiesReplacements[':identifier'] = str_plural($this->configIdentifier);
         $this->entitiesReplacements[':model_config_name'] = $this->getConfigModelName();
         $this->entitiesReplacements[':index_route'] = $this->getIndexRoute();
 
@@ -234,7 +234,7 @@ class ResourceCompiler
         foreach ($modelNameSplitted as $key => $value) {
             if ($key != 0) {
                 if (end($modelNameSplitted) === $value) {
-                    $string .= str_plural($value);
+                    $string .= $value;
                 } else {
                     $string .= $value.' ';
                 }
@@ -249,6 +249,8 @@ class ResourceCompiler
      */
     public function getIndexRoute()
     {
-        return strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']).'.index');
+        return count(preg_split('/(?=[A-Z])/', $this->entitiesReplacements[':model_name'])) > 2 ?
+            strtolower(str_replace(' ', '', str_plural($this->entitiesReplacements[':model_config_name'])).'.index') :
+            strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']).'.index');
     }
 }

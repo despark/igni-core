@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'name' => 'Pages',
-    'description' => 'Pages resource',
+    'name' => 'Page',
+    'description' => 'Page resource',
     'model' => :app_namespaceModels\Page::class,
     'controller' => :app_namespaceHttp\Controllers\Admin\PagesController::class,
     'adminColumns' => [

@@ -69,10 +69,10 @@ class PagesResourceCommand extends Command
      */
     public function handle()
     {
-        if (Schema::hasTable($this->fullTableName)) {
-            $this->tableName = $this->ask('The table name '.$this->fullTableName.' already exists! Please enter a new one without it\'s prefix:');
-            $this->fullTableName = $this->tablePrefix ? $this->tablePrefix.'_'.$this->tableName : $this->tableName;
-        }
+        // if (Schema::hasTable($this->fullTableName)) {
+        //     $this->tableName = $this->ask('The table name '.$this->fullTableName.' already exists! Please enter a new one without it\'s prefix:');
+        //     $this->fullTableName = $this->tablePrefix ? $this->tablePrefix.'_'.$this->tableName : $this->tableName;
+        // }
 
         $this->compiler = new PageCompiler($this->tableName, $this->fullTableName);
         $this->createResource('entities');
@@ -82,8 +82,10 @@ class PagesResourceCommand extends Command
         $this->createResource('migration');
         $this->info('Migrating..'.PHP_EOL);
         $this->call('migrate');
-        $this->info('Seeding..'.PHP_EOL);
-        $this->seedPage();
+        if ($this->confirm('Do you want to insert dummy data?')) {
+            $this->info('Seeding..'.PHP_EOL);
+            $this->seedPage();
+        }
         $this->info('Fantastic! You are good to go :)'.PHP_EOL);
     }
 

@@ -5,7 +5,7 @@ return [
     'description' => ':model_config_name resource',
     'model' => :app_namespaceModels\:model_name::class,
     'controller' => :app_namespaceHttp\Controllers\Admin\:controller_name::class,
-    'adminColumns' => [],
+    'adminColumns' => [''],
     'actions' => [:actions],
     'adminFormFields' => [],
     :image_fields
