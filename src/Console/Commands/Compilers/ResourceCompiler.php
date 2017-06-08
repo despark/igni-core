@@ -3,10 +3,7 @@
 namespace Despark\Cms\Console\Commands\Compilers;
 
 use Illuminate\Console\Command;
-use Despark\Cms\Admin\Traits\AdminFile;
 use Despark\Cms\Admin\Traits\AdminImage;
-use Illuminate\Console\AppNamespaceDetectorTrait;
-use Despark\Cms\Admin\Interfaces\UploadFileInterface;
 use Despark\Cms\Admin\Interfaces\UploadImageInterface;
 use Despark\Cms\Console\Commands\Admin\ResourceCommand;
 
@@ -15,8 +12,6 @@ use Despark\Cms\Console\Commands\Admin\ResourceCommand;
  */
 class ResourceCompiler
 {
-    use AppNamespaceDetectorTrait;
-
     /**
      * @var Command|ResourceCommand
      */
@@ -30,6 +25,11 @@ class ResourceCompiler
     /**
      * @var
      */
+    protected $configIdentifier;
+
+    /**
+     * @var
+     */
     protected $options;
 
     /**
@@ -39,52 +39,43 @@ class ResourceCompiler
         ':identifier' => '',
         ':model_name' => '',
         ':app_namespace' => '',
-        ':image_traits_include' => '',
-        ':image_traits_use' => '',
-        ':file_traits_include' => '',
-        ':file_traits_use' => '',
-        ':table_name' => '',
-        ':implementations' => [],
         ':uses' => [],
         ':traits' => [],
+        ':table_name' => '',
+        ':implementations' => [],
     ];
 
     /**
      * @var array
      */
-    protected $configReplacements = [
+    protected $entitiesReplacements = [
         ':image_fields' => '',
-        ':file_fields' => '',
+        ':identifier' => '',
+        ':model_name' => '',
+        ':model_config_name' => '',
+        ':app_namespace' => '',
+        ':controller_name' => '',
+        ':index_route' => '',
+        ':identifier' => '',
+        ':actions' => '',
     ];
 
     /**
      * @var array
      */
     protected $controllerReplacements = [
-        ':identifier' => '',
-        ':model_name' => '',
         ':controller_name' => '',
         ':app_namespace' => '',
-        ':resource' => '',
-        ':create_route' => '',
-        ':edit_route' => '',
-        ':destroy_route' => '',
     ];
 
     /**
      * @var array
      */
-    protected $routeActions = [
-        'index',
-        'store',
-        'create',
-        'update',
-        'show',
-        'destroy',
-        'edit',
+    protected $migrationReplacements = [
+        ':app_namespace' => '',
+        ':table_name' => '',
+        ':migration_class' => '',
     ];
-
-    protected $routeNames = [];
 
     /**
      * @param Command $command
@@ -93,10 +84,11 @@ class ResourceCompiler
      *
      * @todo why setting options where we can get it from command? Either remove command or keep options
      */
-    public function __construct(Command $command, $identifier, $options)
+    public function __construct(Command $command, $identifier, $configIdentifier, $options)
     {
         $this->command = $command;
         $this->identifier = $identifier;
+        $this->configIdentifier = $configIdentifier;
         $this->options = $options;
     }
 
@@ -109,62 +101,19 @@ class ResourceCompiler
      */
     public function render_model($template)
     {
-        if ($this->options['image_uploads'] || $this->options['file_uploads']) {
-            if ($this->options['image_uploads']) {
-                $this->modelReplacements[':uses'][] = UploadImageInterface::class;
-                $this->modelReplacements[':implementations'][] = class_basename(UploadImageInterface::class);
-                $this->modelReplacements[':uses'][] = AdminImage::class;
-                $this->modelReplacements[':traits'][] = class_basename(AdminImage::class);
-            }
-
-            if ($this->options['file_uploads']) {
-                $this->modelReplacements[':uses'][] = UploadFileInterface::class;
-                $this->modelReplacements[':implementations'][] = class_basename(UploadFileInterface::class);
-                $this->modelReplacements[':uses'][] = AdminFile::class;
-                $this->modelReplacements[':traits'][] = class_basename(AdminFile::class);
-            }
+        if ($this->options['image_uploads']) {
+            $this->modelReplacements[':uses'][] = UploadImageInterface::class;
+            $this->modelReplacements[':implementations'][] = class_basename(UploadImageInterface::class);
+            $this->modelReplacements[':uses'][] = AdminImage::class;
+            $this->modelReplacements[':traits'][] = class_basename(AdminImage::class);
         }
 
-        $this->modelReplacements[':app_namespace'] = $this->getAppNamespace();
+        $this->modelReplacements[':app_namespace'] = app()->getNamespace();
         $this->modelReplacements[':table_name'] = str_plural($this->identifier);
         $this->modelReplacements[':model_name'] = $this->command->model_name($this->identifier);
-        $this->modelReplacements[':identifier'] = $this->identifier;
+        $this->modelReplacements[':identifier'] = $this->configIdentifier;
 
         $this->prepareReplacements();
-
-        // TODO VERSION DEPENDANT
-        // Check to see if route is not already used
-        if (\Route::has($this->identifier.'.index')) {
-            // Check if admin is also free
-            if (\Route::has('admin.'.$this->identifier.'.index')) {
-                throw new \Exception('Resource `'.$this->identifier.'` already exists');
-            }
-
-            // We need to append admin
-            foreach ($this->routeActions as $action) {
-                $this->routeNames[$action] = 'admin.'.$this->identifier.'.'.$action;
-            }
-        }
-
-        $route = "Route::resource('$this->identifier', 'Admin\\".$this->command->controller_name($this->identifier)."'";
-        if (! empty($this->routeNames)) {
-            // create the resource names
-            $route .= ',['.PHP_EOL."'names' => [".PHP_EOL;
-            foreach ($this->routeNames as $action => $name) {
-                $route .= "'$action' => '$name',".PHP_EOL;
-            }
-
-            $route .= ']'.PHP_EOL.']);'.PHP_EOL;
-        } else {
-            // Close the Route resource
-            $route .= ');'.PHP_EOL;
-        }
-
-        if ($this->options['file_uploads']) {
-            $route .= "Route::get('$this->identifier/delete/{fileFieldName}', 'Admin\\".$this->command->controller_name($this->identifier)."@deleteFile');".PHP_EOL;
-        }
-
-        $this->appendToFile(base_path('routes/resources.php'), $route);
 
         $template = strtr($template, $this->modelReplacements);
 
@@ -177,9 +126,12 @@ class ResourceCompiler
     private function prepareReplacements()
     {
         $usesString = '';
-        foreach ($this->modelReplacements[':uses'] as $use) {
-            $usesString .= 'use '.$use.';'.PHP_EOL;
+        if (! empty($this->modelReplacements[':uses'])) {
+            foreach ($this->modelReplacements[':uses'] as $use) {
+                $usesString .= 'use '.$use.';'.PHP_EOL;
+            }
         }
+
         $this->modelReplacements[':uses'] = $usesString;
 
         $this->modelReplacements[':implementations'] = ! empty($this->modelReplacements[':implementations']) ?
@@ -194,10 +146,30 @@ class ResourceCompiler
      *
      * @return string
      */
-    public function render_config($template)
+    public function render_entities($template)
     {
+        $this->entitiesReplacements[':app_namespace'] = app()->getNamespace();
+        $this->entitiesReplacements[':table_name'] = str_plural($this->identifier);
+        $this->entitiesReplacements[':model_name'] = $this->command->model_name($this->identifier);
+        $this->entitiesReplacements[':controller_name'] = $this->command->controller_name($this->identifier);
+        $this->entitiesReplacements[':identifier'] = str_plural($this->configIdentifier);
+        $this->entitiesReplacements[':model_config_name'] = $this->getConfigModelName();
+        $this->entitiesReplacements[':index_route'] = $this->getIndexRoute();
+
+        if ($this->options['edit']) {
+            $actions[] = "'edit'";
+        }
+        if ($this->options['create']) {
+            $actions[] = "'create'";
+        }
+        if ($this->options['destroy']) {
+            $actions[] = "'destroy'";
+        }
+
+        $this->entitiesReplacements[':actions'] = implode(', ', $actions);
+
         if ($this->options['image_uploads']) {
-            $this->configReplacements[':image_fields'] = "'image_fields' => [
+            $this->entitiesReplacements[':image_fields'] = "'image_fields' => [
         'image' => [
             'thumbnails' => [
                 'admin' => [
@@ -208,38 +180,14 @@ class ResourceCompiler
                 'normal' => [
                     'width' => 960,
                     'height' => null,
-                    'type' => 'crop',
+                    'type' => 'resize',
                 ],
             ],
         ],
     ],";
         }
 
-        if ($this->options['file_uploads']) {
-            $this->configReplacements[':file_fields'] = "'file_fields' => [
-        'file'  => [
-            'dirName' => '',
-        ],
-    ],";
-        }
-
-        $template = strtr($template, $this->configReplacements);
-
-        return $template;
-    }
-
-    /**
-     * @param $template
-     *
-     * @return string
-     */
-    public function render_request($template)
-    {
-        $this->modelReplacements[':app_namespace'] = $this->getAppNamespace();
-        $this->modelReplacements[':request_name'] = $this->command->request_name($this->identifier);
-        $this->modelReplacements[':model_name'] = $this->command->model_name($this->identifier);
-
-        $template = strtr($template, $this->modelReplacements);
+        $template = strtr($template, $this->entitiesReplacements);
 
         return $template;
     }
@@ -251,26 +199,8 @@ class ResourceCompiler
      */
     public function render_controller($template)
     {
-        $this->controllerReplacements[':app_namespace'] = $this->getAppNamespace();
-        $this->controllerReplacements[':resource'] = $this->identifier;
-        $this->controllerReplacements[':model_name'] = $this->command->model_name($this->identifier);
-        $this->controllerReplacements[':request_name'] = $this->command->request_name($this->identifier);
+        $this->controllerReplacements[':app_namespace'] = app()->getNamespace();
         $this->controllerReplacements[':controller_name'] = $this->command->controller_name($this->identifier);
-        $this->controllerReplacements[':identifier'] = $this->identifier;
-
-        $routeName = empty($this->routeNames) ? $this->identifier : 'admin.'.$this->identifier;
-
-        if ($this->options['create']) {
-            $this->controllerReplacements[':create_route'] = '$this->viewData'."['createRoute'] = '".$routeName.".create';";
-        }
-
-        if ($this->options['edit']) {
-            $this->controllerReplacements[':edit_route'] = '$this->viewData'."['editRoute'] = '".$routeName.".edit';";
-        }
-
-        if ($this->options['destroy']) {
-            $this->controllerReplacements[':destroy_route'] = '$this->viewData'."['deleteRoute'] = '".$routeName.".destroy';";
-        }
 
         $template = strtr($template, $this->controllerReplacements);
 
@@ -284,27 +214,41 @@ class ResourceCompiler
      */
     public function render_migration($template)
     {
-        $this->controllerReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->identifier)).'Table';
-        $this->controllerReplacements[':table_name'] = str_plural($this->identifier);
+        $this->migrationReplacements[':app_namespace'] = app()->getNamespace();
+        $this->migrationReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->identifier)).'Table';
+        $this->migrationReplacements[':table_name'] = str_plural($this->identifier);
 
-        $template = strtr($template, $this->controllerReplacements);
+        $template = strtr($template, $this->migrationReplacements);
 
         return $template;
     }
 
     /**
-     * @param $file
-     * @param $content
-     *
-     * @throws \Exception
+     * @return string
      */
-    public function appendToFile($file, $content)
+    public function getConfigModelName()
     {
-        if (! file_exists($file)) {
-            touch($file);
-            file_put_contents($file, '<?php'.PHP_EOL, FILE_APPEND);
-            //            throw new \Exception("File '$file' is missing. Cannot append");
+        $modelNameSplitted = preg_split('/(?=[A-Z])/', $this->entitiesReplacements[':model_name']);
+        $string = '';
+
+        foreach ($modelNameSplitted as $key => $value) {
+            if ($key != 0) {
+                if (end($modelNameSplitted) === $value) {
+                    $string .= $value;
+                } else {
+                    $string .= $value.' ';
+                }
+            }
         }
-        file_put_contents($file, $content, FILE_APPEND);
+
+        return $string;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIndexRoute()
+    {
+        return strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']).'.index');
     }
 }

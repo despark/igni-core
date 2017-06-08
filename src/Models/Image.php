@@ -44,6 +44,11 @@ class Image extends Model implements ImageContract
     protected $imageAttributeFields = ['alt', 'title'];
 
     /**
+     * @var string
+     */
+    protected $table = 'images';
+
+    /**
      * @var array
      */
     protected $fillable = [
@@ -454,5 +459,17 @@ class Image extends Model implements ImageContract
         if (! $result && $key != 'meta') {
             return isset($this->meta[$key]);
         }
+    }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        $table = parent::getTable();
+
+        return config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_'.$table : $table;
     }
 }

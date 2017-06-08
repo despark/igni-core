@@ -1,19 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Despark\Cms\Models\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class AddIsAdminToUsers extends Migration
+class AddIsAdminToUsers extends IgniMigration
 {
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_admin')->after('password');
-        });
+        if (! config('ignicms.igniTablesPrefix')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->boolean('is_admin')->after('password');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ class AddIsAdminToUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('is_admin');
-        });
+        if (! config('ignicms.igniTablesPrefix')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('is_admin');
+            });
+        }
     }
 }

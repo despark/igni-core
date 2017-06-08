@@ -281,4 +281,16 @@ abstract class AdminModel extends Model
 
         return $this;
     }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        $table = parent::getTable();
+
+        return config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_'.$table : $table;
+    }
 }
