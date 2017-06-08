@@ -229,14 +229,11 @@ class ResourceCommand extends Command
     public function generateConfigIdentifier()
     {
         $identifier = explode('_', $this->identifier);
+        $string = '';
 
         foreach ($identifier as $key => $value) {
             if ($key != 0) {
-                if (end($identifier) === $value) {
-                    $string .= ucfirst(str_plural($value));
-                } else {
-                    $string .= ucfirst($value);
-                }
+                $string .= ucfirst($value);
             } else {
                 $string = $value;
             }

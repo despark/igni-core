@@ -249,8 +249,6 @@ class ResourceCompiler
      */
     public function getIndexRoute()
     {
-        return count(preg_split('/(?=[A-Z])/', $this->entitiesReplacements[':model_name'])) > 2 ?
-            strtolower(str_replace(' ', '', str_plural($this->entitiesReplacements[':model_config_name'])).'.index') :
-            strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']).'.index');
+        return strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']).'.index');
     }
 }
