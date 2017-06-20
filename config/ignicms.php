@@ -32,6 +32,7 @@ return [
         'admin_thumb_type' => 'fit',
         'disable_alt_title_fields' => false,
         'require_alt_title_fields' => true,
+        'model' => \Despark\Cms\Models\Image::class,
     ],
     'languages' => [
         // Add languages that you will use in your app.

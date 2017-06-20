@@ -22,8 +22,12 @@ class AdminServiceProvider extends ServiceProvider
         /*
          * Image contract implementation
          */
-        $this->app->bind(ImageContract::class, function ($app, $attributes = []) {
-            return new Image();
+        $this->app->bind(ImageContract::class, function ($app) {
+            $class = $app['config']['ignicms']['images']['model'];
+            
+            if (class_exists($class)) {
+                return new $class;
+            }
         });
 
         /*
