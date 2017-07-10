@@ -11,3 +11,4 @@ Homestead.yaml
 /public/js
 /public/images
 /public/fonts
+composer.lock

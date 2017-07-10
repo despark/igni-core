@@ -82,10 +82,10 @@ class EntityManager
         }
 
         // Add igni default resources
-        $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
+        $localFiles = \File::allFiles(__DIR__ . '/../../config/entities');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (! isset($this->resources[$resource])) {
+            if (!isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -95,7 +95,7 @@ class EntityManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (! isset($this->resources[$resourceConfig['id']])) {
+                    if (!isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -145,16 +145,41 @@ class EntityManager
     /**
      * @param Model $model
      *
-     * @return array
+     * @param null $configId
+     *
+     * @return array|null
      */
-    public function getByModel(Model $model)
+    public function getByModel(Model $model, $configId = null)
     {
+        /*
+         * if we have config id we directly return the first we found
+         * If no config id and only one config for the model we return it
+         * If not we will check if we have a default config for the model
+         * If no default is found we return null
+         */
+        if (isset($configId)) {
+            return $this->getById($configId);
+        }
+
+
         $class = get_class($model);
-        foreach ($this->all() as $item) {
+        $resources = [];
+        foreach ($this->all() as $id => $item) {
             if ($item['model'] === $class) {
-                return $item;
+                // we need to force the default one if any
+                if (isset($item['default']) && $item['default']) {
+                    return $item;
+                } else {
+                    $resources[] = $item;
+                    continue;
+                }
+
             }
         }
+
+
+        return count($resources) == 1 ? reset($resources) : null;
+
     }
 
     /**
@@ -193,7 +218,7 @@ class EntityManager
     /**
      * @param $id
      *
-     * @return null|string
+     * @return null|array
      */
     public function getById($id)
     {
@@ -219,7 +244,7 @@ class EntityManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect($classMethods, $availableMethods);
 
-            if (! empty($methods)) {
+            if (!empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], [
@@ -227,33 +252,44 @@ class EntityManager
                     ]);
                 } else {
                     \Route::resource($resource, $config['controller'], [
-                        'only' => $methods,
+                        'only'  => $methods,
                         'names' => build_resource_backport($resource, $methods),
                     ]);
 
                     \Route::resource($resource, EntityController::class, [
                         'except' => $methods,
-                        'names' => build_resource_backport($resource, [], $methods),
+                        'names'  => build_resource_backport($resource, [], $methods),
                     ]);
                 }
             } else {
                 \Route::resource($resource, EntityController::class);
             }
 
-            $this->setRoutes($resource, build_resource_backport($resource));
+            $this->addRoutes($resource, build_resource_backport($resource));
         }
     }
 
-    public function getModelRoutes(Model $model)
+    /**
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
+     * @return mixed
+     */
+    public function getModelRoutes(Model $model, $configId)
     {
-        $resource = $this->getByModel($model)['id'];
+        $resource = $this->getByModel($model, $configId)['id'];
 
         return array_get($this->getRoutes(), $resource);
     }
 
-    public function getRouteName(Model $model, string $action)
+    /**
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param string $action
+     *
+     * @return mixed
+     */
+    public function getRouteName(Model $model, string $action, $configId = null)
     {
-        return array_get($this->getModelRoutes($model), $action);
+        return array_get($this->getModelRoutes($model, $configId), $action);
     }
 
     /**
@@ -261,21 +297,22 @@ class EntityManager
      *
      * @param Model $model
      *
-     * @throws \Exception
+     * @param null $configId
      *
      * @return string
      */
-    public function getForm(Model $model)
+    public function getForm(Model $model, $configId = null)
     {
         $method = $model->exists ? 'PUT' : 'POST';
         $actionVerb = $model->exists ? 'update' : 'store';
-        $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
-        $action = route($this->getRouteName($model, $actionVerb), $attributes);
+        $attributes = $model->getKey() ? ['id' => 'model_' . $model->getKey()] : [];
+
+        $action = $this->getFormAction($model, $actionVerb, $configId, $attributes);
 
         $translatable = ($model instanceof Translatable) ? $model->getTranslatable() : null;
         $locale = app('request')->get('locale', \App::getLocale());
 
-        $fields = $this->getFields($model);
+        $fields = $this->getFields($model, $configId);
         $fieldInstances = new Collection();
 
         if ($translatable) {
@@ -284,7 +321,7 @@ class EntityManager
         }
 
         foreach ($fields as $field => $options) {
-            // Check if we have custom factory provided. This wil bring up the field as a custom.
+            // Check if we have custom factory provided. This will bring up the field as a custom.
             if (isset($options['factory'])) {
                 $factory = new $options['factory']();
                 if (is_a($options['factory'], Factory::class, true)) {
@@ -303,6 +340,7 @@ class EntityManager
                 $fieldInstances->push(\Field::make($data));
             }
         }
+
         event(new AfterFieldsMake($fieldInstances, $model));
 
         return $this->form->make([
@@ -311,6 +349,20 @@ class EntityManager
             'fields' => $fieldInstances,
         ]);
     }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param $actionVerb
+     * @param $configId
+     * @param $attributes
+     *
+     * @return string
+     */
+    public function getFormAction(Model $model, $actionVerb, $configId, $attributes)
+    {
+        return route($this->getRouteName($model, $actionVerb, $configId), $attributes);
+    }
+
 
     /**
      * Renders single field.
@@ -335,19 +387,53 @@ class EntityManager
     /**
      * @param Model $model
      *
-     * @return mixed
+     * @param null $configId
      *
+     * @return mixed
      * @throws \Exception
      */
-    public function getFields(Model $model)
+    public function getFields(Model $model, $configId = null)
     {
-        $resource = $this->getByModel($model);
-        if (! $resource) {
-            throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
+        $resource = $this->findResourceConfig($model, $configId);
+        if (!$resource) {
+            throw new \Exception('Model (' . get_class($model) . ') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
             return $resource['adminFormFields'];
         }
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param null $configId
+     *
+     * @return array|null|string
+     * @throws \Exception
+     */
+    public function findResourceConfig(Model $model, $configId = null)
+    {
+        if ($configId) {
+            $resource = $this->getById($configId);
+        } else {
+            // Basically there is a possibility to have two models in a config.
+            // If we have one we use it if not we use the current controller
+            $resource = $this->getByModel($model, $configId);
+        }
+
+        if (!$resource) {
+            $controllerInstance = \Route::getCurrentRoute()->getController();
+
+            $resource = $this->getByController($controllerInstance);
+            // check if resource matches the model
+            if ($resource['model'] !== get_class($model)) {
+                $resource = null;
+            }
+        }
+        if (!$resource) {
+            throw new \Exception('Cannot find (' . get_class($model) . ') resource configuration');
+        }
+
+        return $resource;
     }
 
     /**
@@ -361,8 +447,8 @@ class EntityManager
     {
         $resourceConfig = $this->getByModel($model);
         if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
-            if (! \View::exists($resourceConfig['formTemplate'])) {
-                throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
+            if (!\View::exists($resourceConfig['formTemplate'])) {
+                throw new \Exception('View template ' . $resourceConfig['formTemplate'] . ' does not exist');
             }
 
             return $resourceConfig['formTemplate'];
@@ -396,10 +482,32 @@ class EntityManager
      *
      * @return self
      */
-    public function setRoutes($resource, array $routes)
+    public function addRoutes($resource, array $routes)
     {
         $this->routes[$resource] = $routes;
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getResources()
+    {
+        return $this->resources;
+    }
+
+    /**
+     * @param mixed $resources
+     *
+     * @return $this
+     */
+    public function setResources($resources)
+    {
+        $this->resources = $resources;
+
+        return $this;
+    }
+
+
 }

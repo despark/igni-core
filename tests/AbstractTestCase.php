@@ -2,8 +2,12 @@
 
 namespace Despark\Tests\Cms;
 
-use ReflectionClass;
+use Despark\Cms\Providers\AdminServiceProvider;
+use Despark\Cms\Providers\EntityServiceProvider;
+use Despark\Cms\Providers\IgniServiceProvider;
+use Despark\Cms\Providers\JavascriptServiceProvider;
 use GrahamCampbell\TestBench\AbstractPackageTestCase;
+use ReflectionClass;
 
 /**
  * Class AbstractTestCase.
@@ -15,23 +19,20 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
      */
     protected $migrationPath;
 
-    public function setUp()
-    {
-        parent::setUp();
-        $this->migrationPath = realpath(__DIR__.'/migrations');
-        $this->withFactories(__DIR__.'/../database/factories');
-    }
 
     /**
-     * Get the service provider class.
-     *
      * @param \Illuminate\Contracts\Foundation\Application $app
      *
-     * @return string
+     * @return array
      */
-    protected function getServiceProviderClass($app)
+    protected function getRequiredServiceProviders($app)
     {
-        return \Despark\Cms\Providers\CoreServiceProvider::class;
+        return [
+            AdminServiceProvider::class,
+            EntityServiceProvider::class,
+            IgniServiceProvider::class,
+            JavascriptServiceProvider::class,
+        ];
     }
 
     /**
@@ -50,6 +51,10 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
         $reflection_property->setAccessible(true);
         $reflection_property->setValue($object, $value);
     }
+
+
+
+
 
     /*
      * Define environment setup.

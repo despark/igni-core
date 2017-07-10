@@ -183,13 +183,15 @@ trait AdminModelTrait
         return $this->adminFilters['text_search'] and $this->adminFilters['text_search']['db_fields'];
     }
 
-    // /**
-    //  * @return string
-    //  */
-    // public function buildForm()
-    // {
-    //     return $this->getEntityManager()->getForm($this);
-    // }
+    /**
+     * @param string|null $configId
+     *
+     * @return string
+     */
+     public function buildForm(string $configId = null)
+     {
+         return $this->getEntityManager()->getForm($this, $configId);
+     }
 
     /**
      * @return mixed
