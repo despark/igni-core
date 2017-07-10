@@ -82,10 +82,10 @@ class EntityManager
         }
 
         // Add igni default resources
-        $localFiles = \File::allFiles(__DIR__ . '/../../config/entities');
+        $localFiles = \File::allFiles(__DIR__.'/../../config/entities');
         foreach ($localFiles as $file) {
             $resource = str_slug(pathinfo($file, PATHINFO_FILENAME), '_');
-            if (!isset($this->resources[$resource])) {
+            if (! isset($this->resources[$resource])) {
                 $resourceConfig = call_user_func(function () use ($file, $resource) {
                     $array = include $file;
                     if (is_array($array)) {
@@ -95,7 +95,7 @@ class EntityManager
                     return null;
                 });
                 if ($resourceConfig) {
-                    if (!isset($this->resources[$resourceConfig['id']])) {
+                    if (! isset($this->resources[$resourceConfig['id']])) {
                         // We need to make sure we don't override existing sidebar items
                         if (isset($resourceConfig['adminMenu'])) {
                             foreach ($this->resources as $existingResource) {
@@ -144,8 +144,7 @@ class EntityManager
 
     /**
      * @param Model $model
-     *
-     * @param null $configId
+     * @param null  $configId
      *
      * @return array|null
      */
@@ -161,7 +160,6 @@ class EntityManager
             return $this->getById($configId);
         }
 
-
         $class = get_class($model);
         $resources = [];
         foreach ($this->all() as $id => $item) {
@@ -173,13 +171,10 @@ class EntityManager
                     $resources[] = $item;
                     continue;
                 }
-
             }
         }
 
-
         return count($resources) == 1 ? reset($resources) : null;
-
     }
 
     /**
@@ -244,7 +239,7 @@ class EntityManager
             // Get the implementing controller and check for rewritten routes
             $methods = array_intersect($classMethods, $availableMethods);
 
-            if (!empty($methods)) {
+            if (! empty($methods)) {
                 // If all routes are rewritten we use the config one
                 if (count($methods) == count($availableMethods)) {
                     \Route::resource($resource, $config['controller'], [
@@ -252,13 +247,13 @@ class EntityManager
                     ]);
                 } else {
                     \Route::resource($resource, $config['controller'], [
-                        'only'  => $methods,
+                        'only' => $methods,
                         'names' => build_resource_backport($resource, $methods),
                     ]);
 
                     \Route::resource($resource, EntityController::class, [
                         'except' => $methods,
-                        'names'  => build_resource_backport($resource, [], $methods),
+                        'names' => build_resource_backport($resource, [], $methods),
                     ]);
                 }
             } else {
@@ -283,7 +278,7 @@ class EntityManager
 
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @param string $action
+     * @param string                              $action
      *
      * @return mixed
      */
@@ -296,8 +291,7 @@ class EntityManager
      * Renders entire form.
      *
      * @param Model $model
-     *
-     * @param null $configId
+     * @param null  $configId
      *
      * @return string
      */
@@ -305,7 +299,7 @@ class EntityManager
     {
         $method = $model->exists ? 'PUT' : 'POST';
         $actionVerb = $model->exists ? 'update' : 'store';
-        $attributes = $model->getKey() ? ['id' => 'model_' . $model->getKey()] : [];
+        $attributes = $model->getKey() ? ['id' => 'model_'.$model->getKey()] : [];
 
         $action = $this->getFormAction($model, $actionVerb, $configId, $attributes);
 
@@ -363,7 +357,6 @@ class EntityManager
         return route($this->getRouteName($model, $actionVerb, $configId), $attributes);
     }
 
-
     /**
      * Renders single field.
      *
@@ -376,6 +369,7 @@ class EntityManager
      */
     public function renderField(Model $model, $fieldId)
     {
+        dd($fieldId);
         $fields = $this->getFields($model);
         foreach ($fields as $field => $config) {
             if ($fieldId == $field) {
@@ -386,17 +380,17 @@ class EntityManager
 
     /**
      * @param Model $model
-     *
-     * @param null $configId
+     * @param null  $configId
      *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function getFields(Model $model, $configId = null)
     {
         $resource = $this->findResourceConfig($model, $configId);
-        if (!$resource) {
-            throw new \Exception('Model (' . get_class($model) . ') is missing resource configuration');
+        if (! $resource) {
+            throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
         if (isset($resource['adminFormFields']) && is_array($resource['adminFormFields'])) {
             return $resource['adminFormFields'];
@@ -405,9 +399,10 @@ class EntityManager
 
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @param null $configId
+     * @param null                                $configId
      *
      * @return array|null|string
+     *
      * @throws \Exception
      */
     public function findResourceConfig(Model $model, $configId = null)
@@ -420,7 +415,7 @@ class EntityManager
             $resource = $this->getByModel($model, $configId);
         }
 
-        if (!$resource) {
+        if (! $resource) {
             $controllerInstance = \Route::getCurrentRoute()->getController();
 
             $resource = $this->getByController($controllerInstance);
@@ -429,8 +424,8 @@ class EntityManager
                 $resource = null;
             }
         }
-        if (!$resource) {
-            throw new \Exception('Cannot find (' . get_class($model) . ') resource configuration');
+        if (! $resource) {
+            throw new \Exception('Cannot find ('.get_class($model).') resource configuration');
         }
 
         return $resource;
@@ -447,8 +442,8 @@ class EntityManager
     {
         $resourceConfig = $this->getByModel($model);
         if ($resourceConfig && isset($resourceConfig['formTemplate'])) {
-            if (!\View::exists($resourceConfig['formTemplate'])) {
-                throw new \Exception('View template ' . $resourceConfig['formTemplate'] . ' does not exist');
+            if (! \View::exists($resourceConfig['formTemplate'])) {
+                throw new \Exception('View template '.$resourceConfig['formTemplate'].' does not exist');
             }
 
             return $resourceConfig['formTemplate'];
@@ -508,6 +503,4 @@ class EntityManager
 
         return $this;
     }
-
-
 }

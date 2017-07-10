@@ -1,23 +1,20 @@
 <?php
 
-
 namespace Classes\Resource;
-
 
 use Despark\Cms\Admin\Form;
 use Despark\Cms\Admin\FormBuilder;
 use Despark\Cms\Resource\EntityManager;
 use Despark\Tests\Cms\AbstractTestCase;
 use resources\TestModel;
+use resources\TestModelWithTranslations;
 
 class EntityManagerTest extends AbstractTestCase
 {
-    /**
-     * @group debug
-     */
-    public function testGetForm(){
-
-        $modelMock = \Mockery::mock(TestModel::class)->makePartial();
+    public function testGetForm()
+    {
+        // With translations
+        $modelMock = \Mockery::mock(TestModelWithTranslations::class)->makePartial();
 
         $modelMock->shouldReceive('getTranslation')->andReturn('test_translations');
 
@@ -37,9 +34,8 @@ class EntityManagerTest extends AbstractTestCase
                 'id' => 'test',
                 'actions' => ['store'],
                 'model' => get_class($modelMock),
-                'adminFormFields' => $fields
-            ]
-
+                'adminFormFields' => $fields,
+            ],
         ];
 
         $entityManagerMock->setResources($config);
@@ -47,26 +43,55 @@ class EntityManagerTest extends AbstractTestCase
         $entityManagerMock->shouldReceive('getFormAction')
             ->andReturn('http://example.com');
 
-
         $modelMock->translatable = [
-            'test'
+            'test',
         ];
 
-       $form = $entityManagerMock->getForm($modelMock);
+        $form = $entityManagerMock->getForm($modelMock);
 
-       $this->assertNotEmpty($form);
+        $this->assertNotEmpty($form);
 
+        // Without translations
+        $modelMock = \Mockery::mock(TestModel::class)->makePartial();
+
+        /** @var EntityManager|\Mockery\Mock $entityManagerMock */
+        $entityManagerMock = \Mockery::mock(EntityManager::class, [new FormBuilder(), new Form()])
+                                     ->makePartial();
+
+        $fields = [
+            'test' => [
+                'type' => 'text',
+                'label' => 'Test',
+            ],
+        ];
+
+        $config = [
+            'test' => [
+                'id' => 'test',
+                'actions' => ['store'],
+                'model' => get_class($modelMock),
+                'adminFormFields' => $fields,
+            ],
+        ];
+
+        $entityManagerMock->setResources($config);
+
+        $entityManagerMock->shouldReceive('getFormAction')
+            ->andReturn('http://example.com');
+
+        $form = $entityManagerMock->getForm($modelMock);
+
+        $this->assertNotEmpty($form);
     }
 
     public function testGetByModel()
     {
-
         $testId = [
             'model' => TestModel::class,
         ];
 
         $testId2 = [
-            'model'   => TestModel::class,
+            'model' => TestModel::class,
             'default' => true,
         ];
 
@@ -78,23 +103,19 @@ class EntityManagerTest extends AbstractTestCase
         $mock->shouldReceive('getById')
              ->andReturn($testId);
 
-
         $resource = $mock->getByModel($testModel, 'test_id');
-
 
         $this->assertEquals($testId, $resource);
 
-
         $mock->shouldReceive('all')
              ->andReturn([
-                 'test_id'   => $testId,
+                 'test_id' => $testId,
                  'test_id_2' => $testId2,
              ]);
 
         $resource = $mock->getByModel($testModel);
 
         $this->assertEquals($testId2, $resource);
-
 
         $mock = \Mockery::mock(EntityManager::class)->makePartial();
         $mock->shouldReceive('all')
@@ -105,7 +126,5 @@ class EntityManagerTest extends AbstractTestCase
         $resource = $mock->getByModel($testModel);
 
         $this->assertEquals($testId, $resource);
-
     }
-
 }

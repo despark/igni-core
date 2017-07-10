@@ -51,7 +51,8 @@
         "classmap": [],
         "files": [
             "src/helpers.php",
-            "tests/resources/TestModel.php"
+            "tests/resources/TestModel.php",
+            "tests/resources/TestModelWithTranslations.php"
         ],
         "psr-4": {
             "Despark\\Cms\\": "src/"
