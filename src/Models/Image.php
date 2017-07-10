@@ -44,6 +44,11 @@ class Image extends Model implements ImageContract
     protected $imageAttributeFields = ['alt', 'title'];
 
     /**
+     * @var string
+     */
+    protected $table = 'images';
+
+    /**
      * @var array
      */
     protected $fillable = [
@@ -104,6 +109,7 @@ class Image extends Model implements ImageContract
 
     /**
      * @return array
+     *
      * @throws \Exception
      */
     public function getAllImages()
@@ -157,13 +163,14 @@ class Image extends Model implements ImageContract
 
     /**
      * @return AdminModel|UploadImageInterface
+     *
      * @throws \Exception
      */
     public function getResourceModel()
     {
         if (! isset($this->resourceModelInstance) && $this->resource_model) {
             $class = $this->getActualClassNameForMorph($this->resource_model);
-            $this->resourceModelInstance = new $class;
+            $this->resourceModelInstance = new $class();
 
             if (! $this->resourceModelInstance instanceof UploadImageInterface) {
                 throw new \Exception('Model '.$class.' is not an instance of '.UploadImageInterface::class);
@@ -191,6 +198,7 @@ class Image extends Model implements ImageContract
 
     /**
      * @param string $thumbnailType
+     *
      * @return string
      */
     public function getRetinaImagePath($thumbnailType = 'original')
@@ -203,6 +211,7 @@ class Image extends Model implements ImageContract
 
     /**
      * @param string $thumbnailType
+     *
      * @return string
      */
     public function getOriginalImagePath($thumbnailType = 'original')
@@ -224,6 +233,7 @@ class Image extends Model implements ImageContract
 
     /**
      * @param string $thumbnailType
+     *
      * @return string
      */
     public function getThumbnailPath($thumbnailType = 'original')
@@ -237,6 +247,7 @@ class Image extends Model implements ImageContract
 
     /**
      * @return array|mixed|string
+     *
      * @throws \Exception
      */
     public function getCurrentUploadDir()
@@ -257,7 +268,8 @@ class Image extends Model implements ImageContract
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return $this
      */
     public function setAttribute($key, $value)
@@ -273,7 +285,8 @@ class Image extends Model implements ImageContract
 
     /**
      * @param array $attributes
-     * @param bool $sync
+     * @param bool  $sync
+     *
      * @return $this
      */
     public function setRawAttributes(array $attributes, $sync = false)
@@ -286,12 +299,12 @@ class Image extends Model implements ImageContract
 
     /**
      * @param array $attributes
+     *
      * @throws \Exception
      */
     protected function attachMetaAttributes(array $attributes)
     {
         if (array_key_exists('meta', $attributes)) {
-
             // add meta attributes.
             if (is_string($attributes['meta'])) {
                 $attributes['meta'] = json_decode($attributes['meta'], true);
@@ -311,7 +324,9 @@ class Image extends Model implements ImageContract
 
     /**
      * @param array $fields
+     *
      * @return bool
+     *
      * @throws ImageFieldCollisionException
      */
     public function checkMetaFieldCollision(array $fields)
@@ -343,6 +358,7 @@ class Image extends Model implements ImageContract
 
     /**
      * @param $key
+     *
      * @return mixed|null
      */
     public function getMeta($key)
@@ -369,7 +385,9 @@ class Image extends Model implements ImageContract
 
     /**
      * @param $thumb
+     *
      * @return string
+     *
      * @throws \Exception
      */
     public function toHtml($thumb, $attributes = [])
@@ -390,7 +408,9 @@ class Image extends Model implements ImageContract
 
     /**
      * Override getter so we can fetch metadata from properties.
+     *
      * @param string $key
+     *
      * @return mixed
      */
     public function __get($key)
@@ -417,7 +437,9 @@ class Image extends Model implements ImageContract
 
     /**
      * Override magic isset so we can check for identifier metadata and properties.
+     *
      * @param string $key
+     *
      * @return bool
      */
     public function __isset($key)
@@ -437,5 +459,17 @@ class Image extends Model implements ImageContract
         if (! $result && $key != 'meta') {
             return isset($this->meta[$key]);
         }
+    }
+
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        $table = parent::getTable();
+
+        return config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_'.$table : $table;
     }
 }

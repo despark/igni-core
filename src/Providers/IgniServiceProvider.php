@@ -22,7 +22,8 @@ class IgniServiceProvider extends ServiceProvider
      */
     protected $commands = [
         \Despark\Cms\Console\Commands\InstallCommand::class,
-        \Despark\Cms\Console\Commands\Admin\ResourceCommand::class,
+        \Despark\Cms\Console\Commands\ResourceCommand::class,
+        \Despark\Cms\Console\Commands\PagesResourceCommand::class,
         \Despark\Cms\Console\Commands\Image\Rebuild::class,
     ];
 
@@ -62,6 +63,13 @@ class IgniServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../config/' => config_path(),
         ], 'configs');
+         // Plugins
+        $this->publishes([
+            __DIR__.'/../../public/admin_assets/plugins' => base_path('/public/admin_assets/plugins'),
+        ], 'plugins');
+        $this->publishes([
+            __DIR__.'/../../public/plugins/' => base_path('/public/plugins'),
+        ], 'plugins');
         // Resources
         $this->publishes([
             __DIR__.'/../../resources/assets' => base_path('/resources/assets'),

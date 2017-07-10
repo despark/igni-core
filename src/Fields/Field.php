@@ -47,7 +47,7 @@ abstract class Field implements FieldContract
      * @param array  $options
      * @param null   $value
      */
-    public function __construct($fieldName, array $options, $value = null)
+    public function __construct($fieldName, array $options, $value = null, $model = null)
     {
         $this->value = $value;
         $this->fieldName = $fieldName;
@@ -71,6 +71,7 @@ abstract class Field implements FieldContract
 
     /**
      * @param string $template
+     *
      * @return $this
      */
     public function setTemplate(string $template)
@@ -100,6 +101,7 @@ abstract class Field implements FieldContract
 
     /**
      * @param mixed $value
+     *
      * @return $this
      */
     public function setValue($value)

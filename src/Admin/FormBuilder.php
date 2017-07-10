@@ -38,7 +38,7 @@ class FormBuilder
      * @var array
      */
     protected $rendered = [];
-    
+
     /**
      * @param string $view
      *
@@ -71,7 +71,14 @@ class FormBuilder
 
     public function field($model, $fieldName, $options, $elementName = null)
     {
-        return \Field::make($model, $fieldName, $options);
+        $field = $fieldName;
+        $options['elementName'] = $elementName;
+
+        $data = compact('options', 'field', 'model');
+
+        return \Field::make($data);
+
+        // return \Field::make($model, $fieldName, $options);
     }
 
     /**

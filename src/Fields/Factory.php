@@ -22,6 +22,8 @@ class Factory implements FactoryContract
         'textarea' => Textarea::class,
         'hidden' => Hidden::class,
         'translations' => Translations::class,
+        'imageSingle' => ImageSingle::class,
+        'wysiwyg' => Wysiwyg::class,
     ];
 
     /**
@@ -49,6 +51,10 @@ class Factory implements FactoryContract
             $instance->setFieldType($type);
         } else {
             throw new \Exception($this->fields[$type].' must be instance of '.Field::class);
+        }
+
+        if (method_exists($instance, 'setModel')) {
+            $instance->setModel($model);
         }
 
         return $instance;

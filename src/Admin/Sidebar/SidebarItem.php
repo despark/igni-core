@@ -1,10 +1,8 @@
 <?php
 
-
 namespace Despark\Cms\Admin\Sidebar;
 
-
-/**
+/*
  * Class SidebarItem.
  */
 use Despark\Cms\Admin\Sidebar;
@@ -14,7 +12,6 @@ use Despark\Cms\Admin\Sidebar;
  */
 class SidebarItem
 {
-
     /**
      * @var string
      */
@@ -41,7 +38,12 @@ class SidebarItem
     protected $sidebar;
 
     /**
-     * @var boolean
+     * @var string;
+     */
+    protected $entityId;
+
+    /**
+     * @var bool
      */
     protected $hasChildren;
 
@@ -54,6 +56,7 @@ class SidebarItem
 
     /**
      * SidebarItem constructor.
+     *
      * @param array $config
      */
     public function __construct(Sidebar $sidebar, array $config)
@@ -74,6 +77,7 @@ class SidebarItem
 
     /**
      * @param mixed $id
+     *
      * @return SidebarItem
      */
     public function setId($id)
@@ -83,12 +87,19 @@ class SidebarItem
         return $this;
     }
 
-    /**
-     *
-     */
     public function isActive()
     {
         if ($this->active) {
+            return true;
+        }
+
+        // TODO Version Dependant
+        $resourceNameArray = explode('.', \Route::currentRouteName());
+        $resourceName = reset($resourceNameArray);
+
+        if (strcasecmp($resourceName, $this->getEntityId()) === 0) {
+            $this->active = true;
+
             return true;
         }
 
@@ -113,6 +124,7 @@ class SidebarItem
 
     /**
      * @param bool $active
+     *
      * @return SidebarItem
      */
     public function setActive($active)
@@ -121,7 +133,6 @@ class SidebarItem
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -171,9 +182,6 @@ class SidebarItem
         return $this->hasChildren;
     }
 
-    /**
-     *
-     */
     public function getChildren()
     {
         if (! isset($this->children)) {
@@ -197,6 +205,7 @@ class SidebarItem
 
     /**
      * @param string $name
+     *
      * @return SidebarItem
      */
     public function setName($name)
@@ -217,7 +226,7 @@ class SidebarItem
     /**
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->toHtml();
     }
@@ -230,5 +239,27 @@ class SidebarItem
         return $this->childTemplate;
     }
 
+    /**
+     * Gets the value of entityId.
+     *
+     * @return string
+     */
+    public function getEntityId(): string
+    {
+        return $this->entityId;
+    }
 
+    /**
+     * Sets the value of entityId.
+     *
+     * @param mixed $entityId the entity id
+     *
+     * @return self
+     */
+    public function setEntityId(string $entityId)
+    {
+        $this->entityId = $entityId;
+
+        return $this;
+    }
 }

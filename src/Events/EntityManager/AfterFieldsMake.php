@@ -1,15 +1,12 @@
 <?php
 
-
 namespace Despark\Cms\Events\EntityManager;
-
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class AfterFieldsMake
 {
-
     /**
      * @var array
      */
@@ -22,6 +19,7 @@ class AfterFieldsMake
 
     /**
      * AfterFieldsMake constructor.
+     *
      * @param Collection $fieldInstances
      * @param Model      $model
      */
