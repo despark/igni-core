@@ -4,8 +4,10 @@ namespace Classes\Resource;
 
 use Despark\Cms\Admin\Form;
 use Despark\Cms\Admin\FormBuilder;
+use Despark\Cms\Http\Controllers\EntityController;
 use Despark\Cms\Resource\EntityManager;
 use Despark\Tests\Cms\AbstractTestCase;
+use resources\TestController;
 use resources\TestModel;
 use resources\TestModelWithTranslations;
 
@@ -124,6 +126,51 @@ class EntityManagerTest extends AbstractTestCase
              ]);
 
         $resource = $mock->getByModel($testModel);
+
+        $this->assertEquals($testId, $resource);
+    }
+
+    public function testGetByController()
+    {
+        $testController = new TestController();
+
+        $testId = [
+            'controller' => TestController::class,
+        ];
+
+        $testId2 = [
+            'controller' => TestController::class,
+            'default' => true,
+        ];
+
+        /** @var EntityManager|\Mockery\Mock $mock */
+        $mock = \Mockery::mock(EntityManager::class)->makePartial();
+
+        $mock->shouldReceive('all')
+             ->andReturn([
+                 'test_id' => $testId,
+                 'test_id_2' => $testId2,
+             ]);
+
+        $resource = $mock->getByController($testController);
+
+        $this->assertEquals($testId, $resource);
+
+        $testController = new EntityController($mock);
+
+        $testId = [
+            'controller' => EntityController::class,
+        ];
+
+        $testId2 = [
+            'controller' => EntityController::class,
+            'default' => true,
+        ];
+
+        $mock->shouldReceive('getByRoute')
+             ->andReturn($testId);
+
+        $resource = $mock->getByController($testController);
 
         $this->assertEquals($testId, $resource);
     }
