@@ -369,7 +369,6 @@ class EntityManager
      */
     public function renderField(Model $model, $fieldId)
     {
-        dd($fieldId);
         $fields = $this->getFields($model);
         foreach ($fields as $field => $config) {
             if ($fieldId == $field) {
