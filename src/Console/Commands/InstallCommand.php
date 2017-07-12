@@ -56,6 +56,8 @@ class InstallCommand extends Command
                 return false;
             }
             // Ask for database prefix
+            $prefix = null;
+
             if ($this->confirm('Do you wish to add prefix to the CMS tables?')) {
                 $prefix = $this->ask('Enter prefix for the CMS tables:', 'igni');
                 $variable = PHP_EOL.PHP_EOL.'IGNI_TABLES_PREFIX='.$prefix;
