@@ -38,7 +38,7 @@
         "doctrine/dbal": "^2.5",
         "yajra/laravel-datatables-oracle": "~7.0",
         "spatie/laravel-permission": "^1.11",
-        "despark/laravel-db-localization": "v3.x-dev"
+        "despark/laravel-db-i18n": "v1.x"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.1",
@@ -52,8 +52,7 @@
         "files": [
             "src/helpers.php",
             "tests/resources/TestModel.php",
-            "tests/resources/TestModelWithTranslations.php",
-            "tests/resources/TestController.php"
+            "tests/resources/TestModelWithTranslations.php"
         ],
         "psr-4": {
             "Despark\\Cms\\": "src/"
