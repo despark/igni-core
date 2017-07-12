@@ -31,7 +31,7 @@
   ```php
    ...
     /*
-    * igniCMS Service Provider
+    * igniCMS Service Providers
     */
     Despark\Cms\Providers\AdminServiceProvider::class,
     Despark\Cms\Providers\IgniServiceProvider::class,
