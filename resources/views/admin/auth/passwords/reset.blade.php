@@ -8,11 +8,7 @@
             <img src="{{ asset(config('ignicms.logo')) }}" class="admin-logo" alt="Logo"/>
             <h4 class="uppercase">Website Administration</h4>
         </div>
-        @if (session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
-        @endif
+        
         <div class="login-box-body">
             <form action="{{ url('/admin/password/reset') }}" method="post">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">

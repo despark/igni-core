@@ -9,6 +9,12 @@
             <h4 class="uppercase">Website Administration</h4>
         </div>
 
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
         <div class="login-box-body">
             <form action="{{ url('/admin/password/email') }}" method="post">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
