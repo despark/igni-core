@@ -24,9 +24,9 @@ class AdminServiceProvider extends ServiceProvider
          */
         $this->app->bind(ImageContract::class, function ($app) {
             $class = $app['config']['ignicms']['images']['model'];
-            
+
             if (class_exists($class)) {
-                return new $class;
+                return new $class();
             }
         });
 

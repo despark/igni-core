@@ -8,8 +8,9 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends AdminModel implements UserContract
+class User extends AdminModel implements UserContract, CanResetPasswordContract
 {
     use Notifiable;
     use Authenticatable, Authorizable, CanResetPassword;
