@@ -63,11 +63,9 @@ class IgniServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../config/' => config_path(),
         ], 'configs');
-         // Plugins
+        // Plugins
         $this->publishes([
             __DIR__.'/../../public/admin_assets/plugins' => base_path('/public/admin_assets/plugins'),
-        ], 'plugins');
-        $this->publishes([
             __DIR__.'/../../public/plugins/' => base_path('/public/plugins'),
         ], 'plugins');
         // Resources

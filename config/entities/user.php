@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'name' => 'User',
     'description' => 'User resource',
     'model' => config('auth.providers.users.model'),

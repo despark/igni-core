@@ -17,7 +17,7 @@ class ResourceCommand extends Command
      *
      * @var string
      */
-    protected $name = 'igni:resource';
+    protected $name = 'igni:make:resource';
     /**
      * The console command description.
      *
@@ -62,15 +62,19 @@ class ResourceCommand extends Command
     {
         $this->identifier = self::normalize($this->argument('identifier'));
         $this->configIdentifier = $this->generateConfigIdentifier();
+
         $this->askImageUploads();
         $this->askMigration();
         $this->askActions();
         $this->compiler = new ResourceCompiler($this, $this->identifier, $this->configIdentifier, $this->resourceOptions);
         $this->createResource('entities');
+        $this->info('Don’t forget to add all the fields you want to manage in your new resource in the entity before running it.'.PHP_EOL);
         $this->createResource('model');
+        $this->info('Don’t forget to add all the fields you want to manage in your new resource in the model before running it.'.PHP_EOL);
         $this->createResource('controller');
         if ($this->resourceOptions['migration']) {
             $this->createResource('migration');
+            $this->info('Don’t forget to add all the fields you want to manage in your new resource in the migration before running it.'.PHP_EOL);
         }
     }
 

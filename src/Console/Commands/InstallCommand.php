@@ -85,7 +85,7 @@ class InstallCommand extends Command
             $this->info('Publishing frontend artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
                 '--force' => 1,
-                '--tag' => ['igni-frontend', 'resources'],
+                '--tag' => ['igni-frontend', 'resources', 'plugins'],
             ]);
 
             // Build FE
