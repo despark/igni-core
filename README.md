@@ -80,12 +80,12 @@
 
 ## Additional commands
 
-- Use the command `php artisan igni:resource` to create all necessary files for manipulating resources. You should specify the resource name (in title case).
+- Use the command `php artisan igni:make:resource` to create all necessary files for manipulating resources. You should specify the resource name (in title case).
 
   **Example**
 
   ```
-    php artisan igni:resource "Blog Post"
+    php artisan igni:make:resource "Blog Post"
   ```
 
 - Use the command `php artisan igni:make:pages` to create all necessary files for manipulating a Page resources. With this command only, you can start building your pages for the new awesome site!
