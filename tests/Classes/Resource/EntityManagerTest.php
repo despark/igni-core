@@ -174,4 +174,182 @@ class EntityManagerTest extends AbstractTestCase
 
         $this->assertEquals($testId, $resource);
     }
+
+    public function testGetRouteName()
+    {
+        $routes = [
+            'create' => 'testmodel.create',
+            'store' => 'testmodel.store',
+            'index' => 'testmodel.index',
+        ];
+
+        $testModel = new TestModel();
+
+        /** @var EntityManager|\Mockery\Mock $mock */
+        $mock = \Mockery::mock(EntityManager::class)->makePartial();
+
+        $mock->shouldReceive('getModelRoutes')
+             ->andReturn($routes);
+
+        $action = $mock->getRouteName($testModel, 'create');
+
+        $this->assertEquals('testmodel.create', $action);
+    }
+
+    public function testGetModelRoutes()
+    {
+        $testId = [
+            'model' => TestModel::class,
+            'actions' => ['create'],
+            'id' => 'testmodel',
+        ];
+
+        $routes = [
+            'testmodel' => [
+                'create' => 'testmodel.create',
+                'store' => 'testmodel.store',
+                'index' => 'testmodel.index',
+            ],
+        ];
+
+        $shouldSee = [
+            'create' => 'testmodel.create',
+            'store' => 'testmodel.store',
+            'index' => 'testmodel.index',
+        ];
+
+        $testModel = new TestModel();
+
+        /** @var EntityManager|\Mockery\Mock $mock */
+        $mock = \Mockery::mock(EntityManager::class)->makePartial();
+
+        $mock->shouldReceive('getByModel')
+             ->andReturn($testId);
+
+        $mock->shouldReceive('getRoutes')
+             ->andReturn($routes);
+
+        $modelRoutes = $mock->getModelRoutes($testModel, null);
+
+        $this->assertEquals($shouldSee, $modelRoutes);
+    }
+
+    public function testRenderField()
+    {
+        $testModel = new TestModel();
+
+        $fields = [
+            'test_1' => [
+                'type' => 'text',
+                'label' => 'Test 1',
+            ],
+            'test_2' => [
+                'type' => 'textarea',
+                'label' => 'Test 2',
+            ],
+        ];
+
+        /** @var EntityManager|\Mockery\Mock $entityManagerMock */
+        $mock = \Mockery::mock(EntityManager::class, [new FormBuilder(), new Form()])
+                                     ->makePartial();
+
+        $mock->shouldReceive('getFields')
+            ->andReturn($fields);
+
+        $field = $mock->renderField($testModel, 'test_2');
+
+        $this->assertNotEmpty($field);
+
+        $field = $mock->renderField($testModel, 'test_3');
+
+        $this->assertEmpty($field);
+    }
+
+    public function testGetFieldsThrowsException()
+    {
+        $this->expectException(\Exception::class);
+
+        $testModel = new TestModel();
+
+        /** @var EntityManager|\Mockery\Mock $entityManagerMock */
+        $mock = \Mockery::mock(EntityManager::class, [new FormBuilder(), new Form()])
+                                     ->makePartial();
+
+        $mock->shouldReceive('findResourceConfig')
+            ->andReturn(null);
+
+        $mock->getFields($testModel);
+    }
+
+    public function testGetFieldsReturnsNothing()
+    {
+        $testModel = new TestModel();
+
+        /** @var EntityManager|\Mockery\Mock $entityManagerMock */
+        $mock = \Mockery::mock(EntityManager::class, [new FormBuilder(), new Form()])
+                                     ->makePartial();
+
+        $config = [
+            'test' => [
+                'id' => 'testmodel',
+                'actions' => ['store'],
+                'model' => get_class($testModel),
+            ],
+        ];
+
+        $mock->shouldReceive('findResourceConfig')
+            ->andReturn($config);
+
+        $fields = $mock->getFields($testModel);
+
+        $this->assertEmpty($fields);
+    }
+
+    /**
+     * @group debug
+     */
+    public function testFindResourceConfig()
+    {
+        $testModel = new TestModel();
+
+        /** @var EntityManager|\Mockery\Mock $entityManagerMock */
+        $mock = \Mockery::mock(EntityManager::class, [new FormBuilder(), new Form()])
+                                     ->makePartial();
+
+        $config = [
+            'test' => [
+                'id' => 'testmodel',
+                'actions' => ['store'],
+                'model' => get_class($testModel),
+            ],
+        ];
+
+        $mock->shouldReceive('getById')
+            ->andReturn($config);
+
+        $resourceConfig = $mock->findResourceConfig($testModel, 'testmodel');
+
+        $this->assertNotEmpty($resourceConfig);
+    }
+
+    // public function testGetFormAction()
+    // {
+    //     $testId = [
+    //         'model' => TestModel::class,
+    //         'actions' => ['create'],
+    //         'id' => 'test',
+    //     ];
+
+    //     $testModel = new TestModel();
+
+    //     /** @var EntityManager|\Mockery\Mock $mock */
+    //     $mock = \Mockery::mock(EntityManager::class)->makePartial();
+
+    //     $mock->shouldReceive('getRouteName')
+    //          ->andReturn('testmodel.store');
+
+    //     $formAction = $mock->getFormAction($testModel, 'create', null, []);
+
+    //     $this->assertEquals('testmodel.store', $formAction);
+    // }
 }

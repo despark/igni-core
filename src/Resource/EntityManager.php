@@ -388,6 +388,7 @@ class EntityManager
     public function getFields(Model $model, $configId = null)
     {
         $resource = $this->findResourceConfig($model, $configId);
+
         if (! $resource) {
             throw new \Exception('Model ('.get_class($model).') is missing resource configuration');
         }
