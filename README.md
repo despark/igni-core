@@ -1,3 +1,9 @@
+<p align="center"><img src="https://despark.com/public/images/despark-logo.svg"></p>
+
+<p align="center">
+<a href="https://packagist.org/packages/despark/igni-core#4.1.x-dev"><img src="https://poser.pugx.org/despark/igni-core/v/stable.svg" alt="Latest Stable Version"></a>
+</p>
+
 # Despark's igniCMS
 
 **igniCMS** is an administrative interface builder for Laravel 5.4
@@ -95,15 +101,23 @@ You can rebuild image styles using `php artisan igni:images:rebuild` . If you wa
 You can exclude some resources with `--without=*`
 
 ### Resetting passwords ###
-In order to use the reset password function, you must fill up the MAIL settings in your `.env` file.
+In order to use the reset password function, you must fill up the MAIL and APP settings in your `.env` file or modify your default ones in `config/app.php` and `config/mail.php`.
 
 ```
+    ...
+    APP_NAME=IgniCMS
+    APP_URL=http://my-site-url.com
+    ...
     MAIL_DRIVER=smtp
     MAIL_HOST=smtp.mailtrap.io
     MAIL_PORT=2525
     MAIL_USERNAME=
     MAIL_PASSWORD=
+    MAIL_FROM_ADDRESS=no-reply@ignicms.com
+    MAIL_FROM_NAME=IgniCMS
 ```
+By modifying your APP_URL, the email sent to the user will be working as expecred!
+If you want to change your email's template, you can find out how at <a href="https://laravel.com/docs/5.4/mail#customizing-the-components">Laravel's website</a>.
 
 ## Copyright and License
 
