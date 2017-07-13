@@ -95,4 +95,30 @@ class LoginController extends Controller
     {
         return property_exists($this, 'decayMinutes') ? $this->decayMinutes : 15;
     }
+
+    /**
+     * Redirect the user after determining they are locked out.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function sendLockoutResponse(Request $request)
+    {
+        $seconds = $this->limiter()->availableIn(
+            $this->throttleKey($request)
+        );
+
+        $message = trans('ignicms::admin.throttle', ['minutes' => round($seconds / 60)]);
+
+        $errors = [$this->username() => $message];
+
+        if ($request->expectsJson()) {
+            return response()->json($errors, 423);
+        }
+
+        return redirect()->back()
+            ->withInput($request->only($this->username(), 'remember'))
+            ->withErrors($errors);
+    }
 }

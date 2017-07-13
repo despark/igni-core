@@ -19,4 +19,5 @@ return [
     ],
     'yes' => 'Yes',
     'no' => 'No',
+    'throttle' => 'Too many login attempts. Please try again in :minutes minutes.',
 ];
