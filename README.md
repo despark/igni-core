@@ -1,3 +1,9 @@
+<p align="center"><img src="https://despark.com/public/images/despark-logo.svg"></p>
+
+<p align="center">
+<a href="https://packagist.org/packages/despark/igni-core#4.1.x-dev"><img src="https://poser.pugx.org/despark/igni-core/v/stable.svg" alt="Latest Stable Version"></a>
+</p>
+
 # Despark's igniCMS
 
 **igniCMS** is an administrative interface builder for Laravel 5.4
