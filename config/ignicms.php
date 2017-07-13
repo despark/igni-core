@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'projectName' => 'Despark',
+    'projectName' => 'IgniCMS',
     'defaultFormView' => 'ignicms::admin.formElements.defaultForm',
     'paginateLimit' => 15,
     'logo' => 'images/logo.png',

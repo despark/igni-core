@@ -9,7 +9,7 @@
                 <img src="{{ asset(config('ignicms.logo')) }}" alt="Logo"/>
             </h1>
             <h2>
-                Welcome to Despark Content Managment System
+                Welcome to IgniCMS
             </h2>
             <p class="subtitle">
                 The interface of the CMS is relatively simple and self explanatory. Hope you will enjoy it.

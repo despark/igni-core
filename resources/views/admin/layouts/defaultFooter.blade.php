@@ -5,5 +5,5 @@
             <img src="{{ asset('images/logo.png') }}" alt="Despark"/>
         </a>
     </div>
-    <h4>Despark Website Administration Copyright &reg; {{ date('Y') }}</h4>
+    <h4>IgniCMS Copyright &reg; {{ date('Y') }}</h4>
 </footer>
