@@ -85,4 +85,14 @@ class LoginController extends Controller
     {
         return view('ignicms::admin.auth.login');
     }
+
+    /**
+     * Get the number of minutes to throttle for.
+     *
+     * @return int
+     */
+    public function decayMinutes()
+    {
+        return property_exists($this, 'decayMinutes') ? $this->decayMinutes : 15;
+    }
 }
