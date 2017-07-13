@@ -15,6 +15,10 @@ return [
             'type' => 'text',
             'label' => 'Title',
         ],
+        'is_published' => [
+            'type' => 'checkbox',
+            'label' => 'Is Published',
+        ],
         'slug' => [
             'type' => 'text',
             'label' => 'Slug',
@@ -30,10 +34,6 @@ return [
         'content' => [
             'type' => 'wysiwyg',
             'label' => 'Content',
-        ],
-        'is_published' => [
-            'type' => 'checkbox',
-            'label' => 'Is Published',
         ],
     ],
     'image_fields' => [

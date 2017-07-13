@@ -299,7 +299,7 @@ class EntityManager
     {
         $method = $model->exists ? 'PUT' : 'POST';
         $actionVerb = $model->exists ? 'update' : 'store';
-        $attributes = $model->getKey() ? ['id' => 'model_'.$model->getKey()] : [];
+        $attributes = $model->getKey() ? ['id' => $model->getKey()] : [];
 
         $action = $this->getFormAction($model, $actionVerb, $configId, $attributes);
 
