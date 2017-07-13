@@ -305,9 +305,6 @@ class EntityManagerTest extends AbstractTestCase
         $this->assertEmpty($fields);
     }
 
-    /**
-     * @group debug
-     */
     public function testFindResourceConfig()
     {
         $testModel = new TestModel();
@@ -331,25 +328,4 @@ class EntityManagerTest extends AbstractTestCase
 
         $this->assertNotEmpty($resourceConfig);
     }
-
-    // public function testGetFormAction()
-    // {
-    //     $testId = [
-    //         'model' => TestModel::class,
-    //         'actions' => ['create'],
-    //         'id' => 'test',
-    //     ];
-
-    //     $testModel = new TestModel();
-
-    //     /** @var EntityManager|\Mockery\Mock $mock */
-    //     $mock = \Mockery::mock(EntityManager::class)->makePartial();
-
-    //     $mock->shouldReceive('getRouteName')
-    //          ->andReturn('testmodel.store');
-
-    //     $formAction = $mock->getFormAction($testModel, 'create', null, []);
-
-    //     $this->assertEquals('testmodel.store', $formAction);
-    // }
 }

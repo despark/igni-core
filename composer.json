@@ -52,7 +52,8 @@
         "files": [
             "src/helpers.php",
             "tests/resources/TestModel.php",
-            "tests/resources/TestModelWithTranslations.php"
+            "tests/resources/TestModelWithTranslations.php",
+            "tests/resources/TestController.php"
         ],
         "psr-4": {
             "Despark\\Cms\\": "src/"
