@@ -86,7 +86,7 @@
 
 ## Additional information
 
-- You can find more info about IgniCMS in our <a href="https://github.com/despark/igni-core/wiki/IgniCMS">wiki</a> page.
+- You can find more info about IgniCMS in our <a href="https://github.com/despark/igni-core/wiki/IgniCMS-Wiki">wiki</a> page.
 
 ## Copyright and License
 
