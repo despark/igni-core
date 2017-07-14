@@ -4,6 +4,7 @@ return [
     'projectName' => 'IgniCMS',
     'defaultFormView' => 'ignicms::admin.formElements.defaultForm',
     'paginateLimit' => 15,
+    // For best performance the image must be with width 234px
     'logo' => 'images/logo.png',
     'auth' => [
         'admin' => \Despark\Cms\Http\Middleware\AdminAuth::class,

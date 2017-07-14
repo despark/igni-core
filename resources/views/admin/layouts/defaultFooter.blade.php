@@ -1,9 +1,7 @@
 <!-- Main Footer -->
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-        <a target="_blank" href="http://despark.com" title="Digital design agency and app design London">
-            <img src="{{ asset('images/logo.png') }}" alt="Despark"/>
-        </a>
+        <img src="{{ asset(config('ignicms.logo')) }}" class="admin-logo" alt="Logo" width="117" />
     </div>
-    <h4>IgniCMS Copyright &reg; {{ date('Y') }}</h4>
+    <h4><a href="https://github.com/despark/igni-core" target="_blank">IgniCMS</a> Copyright &reg; {{ date('Y') }}</h4>
 </footer>

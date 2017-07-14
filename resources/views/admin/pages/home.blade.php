@@ -6,7 +6,7 @@
     <section id="introduction">
         <div class="titles-section">
             <h1>
-                <img src="{{ asset(config('ignicms.logo')) }}" alt="Logo"/>
+                <img src="{{ asset(config('ignicms.logo')) }}" alt="Logo" width="117" />
             </h1>
             <h2>
                 Welcome to IgniCMS
