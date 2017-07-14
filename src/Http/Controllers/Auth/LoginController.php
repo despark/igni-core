@@ -109,7 +109,7 @@ class LoginController extends Controller
             $this->throttleKey($request)
         );
 
-        $message = trans('ignicms::admin.throttle', ['minutes' => round($seconds / 60)]);
+        $message = $seconds < 60 ? trans('auth.throttle', ['seconds' => $seconds]) : trans('ignicms::admin.throttle', ['minutes' => round($seconds / 60)]);
 
         $errors = [$this->username() => $message];
 
