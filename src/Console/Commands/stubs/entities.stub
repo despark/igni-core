@@ -5,9 +5,14 @@ return [
     'description' => ':model_config_name resource',
     'model' => :app_namespaceModels\:model_name::class,
     'controller' => :app_namespaceHttp\Controllers\Admin\:controller_name::class,
-    'adminColumns' => [''],
+    'adminColumns' => ['title'],
     'actions' => [:actions],
-    'adminFormFields' => [],
+    'adminFormFields' => [
+        'title' => [
+            'type' => 'text',
+            'label' => 'Title',
+        ],
+    ],
     :image_fields
     'adminMenu' => [
         ':identifier' => [
