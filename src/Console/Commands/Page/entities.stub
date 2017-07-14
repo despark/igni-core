@@ -7,7 +7,7 @@ return [
     'controller' => :app_namespaceHttp\Controllers\Admin\PagesController::class,
     'adminColumns' => [
         'title',
-        'is publish' => 'is_published',
+        'is published' => 'is_published',
     ],
     'actions' => ['create', 'edit', 'destroy'],
     'adminFormFields' => [
