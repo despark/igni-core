@@ -47,11 +47,6 @@ abstract class AdminController extends BaseController
     public $defaultFormView;
 
     /**
-     * @var
-     */
-    protected $identifier;
-
-    /**
      * @var AdminModel
      */
     protected $model;
