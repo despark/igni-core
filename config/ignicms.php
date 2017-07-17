@@ -15,7 +15,6 @@ return [
         'request' => app_path('Http/Requests/Admin'),
         'controller' => app_path('Http/Controllers/Admin'),
         'migration' => base_path('database/migrations'),
-        'config' => base_path('config/admin'),
         'routes' => base_path('routes'),
         // Where your resource files are kept.
         'entities' => config_path('entities'),
