@@ -11,6 +11,8 @@ class :model_name extends AdminModel :implementations
 
     protected $table = ':table_name';
 
+    :translatable
+
     protected $fillable = ['title'];
 
     protected $rules = ['title' => 'required|max:50'];

@@ -2,10 +2,12 @@
 
 namespace Despark\Cms\Console\Commands\Compilers;
 
-use Illuminate\Console\Command;
-use Despark\Cms\Admin\Traits\AdminImage;
 use Despark\Cms\Admin\Interfaces\UploadImageInterface;
+use Despark\Cms\Admin\Traits\AdminImage;
 use Despark\Cms\Console\Commands\Admin\ResourceCommand;
+use Despark\LaravelDbLocalization\Contracts\Translatable;
+use Despark\LaravelDbLocalization\Traits\HasTranslation;
+use Illuminate\Console\Command;
 
 /**
  * Class ResourceCompiler.
@@ -43,6 +45,7 @@ class ResourceCompiler
         ':traits' => [],
         ':table_name' => '',
         ':implementations' => [],
+        ':translatable' => '',
     ];
 
     /**
@@ -74,6 +77,7 @@ class ResourceCompiler
     protected $migrationReplacements = [
         ':app_namespace' => '',
         ':table_name' => '',
+        ':parent_table_name' => '',
         ':migration_class' => '',
     ];
 
@@ -106,6 +110,14 @@ class ResourceCompiler
             $this->modelReplacements[':implementations'][] = class_basename(UploadImageInterface::class);
             $this->modelReplacements[':uses'][] = AdminImage::class;
             $this->modelReplacements[':traits'][] = class_basename(AdminImage::class);
+        }
+
+        if ($this->options['translations']) {
+            $this->modelReplacements[':uses'][] = Translatable::class;
+            $this->modelReplacements[':uses'][] = HasTranslation::class;
+            $this->modelReplacements[':implementations'][] = class_basename(Translatable::class);
+            $this->modelReplacements[':traits'][] = class_basename(HasTranslation::class);
+            $this->modelReplacements[':translatable'] = 'protected $translatable = [];';
         }
 
         $this->modelReplacements[':app_namespace'] = app()->getNamespace();
@@ -217,6 +229,23 @@ class ResourceCompiler
         $this->migrationReplacements[':app_namespace'] = app()->getNamespace();
         $this->migrationReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->identifier)).'Table';
         $this->migrationReplacements[':table_name'] = str_plural($this->identifier);
+
+        $template = strtr($template, $this->migrationReplacements);
+
+        return $template;
+    }
+
+    /**
+     * @param $template
+     *
+     * @return string
+     */
+    public function render_migration_i18n($template)
+    {
+        $this->migrationReplacements[':app_namespace'] = app()->getNamespace();
+        $this->migrationReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->identifier)).'I18nTable';
+        $this->migrationReplacements[':table_name'] = str_plural($this->identifier).'_i18n';
+        $this->migrationReplacements[':parent_table_name'] = str_plural($this->identifier);
 
         $template = strtr($template, $this->migrationReplacements);
 

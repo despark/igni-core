@@ -2,6 +2,7 @@
 
 namespace Despark\Cms\Console\Commands;
 
+use Carbon\Carbon;
 use Despark\Cms\Console\Commands\Compilers\ResourceCompiler;
 use File;
 use Illuminate\Console\Command;
@@ -41,6 +42,7 @@ class ResourceCommand extends Command
      */
     protected $resourceOptions = [
         'image_uploads' => false,
+        'translations' => false,
         'migration' => false,
         'create' => false,
         'edit' => false,
@@ -64,6 +66,7 @@ class ResourceCommand extends Command
         $this->configIdentifier = $this->generateConfigIdentifier();
 
         $this->askImageUploads();
+        $this->askTranslations();
         $this->askMigration();
         $this->askActions();
         $this->compiler = new ResourceCompiler($this, $this->identifier, $this->configIdentifier, $this->resourceOptions);
@@ -74,6 +77,9 @@ class ResourceCommand extends Command
         $this->createResource('controller');
         if ($this->resourceOptions['migration']) {
             $this->createResource('migration');
+            if ($this->resourceOptions['translations']) {
+                $this->createResource('migration_i18n');
+            }
             $this->info('Don’t forget to add all the fields you want to manage in your new resource in the migration before running it.'.PHP_EOL);
         }
     }
@@ -85,7 +91,12 @@ class ResourceCommand extends Command
     {
         $template = $this->getTemplate($type);
         $template = $this->compiler->{'render_'.$type}($template);
-        $path = config('ignicms.paths.'.$type);
+        if ($type !== 'migration_i18n') {
+            $path = config('ignicms.paths.'.$type);
+        } else {
+            $path = config('ignicms.paths.migration');
+        }
+
         $filename = $this->{$type.'_name'}().'.php';
         $this->saveResult($template, $path, $filename);
     }
@@ -109,6 +120,12 @@ class ResourceCommand extends Command
     {
         $answer = $this->confirm('Do you need image uploads?');
         $this->resourceOptions['image_uploads'] = $answer;
+    }
+
+    protected function askTranslations()
+    {
+        $answer = $this->confirm('Do you need translations?');
+        $this->resourceOptions['translations'] = $answer;
     }
 
     protected function askMigration()
@@ -198,6 +215,14 @@ class ResourceCommand extends Command
     public function migration_name()
     {
         return date('Y_m_d_His').'_create_'.str_plural($this->identifier).'_table';
+    }
+
+    /**
+     * @return string
+     */
+    public function migration_i18n_name()
+    {
+        return Carbon::now()->addSeconds(1)->format('Y_m_d_His').'_create_'.str_plural($this->identifier).'_i18n_table';
     }
 
     /**
