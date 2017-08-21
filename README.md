@@ -1,7 +1,7 @@
 <p align="center"><img src="https://despark.com/public/images/despark-logo.svg"></p>
 
 <p align="center">
-<a href="https://packagist.org/packages/despark/igni-core#4.1.x-dev"><img src="https://poser.pugx.org/despark/igni-core/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/despark/igni-core#dev-master"><img src="https://poser.pugx.org/despark/igni-core/v/stable.svg" alt="Latest Stable Version"></a>
 </p>
 
 # Despark's igniCMS
@@ -24,7 +24,7 @@
   "require": {
      "php": ">=5.5.9",
      "laravel/framework": "5.4.*",
-     "despark/igni-core": "4.1.x-dev"
+     "despark/igni-core": "dev-master"
   },
   ```
 
@@ -86,7 +86,7 @@
 
 ## Additional information
 
-- You can find more info about IgniCMS in our <a href="https://github.com/despark/igni-core/wiki/IgniCMS-Wiki">wiki</a> page.
+- You can find more info about IgniCMS in our <a href="https://despark.github.io/igni-core/">Github page</a>.
 
 ## Copyright and License
 
