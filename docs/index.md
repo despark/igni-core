@@ -1,14 +1,19 @@
+---
+layout: default
+---
+
 # Commands
-* [Create new resource](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#create-new-resource)
-* [Create Pages resource](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#create-pages-resource)
-* [Create Contacts resource](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#create-contacts-page-resource)
+* [Create new resource](#create-new-resource)
+* [Create Pages resource](#create-pages-resource)
+* [Create Contacts resource](#create-contacts-page-resource)
+
 # Features info
-* [Image styles rebuilding](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#image-styles-rebuilding)
-* [Getting your uploaded images](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#getting-your-uploaded-images)
-* [Resetting passwords](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#resetting-passwords)
-* [Localization](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#localization)
-* [Change company logo](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#change-company-logo)
-* [Brute force protection](https://github.com/despark/igni-core/wiki/IgniCMS-Wiki#brute-force-protection)
+* [Image styles rebuilding](#image-styles-rebuilding)
+* [Getting your uploaded images](#getting-your-uploaded-images)
+* [Resetting passwords](#resetting-passwords)
+* [Localization](#localization)
+* [Change company logo](#change-company-logo)
+* [Brute force protection](#brute-force-protection)
 
 ***
 
@@ -102,3 +107,4 @@ You can change the company logo from `config/ignicms.php`.
 
 ## Brute force protection
 If someone tries to login with a certain email and makes 5 wrong attempts, this email will be blocked for 15 minutes.
+
