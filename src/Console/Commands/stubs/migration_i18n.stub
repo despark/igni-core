@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Despark\Cms\Models\IgniMigration;
+use Illuminate\Support\Facades\Schema;
+
+class :migration_class extends IgniMigration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create($this->getTableName(':table_name'), function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('parent_id');
+            $table->string('locale');
+            $table->timestamps();
+
+            $table->foreign('parent_id')
+                   ->references('id')
+                   ->on(':parent_table_name')
+                   ->onDelete('cascade')
+                   ->onUpdate('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists($this->getTableName(':table_name'));
+    }
+}

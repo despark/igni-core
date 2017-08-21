@@ -1,12 +1,13 @@
 <div class="form-group {{ $errors->has($fieldName) ? 'has-error' : '' }}">
-    {!! Form::label($elementName, $options['label']) !!}
+    {!! Form::label($elementName, $field->getLabel()) !!}
     <div class="datetimepicker input-group">
-        {!! Form::text($elementName, $record->$fieldName, [
-            'id' =>  $elementName,
-            'class' => "form-control",
-            'placeholder' => $options['label'],
-        ] ) !!}
+        {!! Form::text($elementName, $field->getValue(), $field->getAttributes() ) !!}
     </div>
+    @if($field->getHelp())
+        <p class="help-text">
+            {{$field->getHelp()}}
+        </p>
+    @endif
     <div class="text-red">
         {{ join($errors->get($fieldName), '<br />') }}
     </div>

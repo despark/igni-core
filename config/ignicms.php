@@ -1,16 +1,23 @@
 <?php
 
 return [
-    'projectName' => 'Despark',
+    'projectName' => 'IgniCMS',
     'defaultFormView' => 'ignicms::admin.formElements.defaultForm',
     'paginateLimit' => 15,
+    // For best performance the image must be with width 234px
+    'logo' => 'images/logo.png',
+    'auth' => [
+        'admin' => \Despark\Cms\Http\Middleware\AdminAuth::class,
+    ],
+    'igniTablesPrefix' => env('IGNI_TABLES_PREFIX', null),
     'paths' => [
         'model' => app_path('Models'),
         'request' => app_path('Http/Requests/Admin'),
         'controller' => app_path('Http/Controllers/Admin'),
         'migration' => base_path('database/migrations'),
-        'config' => base_path('config/admin'),
         'routes' => base_path('routes'),
+        // Where your resource files are kept.
+        'entities' => config_path('entities'),
     ],
     'files' => [
         // No leading slash
@@ -25,6 +32,14 @@ return [
         'admin_thumb_type' => 'fit',
         'disable_alt_title_fields' => false,
         'require_alt_title_fields' => true,
+        'model' => \Despark\Cms\Models\Image::class,
+    ],
+    'languages' => [
+        // Add languages that you will use in your app.
+        [
+            'locale' => 'en',
+            'name' => 'English',
+        ],
     ],
     'admin_assets' => [
         'js' => [

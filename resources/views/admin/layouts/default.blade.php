@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Despark Website Administration - @yield('pageTitle', 'Home') </title>
+    <title>IgniCMS - @yield('pageTitle', 'Home') </title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <meta name="_token" content="{{ app('Illuminate\Encryption\Encrypter')->encrypt(csrf_token()) }}"/>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -17,7 +17,7 @@
 <body class="skin-blue sidebar-mini">
 <div class="wrapper">
     @include('ignicms::admin.layouts.defaultMainHeader')
-    @include('ignicms::admin.layouts.sidebar')
+    {!! $sidebar->toHtml() !!}
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">

@@ -3,15 +3,14 @@
 namespace Despark\Cms\Http\Requests;
 
 use Despark\Cms\Admin\Traits\AdminValidateTrait;
+use Despark\Cms\Contracts\RequestContract;
 
 /**
  * Class ProjectRequest.
  */
-class AdminFormRequest extends Request
+class AdminFormRequest extends Request implements RequestContract
 {
     use AdminValidateTrait;
-
-    protected $model;
 
     /**
      * Get the validation rules that apply to the request.
@@ -25,5 +24,10 @@ class AdminFormRequest extends Request
         }
 
         return $this->model->getRules();
+    }
+
+    public function authorize()
+    {
+        return true;
     }
 }

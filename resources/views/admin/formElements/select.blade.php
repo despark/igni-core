@@ -1,6 +1,11 @@
 <div class="form-group {{ $errors->has($fieldName) ? 'has-error' : '' }}">
-    {!! Form::label($fieldName, $options['label']) !!}
-    {!! Form::select($fieldName, [null => 'Select '.$options['label']] + $sourceModel->toOptionsArray(), $record->{$fieldName}, ['class' => 'form-control '.array_get($options, 'additionalClass')]) !!}
+    {!! Form::label($fieldName, $field->getLabel()) !!}
+    {!! Form::select($fieldName, $field->getSelectOptions(), $field->getValue(), $field->getAttributes()) !!}
+    @if($field->getHelp())
+        <p class="help-text">
+            {{$field->getHelp()}}
+        </p>
+    @endif
     <div class="text-red">
         {{ join($errors->get($fieldName), '<br />') }}
     </div>

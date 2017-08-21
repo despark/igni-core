@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
@@ -11,39 +10,13 @@ use Response;
 class UsersController extends AdminController
 {
     /**
-     * UsersController constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $userModelClass = config('auth.model');
-
-        $this->model = new $userModelClass;
-
-        $this->sidebarItems['users']['isActive'] = true;
-        if (isset($this->sidebarItems['users']['subMenu']['users_manager'])) {
-            $this->sidebarItems['users']['subMenu']['users_manager']['isActive'] = true;
-        }
-
-        $this->viewData['pageTitle'] = 'Users';
-        $this->viewData['editRoute'] = 'user.edit';
-        $this->viewData['createRoute'] = 'user.create';
-        $this->viewData['deleteRoute'] = 'user.destroy';
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return Response
      */
     public function create()
     {
-        $this->viewData['record'] = $this->model;
-
-        $this->viewData['actionVerb'] = 'Create';
-        $this->viewData['formMethod'] = 'POST';
-        $this->viewData['formAction'] = 'user.store';
+        $this->viewData['form'] = \Entity::getForm($this->model);
 
         return view($this->defaultFormView, $this->viewData);
     }
@@ -78,25 +51,6 @@ class UsersController extends AdminController
         ]);
 
         return redirect(route('user.edit', ['id' => $record->id]));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function edit($id)
-    {
-        $record = $this->model->findOrFail($id);
-
-        $this->viewData['record'] = $record;
-
-        $this->viewData['formMethod'] = 'PUT';
-        $this->viewData['formAction'] = 'user.update';
-
-        return view($this->defaultFormView, $this->viewData);
     }
 
     /**

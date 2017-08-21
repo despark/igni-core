@@ -2,9 +2,7 @@
 
 namespace Despark\Cms\Admin\Traits;
 
-use Despark\Cms\Models\I18n;
 use Illuminate\Support\Facades\Request;
-use Despark\Cms\Admin\Helpers\FormBuilder;
 
 /**
  * Class AdminModelTrait.
@@ -43,11 +41,16 @@ trait AdminModelTrait
      */
     public function getIdentifier()
     {
-        if ( ! isset($this->identifier)) {
-            throw new \Exception('Missing required property `identifier` in: '.__CLASS__);
+        return $this->getResourceConfig()['id'];
+    }
+
+    public function getResourceConfig()
+    {
+        if (! isset($this->resourceConfig)) {
+            $this->resourceConfig = $this->entityManager->getByModel($this);
         }
 
-        return $this->identifier;
+        return $this->resourceConfig;
     }
 
     /**
@@ -55,8 +58,8 @@ trait AdminModelTrait
      */
     public function getAdminTableColumns()
     {
-        if ( ! isset($this->adminColumns)) {
-            $this->adminColumns = config('resources.'.$this->getIdentifier().'.adminColumns', []);
+        if (! isset($this->adminColumns)) {
+            $this->adminColumns = $this->getResourceConfig()['adminColumns'];
         }
 
         return $this->adminColumns;
@@ -121,16 +124,18 @@ trait AdminModelTrait
                 return $record->{$col['relation']}->{$col['db_field']};
                 break;
             case 'translation':
-                $locale = config('app.locale', 'en');
-                $i18n = I18n::select('id')->where('locale', $locale)->first();
-                if ($i18n) {
-                    $i18nId = $i18n->id;
-
-                    return $record->translate(1)->{$col['db_field']};
-                }
-
+                // TODO i18n
                 return 'No translation';
-                break;
+            //                $locale = config('app.locale', 'en');
+            //                $i18n = I18n::select('id')->where('locale', $locale)->first();
+            //                if ($i18n) {
+            //                    $i18nId = $i18n->id;
+            //
+            //                    return $record->translate(1)->{$col['db_field']};
+            //                }
+            //
+            //                return 'No translation';
+            //                break;
             default:
                 return $record->{$col['db_field']};
                 break;
@@ -179,27 +184,22 @@ trait AdminModelTrait
     }
 
     /**
+     * @param string|null $configId
+     *
      * @return string
      */
-    public function buildForm()
-    {
-        $formFields = '';
-
-        foreach ($this->getFormFields() as $field => $options) {
-            $formBuilder = new FormBuilder();
-            $formFields .= $formBuilder->field($this, $field, $options);
-        }
-
-        return $formFields;
-    }
+     public function buildForm(string $configId = null)
+     {
+         return $this->getEntityManager()->getForm($this, $configId);
+     }
 
     /**
      * @return mixed
      */
     public function getFormFields()
     {
-        if ( ! isset($this->adminFormFields)) {
-            $this->adminFormFields = config('resources.'.$this->getIdentifier().'.adminFormFields', []);
+        if (! isset($this->adminFormFields)) {
+            $this->adminFormFields = $this->getResourceConfig()['adminFormFields'];
         }
 
         return $this->adminFormFields;
@@ -227,32 +227,22 @@ trait AdminModelTrait
         return $this;
     }
 
-    /**
-     * @param $fieldName
-     * @return null
-     */
-    public function getAdminFormField($fieldName)
-    {
-        if (isset($this->getFormFields()[$fieldName])) {
-            return $this->getFormFields()[$fieldName];
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRules()
-    {
-        return $this->rules;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRulesUpdate()
-    {
-        return (isset($this->rulesUpdate)) ? array_merge($this->rules, $this->rulesUpdate) : $this->rules;
-    }
+    // TODO validation logic.
+    //    /**
+    //     * @return mixed
+    //     */
+    //    public function getRules()
+    //    {
+    //        return $this->rules;
+    //    }
+    //
+    //    /**
+    //     * @return mixed
+    //     */
+    //    public function getRulesUpdate()
+    //    {
+    //        return (isset($this->rulesUpdate)) ? array_merge($this->rules, $this->rulesUpdate) : $this->rules;
+    //    }
 
     /**
      * Generate preview button for the CMS

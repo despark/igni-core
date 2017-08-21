@@ -5,7 +5,7 @@
 @section('content')
     <div class="login-box">
         <div class="login-logo">
-            <img src="{{ asset('images/logo.png') }}" class="admin-logo" alt="Logo"/>
+            <img src="{{ asset(config('ignicms.logo')) }}" class="admin-logo" alt="Logo" width="117" />
             <h4 class="uppercase">Website Administration</h4>
         </div>
 
@@ -30,6 +30,12 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <button type="submit" class="btn btn-primary btn-block btn-flat uppercase">Sign In</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <a href="{{ url('/admin/password/reset') }}" class="btn btn-link btn-block btn-flat uppercase">Forgot your password?</button>
                     </div>
                 </div>
 

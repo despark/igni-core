@@ -3,7 +3,9 @@
 namespace Despark\Cms\Console\Commands;
 
 use Carbon\Carbon;
+use Despark\Cms\Console\Commands\Compilers\UserCompiler;
 use Illuminate\Console\Command;
+use File;
 
 /**
  * Class InstallCommand.
@@ -23,6 +25,13 @@ class InstallCommand extends Command
      * @var string
      */
     protected $description = 'Installs the application by setting up all the necessary resources.';
+
+    /**
+     * Compiler.
+     *
+     * @var
+     */
+    protected $compiler;
 
     /**
      * Create a new command instance.
@@ -46,11 +55,24 @@ class InstallCommand extends Command
 
                 return false;
             }
-            // First publish the commands
-            $this->info('Publishing migrations..'.PHP_EOL);
+            // Ask for database prefix
+            $prefix = null;
+
+            if ($this->confirm('Do you wish to add prefix to the CMS tables?')) {
+                $prefix = $this->ask('Enter prefix for the CMS tables:', 'igni');
+                $variable = PHP_EOL.PHP_EOL.'IGNI_TABLES_PREFIX='.$prefix;
+                $env = base_path('.env');
+                file_put_contents($env, $variable, FILE_APPEND | LOCK_EX);
+                config(['ignicms.igniTablesPrefix' => $prefix]);
+            }
+            $this->compiler = new UserCompiler('users', $prefix ? $prefix.'_users' : 'users');
+            $this->createResource('model');
+
+            // Publish the commands
+            $this->info('Publishing Igni CMS artifacts..'.PHP_EOL);
             $this->call('vendor:publish', [
-                '--provider' => 'Despark\Cms\Providers\CoreServiceProvider',
-                '--tag' => ['migrations'],
+                '--provider' => \Despark\Cms\Providers\IgniServiceProvider::class,
+                '--tag' => ['migrations', 'configs'],
             ]);
 
             $this->info(PHP_EOL.'Dumping autoloader..');
@@ -59,8 +81,22 @@ class InstallCommand extends Command
             $this->info('Migrating..'.PHP_EOL);
             $this->call('migrate');
 
-            $this->info(PHP_EOL.'--- Admin setup ---');
+            // Publish frontend
+            $this->info('Publishing frontend artifacts..'.PHP_EOL);
+            $this->call('vendor:publish', [
+                '--force' => 1,
+                '--tag' => ['igni-frontend', 'resources', 'plugins'],
+            ]);
 
+            // Build FE
+            $this->info(PHP_EOL.'Building frontend..'.PHP_EOL);
+            exec(__DIR__.'/../../../scripts/frontend.sh '.base_path(), $output, $exitCode);
+            if ($exitCode > 0) {
+                $this->warn('Frontend build failed. Please run manually.');
+                $this->info('Reason: '.implode(PHP_EOL, $output).PHP_EOL);
+            }
+
+            $this->info(PHP_EOL.'--- Admin setup ---');
         }
 
         if (! isset($data['name'])) {
@@ -85,12 +121,10 @@ class InstallCommand extends Command
             return $this->handle(true, $data);
         }
 
-
         $this->info('Seeding user..'.PHP_EOL);
         $this->seedUser($data);
 
         $this->output->success('Installation complete!');
-
     }
 
     /**
@@ -98,6 +132,7 @@ class InstallCommand extends Command
      */
     public function seedUser($data)
     {
+        $tableName = config('ignicms.igniTablesPrefix') ? config('ignicms.igniTablesPrefix').'_users' : 'users';
         $data = array_merge(array_only($data, ['password', 'email', 'name']), [
             'is_admin' => 1,
             'created_at' => Carbon::now(),
@@ -106,12 +141,14 @@ class InstallCommand extends Command
 
         $data['password'] = bcrypt($data['password']);
 
-        \DB::table('users')->insert($data);
+        \DB::table($tableName)->insert($data);
     }
 
     /**
      * @param $email
+     *
      * @return bool
+     *
      * @throws \Exception
      */
     public function validateEmail($email)
@@ -123,7 +160,6 @@ class InstallCommand extends Command
         return $email;
     }
 
-
     /**
      * @return bool
      */
@@ -134,5 +170,56 @@ class InstallCommand extends Command
                 return \DB::table('users')->where('is_admin', 1)->exists();
             }
         }
+    }
+
+    /**
+     * @param $type
+     */
+    protected function createResource($type)
+    {
+        $template = $this->getTemplate($type);
+        $template = $this->compiler->{'render_'.$type}($template);
+        $path = config('ignicms.paths.'.$type);
+        $filename = $this->{$type.'_name'}().'.php';
+        $this->saveResult($template, $path, $filename);
+    }
+
+    /**
+     * @param $type
+     *
+     * @return string
+     */
+    public function getTemplate($type)
+    {
+        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'User'.DIRECTORY_SEPARATOR.$type.'.stub');
+    }
+
+    /**
+     * @param $template
+     * @param $path
+     * @param $filename
+     */
+    protected function saveResult($template, $path, $filename)
+    {
+        $file = $path.DIRECTORY_SEPARATOR.$filename;
+
+        if (File::exists($file)) {
+            $result = $this->confirm('File "'.$filename.'" already exist. Overwrite?', false);
+            if (! $result) {
+                return;
+            }
+        }
+        File::put($file, $template);
+        $this->info('File "'.$filename.'" was created.');
+    }
+
+    /**
+     * @return string
+     *
+     * @todo this is not needed in the command we should move it into the compiler
+     */
+    public function model_name()
+    {
+        return 'User';
     }
 }

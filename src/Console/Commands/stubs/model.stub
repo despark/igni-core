@@ -3,9 +3,7 @@
 namespace :app_namespaceModels;
 
 use Despark\Cms\Models\AdminModel;
-use Despark\Cms\Admin\Traits\AdminModelTrait;
 :uses
-
 
 class :model_name extends AdminModel :implementations
 {
@@ -13,9 +11,18 @@ class :model_name extends AdminModel :implementations
 
     protected $table = ':table_name';
 
-    protected $fillable = [];
+    :translatable
 
-    protected $rules = [];
+    protected $fillable = ['title'];
+
+    protected $rules = ['title' => 'required|max:50'];
+
+    protected $rulesUpdate = [];
+
+    public function getRulesUpdate()
+    {
+        return array_merge($this->rules, $this->rulesUpdate);
+    }
 
     protected $identifier = ':identifier';
 }

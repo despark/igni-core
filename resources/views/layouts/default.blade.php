@@ -1,28 +1,28 @@
 <!doctype html>
 <html>
 <head>
-    <title>@yield('title', 'Home') | Despark</title>
+    <title>@yield('title', 'Home') | IgniCMS</title>
 
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="Description" content="@yield('social:description', 'Despark')">
+    <meta name="Description" content="@yield('social:description', 'IgniCMS')">
     <meta name="keywords" content="@yield('meta:keywords')">
     <link rel="canonical" href="{{ URL::current() }}"/>
 
     <!-- for Facebook -->
-    <meta property="og:title" content="@yield('social:title', 'Despark') | Despark"/>
+    <meta property="og:title" content="@yield('social:title', 'IgniCMS') | IgniCMS"/>
     <meta property="og:type" content="article"/>
     <meta property="og:image" content="@yield('social:image', asset('/img/logo_600_350.jpg'))"/>
     <meta property="og:url" content="{{ URL::current() }}"/>
-    <meta property="og:description" content="@yield('social:description', 'Despark')"/>
+    <meta property="og:description" content="@yield('social:description', 'IgniCMS')"/>
     <meta property="fb:app_id" content="437670326442440"/>
 
     <!-- for Twitter -->
     <meta name="twitter:card" content="summary"/>
-    <meta name="twitter:title" content="@yield('social:title', 'Despark')"/>
-    <meta name="twitter:description" content="@yield('social:description', 'Despark')"/>
+    <meta name="twitter:title" content="@yield('social:title', 'IgniCMS')"/>
+    <meta name="twitter:description" content="@yield('social:description', 'IgniCMS')"/>
     <meta name="twitter:image" content="@yield('social:image', asset('/images/logo-desktop.png'))"/>
 
     <!-- Favicon -->
