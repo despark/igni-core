@@ -187,6 +187,11 @@ abstract class AdminController extends BaseController
             } else {
                 $query->addSelect($table.'.'.$column);
             }
+
+            //Check if the user is trying to filter using a get parameter
+            if ($request->has($column)) {
+                $query->where($column, '=', $request->input($column));
+            }
         }
 
         if (! empty($with)) {
@@ -328,7 +333,8 @@ abstract class AdminController extends BaseController
      */
     public function getDataTablesAjaxUrl()
     {
-        return route($this->getResourceConfig()['id'].'.index');
+        $queryString = str_replace(request()->url(), '', request()->fullURL());
+        return route($this->getResourceConfig()['id'].'.index').$queryString;
     }
 
     //    public function getModel(){
