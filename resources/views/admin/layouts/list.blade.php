@@ -16,6 +16,7 @@
                             <a href="{{ route($createRoute) }}"
                                class="btn btn-success pull-left">+ {{ trans('ignicms::admin.add') }} {{ $pageTitle }}</a>
                         @endif
+                        
                         <div class="row">
                             <div class="col-sm-12" style="overflow: auto">
                                 <table id="data-table" class="table table-bordered table-striped dataTable"
@@ -33,6 +34,11 @@
                                 </table>
                             </div>
                         </div>
+
+                        <?php $resourceConfig = $controller->getResourceConfig() ?>
+                        @if(isset($resourceConfig['parentModel']) AND request()->has($resourceConfig['parentModel']['foreignKey']))
+                           <a href="{{ route($resourceConfig['parentModel']['listingButtonRoute'], request()->query($resourceConfig['parentModel']['foreignKey'])) }}" class="btn btn-primary pull-left parent-model-btn">{{ $resourceConfig['parentModel']['listingButtonLabel'] }}</a> 
+                        @endif
                     </div>
                 </div>
             </div>

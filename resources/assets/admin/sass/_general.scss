@@ -5,7 +5,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'SourceSansPro-regular';
+  font-family: "SourceSansPro-regular";
 }
 
 .uppercase {
@@ -67,4 +67,16 @@ input.form-control {
   &:hover {
     background-color: $btn-danger-color;
   }
+}
+
+.parent-model-btn {
+  position: absolute;
+  bottom: 3px;
+  z-index: 1;
+}
+
+.back-to-filtered-listing {
+  position: absolute;
+  bottom: -24px;
+  margin-left: 30px;
 }

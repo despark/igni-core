@@ -294,14 +294,16 @@ abstract class AdminController extends BaseController
     protected function getActionButtons($record)
     {
         $buttons = [];
+        $queryString = str_replace(request()->url(), '', request()->fullURL());
+
         if (isset($this->viewData['editRoute'])) {
             $buttons[] = '<a href="'.route($this->viewData['editRoute'],
-                    ['id' => $record->id]).'" class="btn btn-primary">'.trans('ignicms::admin.edit').'</a>';
+                    ['id' => $record->id]).$queryString.'" class="btn btn-primary">'.trans('ignicms::admin.edit').'</a>';
         }
 
         if (isset($this->viewData['destroyRoute'])) {
             $buttons[] = '<a href="#"  class="js-open-delete-modal btn btn-danger"
-                    data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->id]).'">
+                    data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->id]).$queryString.'">
                     '.trans('ignicms::admin.delete').'
                 </a>';
         }
