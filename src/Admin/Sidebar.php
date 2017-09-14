@@ -69,7 +69,7 @@ class Sidebar
     protected function beforeToHtml()
     {
         uasort($this->sidebarItems, function ($a, $b) {
-            return $a->getWeight() - $b->getWeight();
+            return $a->getId() < $b->getId() ? 0 : 1;
         });
     }
 
