@@ -8,6 +8,12 @@
             <div class="box">
                 <div class="box-header">
                     <h3 class="box-title">{{ $pageTitle }}</h3>
+                    @if (count(request()->query) > 0)
+                        <p><strong>Filtered by:</strong> 
+                        @foreach(request()->query as $key => $value)
+                            {{ ucwords(str_replace('_', ' ', $key)).' ('.$value.')' }}
+                        @endforeach
+                    @endif 
                 </div>
 
                 <div class="box-body">
