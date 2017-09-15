@@ -139,7 +139,16 @@ class SidebarItem
      */
     public function getHref()
     {
-        return isset($this->link) ? route($this->link) : '#';
+        if (isset($this->link)) {
+            $exploded = explode(', ', $this->link);
+            if (! isset($exploded[1])) {
+                return route($this->link);
+            } else {
+                return route($exploded[0], $exploded[1]);
+            }
+        }
+
+        return '#';
     }
 
     /**
