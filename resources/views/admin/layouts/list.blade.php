@@ -41,7 +41,9 @@
                             </div>
                         </div>
 
-                        <?php $resourceConfig = $controller->getResourceConfig() ?>
+                        @php 
+                            $resourceConfig = $controller->getResourceConfig();
+                        @endphp
                         @if(isset($resourceConfig['parentModel']) AND request()->has($resourceConfig['parentModel']['foreignKey']))
                            <a href="{{ route($resourceConfig['parentModel']['listingButtonRoute'], request()->query($resourceConfig['parentModel']['foreignKey'])) }}" class="btn btn-primary pull-left parent-model-btn">{{ $resourceConfig['parentModel']['listingButtonLabel'] }}</a> 
                         @endif
