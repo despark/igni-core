@@ -53,6 +53,7 @@ class ResourceCompiler
      */
     protected $entitiesReplacements = [
         ':image_fields' => '',
+        ':image_upload' => '',
         ':identifier' => '',
         ':model_name' => '',
         ':model_config_name' => '',
@@ -197,6 +198,10 @@ class ResourceCompiler
             ],
         ],
     ],";
+            $this->entitiesReplacements[':image_upload'] = "'image' => [
+            'type' => 'imageSingle',
+            'label' => 'Image',
+        ],";
         }
 
         $template = strtr($template, $this->entitiesReplacements);
