@@ -13,8 +13,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use View;
-use Yajra\Datatables\Contracts\DataTableEngineContract;
-use Yajra\Datatables\Datatables;
+use Yajra\DataTables\Contracts\DataTable;
+use Yajra\DataTables\DataTables;
 
 /**
  * Class AdminController.
@@ -97,7 +97,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param Request    $request
-     * @param Datatables $dataTable
+     * @param DataTables $dataTable
      *
      * @return \Illuminate\Http\JsonResponse|View
      */
@@ -105,7 +105,7 @@ abstract class AdminController extends BaseController
     {
         $request = app(Request::class);
         if ($request->ajax()) {
-            $dataTable = app(Datatables::class);
+            $dataTable = app(DataTables::class);
             $dataTableEngine = $dataTable->eloquent($this->prepareModelQuery($request));
 
             if ($this->hasActionButtons()) {
@@ -336,6 +336,7 @@ abstract class AdminController extends BaseController
     public function getDataTablesAjaxUrl()
     {
         $queryString = str_replace(request()->url(), '', request()->fullURL());
+
         return route($this->getResourceConfig()['id'].'.index').$queryString;
     }
 
@@ -409,10 +410,10 @@ abstract class AdminController extends BaseController
     /**
      * Give chance for children to alter the data table.
      *
-     * @param Request                 $request
-     * @param DataTableEngineContract $dataTableEngine
+     * @param Request   $request
+     * @param DataTable $dataTableEngine
      */
-    protected function prepareDataTable(Request $request, DataTableEngineContract $dataTableEngine)
+    protected function prepareDataTable(Request $request, DataTable $dataTableEngine)
     {
     }
 

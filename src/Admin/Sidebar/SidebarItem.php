@@ -93,8 +93,7 @@ class SidebarItem
             return true;
         }
 
-        // TODO Version Dependant
-        $resourceNameArray = explode('.', \Route::currentRouteName());
+        $resourceNameArray = explode('.', request()->route()->getName());
         $resourceName = reset($resourceNameArray);
 
         if (strcasecmp($resourceName, $this->getEntityId()) === 0) {

@@ -110,6 +110,7 @@ class IgniServiceProvider extends ServiceProvider
         $this->app->register(\Intervention\Image\ImageServiceProvider::class);
         $this->app->register(\Cviebrock\EloquentSluggable\ServiceProvider::class);
         $this->app->register(\Rutorika\Sortable\SortableServiceProvider::class);
+        $this->app->register(\Yajra\DataTables\DataTablesServiceProvider::class);
 
         /*
          * Create aliases for the dependency.
