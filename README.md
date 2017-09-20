@@ -6,7 +6,7 @@
 
 # Despark's igniCMS
 
-**igniCMS** is an administrative interface builder for Laravel 5.4
+**igniCMS** is an administrative interface builder for Laravel 5.4|5.5
 
 ## Prerequisites
 
@@ -22,17 +22,16 @@
 
   ```json
   "require": {
-     "php": ">=5.5.9",
-     "laravel/framework": "5.4.*",
+     ...
      "despark/igni-core": "dev-master"
   },
   ```
 
   Or `composer require despark/igni-core`
 
-2. Add igniCMS service providers before the _application service providers_ in the `config/app.php`, as shown below 
+2. Add igniCMS service providers before the _application service providers_ in the `config/app.php`, as shown below **(Optional for Laravel 5.5)** 
 
-  **Example**
+  _Example_
 
   ```php
    ...
@@ -70,7 +69,7 @@
   
 5. Config your `config/auth.php` file to use Igni's User model
 
-**Example**
+_Example_
 
  ```php
    ...
