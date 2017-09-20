@@ -61,7 +61,7 @@ These are the columns where you can tell your entity which model and controller 
 #### adminColumns
 Here you can set which columns to show in your table at the index page. You can also use foreign keys here.
 
-**Example**
+_Example_
 
 You have a relation between a user and a car and you want to call the user's name and car's model from the user's entity:
 ```
@@ -80,7 +80,7 @@ You can also set your desired actions. By default they are set to all:
 Here you can set all of your form inputs. For full information please read [Form fields](form-fields).
 #### image_fields
 
-**Example**
+_Example_
 
 ```
 'image_fields' => [
@@ -118,7 +118,7 @@ Here you set all of your image field's settings. The admin settings are for crea
 #### adminMenu
 Here is the place where you set the sidebar item shown in the CMS. You can make normal or nested sidebar lists. In order to make a nested sidebar list you must config the parent once in some entity, after that you can add children to him with the `parent` column. The `weight` column is not required. It is used to sort your items in a way that you prefer. In the example below, the User management will be always on top of the sidebar items and the nested items will be Users and after that Roles. 
 
-**Example**
+_Example_
 
 Nested sidebar list
 
@@ -153,7 +153,7 @@ Nested sidebar list
 ],
  ```
  
-**Example**
+_Example_
 
 Normal sidebar list
 
@@ -174,7 +174,7 @@ Normal sidebar list
 ## Create new resource
 Use the command `php artisan igni:make:resource` to create all necessary files for manipulating resources. You should specify the resource name (in title case).
 
-**Example**
+_Example_
 
   ```
     php artisan igni:make:resource "Blog Post"
@@ -182,7 +182,7 @@ Use the command `php artisan igni:make:resource` to create all necessary files f
 ## Create Pages resource
 Use the command `php artisan igni:make:pages` to create all necessary files for manipulating a Pages resource. With this command only, you can start building your pages for the new awesome site!
 
-**Example**
+_Example_
 
   ```
     php artisan igni:make:pages
