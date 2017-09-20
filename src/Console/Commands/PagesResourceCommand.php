@@ -127,7 +127,7 @@ class PagesResourceCommand extends Command
             }
         }
         File::put($file, $template);
-        $this->info('File "'.$filename.'" was created.');
+        $this->info('File "'.$file.'" was created.');
     }
 
     /**
