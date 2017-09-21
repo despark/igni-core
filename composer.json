@@ -67,5 +67,15 @@
     "config": {
         "preferred-install": "dist"
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Despark\\Cms\\Providers\\AdminServiceProvider",
+                "Despark\\Cms\\Providers\\IgniServiceProvider",
+                "Despark\\Cms\\Providers\\EntityServiceProvider",
+                "Despark\\Cms\\Providers\\JavascriptServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable"
 }
