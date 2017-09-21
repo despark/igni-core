@@ -1,10 +1,18 @@
 <div class="form-group {{ $errors->has($field->getOptions('validateName')) ? 'has-error' : '' }}">
-    {!! Form::label($fieldName, $field->getLabel()) !!}
-    {!! Form::select($fieldName, $field->getSelectOptions(), $field->getRelationMethod()->pluck($field->getOptions('selectedKey'))->all(), [
-            'class' => 'form-control '.('select2').' '.$field->getOptions('additionalClass'),
-            'multiple' => 'multiple',
-            'style' => 'width: 100%',
-        ]) !!}
+    <label for="{{ $fieldName }}">{{ $field->getLabel() }}</label>
+    <select 
+        id="{{ $fieldName }}" 
+        name="{{ $fieldName }}" 
+        class="form-control select2 {{ $field->getOptions('additionalClass') }}" 
+        multiple 
+        style="width: 100%">
+        @foreach($field->getSelectOptions() as $key => $value)
+            <option value="{{ $key }}" 
+                {{ in_array($key, $field->getRelationMethod()->pluck($field->getOptions('selectedKey'))->all()) ? 'selected' : '' }}>
+                {{ $value }}
+            </option>
+        @endforeach
+    </select>
     <div class="text-red">
         {{ join($errors->get($field->getOptions('validateName')), '<br />') }}
     </div>
