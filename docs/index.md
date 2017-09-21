@@ -8,6 +8,7 @@ layout: default
 * [Enteties](#enteties)
     * [What is an entity](#what-is-an-entity)
     * [How to use](#how-to-use)
+    
 # Commands
 * [Create new resource](#create-new-resource)
 * [Create Pages resource](#create-pages-resource)
