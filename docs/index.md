@@ -8,14 +8,6 @@ layout: default
 * [Enteties](#enteties)
     * [What is an entity](#what-is-an-entity)
     * [How to use](#how-to-use)
-        * [name](#name)
-        * [model and controller](#model-and-controller)
-        * [adminColumns](#admincolumns)
-        * [actions](#actions)
-        * [adminFormFields](#adminformfields)
-        * [image_fields](#image_fields)
-        * [adminMenu](#adminmenu)
-
 # Commands
 * [Create new resource](#create-new-resource)
 * [Create Pages resource](#create-pages-resource)
