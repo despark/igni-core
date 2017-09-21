@@ -18,16 +18,7 @@
 
 ## Installation
 
-1. Require this package in your composer.json and run `composer update`:
-
-  ```json
-  "require": {
-     ...
-     "despark/igni-core": "dev-master"
-  },
-  ```
-
-  Or `composer require despark/igni-core`
+1. Run `composer require despark/igni-core`.
 
 2. Add igniCMS service providers before the _application service providers_ in the `config/app.php`, as shown below **(Optional for Laravel 5.5)** 
 
