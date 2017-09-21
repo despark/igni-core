@@ -29,6 +29,7 @@ layout: default
     * [Datetime picker](#datetime-picker)
     * [Hidden](#hidden)
     * [Image single](#image-single)
+    * [Many to many select](#many-to-many-select)
     * [Password](#password)
     * [Select](#select)
     * [Text](#text)
@@ -64,7 +65,7 @@ Here you can set which columns to show in your table at the index page. You can 
 _Example_
 
 You have a relation between a user and a car and you want to call the user's name and car's model from the user's entity:
-```
+```php
 'adminColumns' => [
     'name',
     'car model' => 'car.model',
@@ -73,7 +74,7 @@ You have a relation between a user and a car and you want to call the user's nam
 Here all 0/1 values are casted to No/Yes.
 #### actions
 You can also set your desired actions. By default they are set to all:
-```
+```php
 'actions' => ['edit', 'create', 'destroy'],
 ```
 #### adminFormFields
@@ -82,7 +83,7 @@ Here you can set all of your form inputs. For full information please read [Form
 
 _Example_
 
-```
+```php
 'image_fields' => [
     'column_name' => [
         'thumbnails' => [
@@ -124,7 +125,7 @@ Nested sidebar list
 
 `config/enteties/users.php`
 
-```
+```php
 'adminMenu' => [
     'user_management' => [
         'name' => 'User Management',
@@ -142,7 +143,7 @@ Nested sidebar list
  
  `config/enteties/roles.php`
  
- ```
+ ```php
 'adminMenu' => [
     'roles' => [
         'name' => 'Role',
@@ -159,7 +160,7 @@ Normal sidebar list
 
 `config/enteties/users.php`
 
- ```
+ ```php
 'adminMenu' => [
     'users' => [
         'name' => 'User',
@@ -193,7 +194,7 @@ If you want a command for creating a Contacts page resource, you should add our 
 # Features info
 ## Form fields
 ### Checkbox
-```
+```php
 'column_name' => [
     'type' => 'checkbox',
     'label' => 'I am a checkbox',
@@ -260,7 +261,7 @@ class ColorFactory implements Factory
 }
 ```
 Let's create a template in `app/resources/views/admin` called `color.blade.php`:
-```
+```php
 <div class="form-group {{ $errors->has($field->getFieldName()) ? 'has-error' : '' }}">
     {!! Form::label($field->getFieldName(), $field->getOptions('label')) !!}
     <div class="input-group my-colorpicker2">
@@ -288,7 +289,7 @@ Let's create a template in `app/resources/views/admin` called `color.blade.php`:
 @endpush
 ```
 Finally, let's call our field:
-```
+```php
 'column_name' => [
     'type' => 'custom',
     'handler' => \App\Fields\Color::class,
@@ -299,33 +300,138 @@ Finally, let's call our field:
 ```
 
 ### Date picker
-```
+```php
 'column_name' => [
     'type' => 'date',
     'label' => 'I am a date picker',
 ],
 ```
 ### Datetime picker
-```
+```php
 'column_name' => [
     'type' => 'datetime',
     'label' => 'I am a datetime picker',
 ],
 ```
 ### Hidden
-```
+```php
 'column_name' => [
     'type' => 'hidden',
 ],
 ```
 ### Image single
 Keep in mind that the images relation is polymorphic, so you don't have to make a column in your table. You just need to replace `column_name` with your desired one.
-```
+```php
 'column_name' => [
     'type' => 'imageSingle',
     'label' => 'I am a image single upload',
 ],
 ```
+### Many to many select
+First, we need to make the many to many relation between the Models. For this example we are using a User and Permission class.
+```php
+use Despark\Cms\Models\AdminModel;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Authenticatable as UserContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Notifications\Notifiable;
+
+class User extends AdminModel implements UserContract, CanResetPasswordContract
+{
+    use Notifiable;
+    use Authenticatable, Authorizable, CanResetPassword;
+
+    ...
+
+    protected $rules = [
+        'name' => 'required',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:6|max:20',
+        'permissions' => 'required',
+    ];
+
+    ...
+    
+    // Here we define the method_name => request_column_name
+    public function getManyToManyFields()
+    {
+        return [
+            'permissions' => 'permissions',
+        ];
+    }
+    
+    // Here we define a relation to the Permission class
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
+    }
+```
+
+```php
+use Despark\Cms\Models\AdminModel;
+
+class Permission extends AdminModel
+{
+    protected $table = 'permissions';
+
+    protected $fillable = ['name'];
+
+    protected $rules = ['name' => 'required|max:50'];
+
+    // Here we define a relation to the User class
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    protected $identifier = 'permission';
+}
+```
+Next we need to get the data for the Select. For example in our `app/Sources` directory, we can make a Permissions class and get the needed data:
+```php
+use App\Models\Permission;
+use Despark\Cms\Contracts\SourceModel;
+
+/**
+ * Class Permissions.
+ */
+class Permissions implements SourceModel
+{
+    /**
+     * @var array
+     */
+    protected $options;
+
+    /**
+     * @return array
+     */
+    public function toOptionsArray()
+    {
+        if (! isset($this->options)) {
+            $this->options = Permission::orderBy('name')
+                ->pluck('name', 'id')
+                ->toArray();
+        }
+
+        return $this->options;
+    }
+}
+```
+Finally, we need to setup the field in our entity:
+```php
+'column_name[]' => [ // In our case permissions[]
+    'type' => 'manyToManySelect',
+    'label' => 'Permissions',
+    'additionalClass' => 'select2-tags', // This is not required. Use it if you need some extra classes
+    'sourceModel' => \App\Sources\Permissions::class,
+    'relationMethod' => 'permissions', // The name of the relation
+    'validateName' => 'permissions', // Which name to validate in the protected $rules array
+    'selectedKey' => 'id', // Which key will be the value for the select
+],
+```
+It also works with polymorphic relations. You can find more info about this type of relations in the [Laravel docs](https://laravel.com/docs/5.5/eloquent-relationships#many-to-many-polymorphic-relations)
 ### Password
 ```
 'column_name' => [
@@ -364,7 +470,7 @@ class Roles implements SourceModel
 
 ```
 And here is how to call the field:
-```
+```php
 'column_name' => [
     'type' => 'select',
     'label' => 'I am a select',
@@ -372,21 +478,21 @@ And here is how to call the field:
 ],
 ```
 ### Text
-```
+```php
 'column_name' => [
     'type' => 'text',
     'label' => 'I am a text',
 ],
 ```
 ### Textarea
-```
+```php
 'column_name' => [
     'type' => 'textarea',
     'label' => 'I am a textarea',
 ],
 ```
 ### Wysiwyg
-```
+```php
 'column_name' => [
     'type' => 'wysiwyg',
     'label' => 'I am a wysiwyg',
@@ -398,17 +504,17 @@ You can exclude some resources with `--without=*`
 
 ## Getting your uploaded images
 You can get all images for a given resoruce with the following function:
-```
+```php
     $image = $model->getImages('image')->first()
 ```
 where ```image``` is the id field given in the resource config file.
 To display the images in your view you can use the following function:
-```
+```php
     {!! $image->toHtml('normal') !!}
 ```
 where ```normal``` is the given image type in the resource config file.
 Example resource config file:
-```
+```php
 'image_fields' => [
         'image' => [
             'thumbnails' => [
