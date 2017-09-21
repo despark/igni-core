@@ -1,7 +1,7 @@
 <p align="center"><img src="https://despark.com/public/images/despark-logo.svg"></p>
 
 <p align="center">
-<a href="https://packagist.org/packages/despark/igni-core#dev-master"><img src="https://poser.pugx.org/despark/igni-core/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/despark/igni-core"><img src="https://poser.pugx.org/despark/igni-core/v/stable.svg" alt="Latest Stable Version"></a>
 </p>
 
 # Despark's igniCMS
