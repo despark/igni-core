@@ -49,6 +49,6 @@ class User extends AdminModel implements UserContract, CanResetPasswordContract
     protected $rulesUpdate = [
         'name' => 'required',
         'email' => 'required|email|unique::full_table_name,email,{id},id',
-        'password' => 'min:6|max:20',
+        'password' => 'max:20',
     ];
 }
