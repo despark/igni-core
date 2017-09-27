@@ -202,6 +202,8 @@ abstract class AdminController extends BaseController
             $query->select($table.'.*');
         }
 
+        $this->postQueryBuilder($query);
+
         return $query;
     }
 
@@ -423,5 +425,14 @@ abstract class AdminController extends BaseController
     public function getSidebar()
     {
         return app(Sidebar::class);
+    }
+
+    /*
+     *  Blow-trough function for controller-specific
+     *  queries
+     */
+
+    public function postQueryBuilder($query) {
+        return $query;
     }
 }
