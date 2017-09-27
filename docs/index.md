@@ -5,19 +5,18 @@ layout: default
 * [Models](#models)
 * [Controllers](#controllers)
 * [Migrations](#migrations)
-* [Enteties](#enteties)
-    * [What is an entity](#what-is-an-entity)
-    * [How to use](#how-to-use)
+* [Entities](#entities)
+    * [What are entities?](#what-are-entities)
+    * [How to use them?](#how-to-use-them)
     
 # Commands
 * [Create new resource](#create-new-resource)
-* [Create Pages resource](#create-pages-resource)
-* [Create Contacts resource](#create-contacts-page-resource)
+* [Create Pages module](#create-pages-madule)
+* [Create Contacts module](#create-contacts-module)
 
 # Features info
 * [Form fields](#form-fields)
     * [Checkbox](#checkbox)
-    * [Custom](#custom)
     * [Date picker](#date-picker)
     * [Datetime picker](#datetime-picker)
     * [Hidden](#hidden)
@@ -28,6 +27,7 @@ layout: default
     * [Text](#text)
     * [Textarea](#textarea)
     * [Wysiwyg](#wysiwyg)
+    * [Custom](#custom)
 * [Image styles rebuilding](#image-styles-rebuilding)
 * [Getting your uploaded images](#getting-your-uploaded-images)
 * [Resetting passwords](#resetting-passwords)
@@ -39,41 +39,86 @@ layout: default
 
 # General CMS acrchitecture
 ## Models
-They will be stored at `app/Models`. There you must config your well know Laravel protected arrays, such as fillable and rules and also your relations to other models.
+The models which are generated for resources using the `igni:` commands will be stored in the `app/Models` directory. Those models follow the standard Laravel convention, so you must input the well know Laravel protected arrays, e.g. `$fillable` and `$rules` and also the relationships with other models. We advise you to store all the models in the `app/Models` directory (even the ones which are not generated using `igni:` commands) in order to keep consistency within your project architecture.
 ## Controllers
-They will be stored at `app/Http/Controller/Admin`. By default it's a blank one extending Igni's `AdminController`. If you need to change the logic of some of the methods, you can copy->paste it from `AdminController` or `EntityController`  and edit it like you want.
+Those generated using `igni:` commands will be stored in the `app/Http/Controller/Admin` directory. When generated the Igni CMS controllers are blank classes extending Igni's `AdminController`.
 ## Migrations
-They will be stored at `database/migrations`. There you must set your table name, columns and relations.
-## Enteties
-### What is an entity
-Your resource's entity is like a spine for all of its views. You can find it in `config/enteties`. In it you can set which model/controller to use, desired actions, fields, columns and much more.
-### How to use
+They will be stored in the default location - `database/migrations`. If you are creating an empty resource you must set the table name, columns and relationships on your own.
+## Entities
+### What are entities?
+The resource entity is the main config file for its functionality. In it you can set which model/controller to use, desired actions, fields, columns and much more. The entity files are stored in `config/entities`.
+### How to use them?
+Here's an example entity config which defines a user management resource.
+```php
+return [
+    'name' => 'User',
+    'description' => 'User resource',
+    'model' => config('auth.providers.users.model'),
+    'controller' => \Despark\Cms\Http\Controllers\UsersController::class,
+    'adminColumns' => [
+        'name',
+        'email',
+        'Admin?' => 'is_admin',
+    ],
+    'actions' => ['edit', 'create', 'destroy'],
+    'adminFormFields' => [
+        'name' => [
+            'type' => 'text',
+            'label' => 'Name',
+        ],
+        'email' => [
+            'type' => 'text',
+            'label' => 'Email',
+        ],
+        'is_admin' => [
+            'type' => 'checkbox',
+            'label' => 'is_admin',
+        ],
+        'password' => [
+            'type' => 'password',
+            'label' => 'Password',
+        ],
+    ],
+    'adminMenu' => [
+        'user_management' => [
+            'name' => 'User Management',
+            'iconClass' => 'fa-users',
+        ],
+        'users' => [
+            'name' => 'Users',
+            'link' => 'user.index',
+            'parent' => 'user_management',
+        ],
+    ],
+];
+
+```
 #### name
-This column is used to set your page title, browser tab title and add button name(E.g. you call it User, the button for creating a new one will be called "Add User").
+You can set your page title, browser tab title and add button name in that item. (E.g. If you call it User, the button for creating a new item will be called "Add User").
 #### model and controller
-These are the columns where you can tell your entity which model and controller to use.
+Define the used controller and model for your entity here.
 #### adminColumns
-Here you can set which columns to show in your table at the index page. You can also use foreign keys here.
+Array defining which columns to show in your table at the listing page. You can also use relationships here.
 
 _Example_
 
-You have a relation between a user and a car and you want to call the user's name and car's model from the user's entity:
+You have a relationship between a user and a car and you want to show the user's name and their car model in the users listing:
 ```php
 'adminColumns' => [
     'name',
     'car model' => 'car.model',
 ],
 ```
-Here all 0/1 values are casted to No/Yes.
+Keep in mind that in the listing all 0 and 1 values are casted to No/Yes.
 #### actions
-You can also set your desired actions. By default they are set to all:
+You can also limit the available actions for a resource. By default they are set to all:
 ```php
 'actions' => ['edit', 'create', 'destroy'],
 ```
 #### adminFormFields
-Here you can set all of your form inputs. For full information please read [Form fields](form-fields).
+In that array you set all the fields to which the admins have access in the create/edit form. Don't forget to also set the fields as fillable in the model. For full listing of available field type please go to [Form fields](form-fields).
 #### image_fields
-
+Here you set the settings for all of your image fields. 
 _Example_
 
 ```php
@@ -108,15 +153,15 @@ _Example_
     ], 
 ],
 ```
-Here you set all of your image field's settings. The admin settings are for creating a smaller thumbnail, showing it in the CMS while editing. The available types of image manipulations are `resize, crop and fit`. Keep in mind that these are normal sizes. If `retina_factor` is enabled in `config/ignicms.php` then you must upload double the size that is entered in `normal`(E.g. for column_name you must upload an image with minimum 800x800px).
+The `admin` array contains the settings for the thumbnail created for the CMS, which is shown when editing the resource. The available types of image manipulations are `resize`, `crop` and `fit`. In the `normal` array you should define the standard size of the images. If `retina_factor` is enabled in `config/ignicms.php` then you must upload images with size at least double the size that is entered in `normal` (E.g. for `column_name` in the example above you must upload an image with minimum 800x800px).
 #### adminMenu
-Here is the place where you set the sidebar item shown in the CMS. You can make normal or nested sidebar lists. In order to make a nested sidebar list you must config the parent once in some entity, after that you can add children to him with the `parent` column. The `weight` column is not required. It is used to sort your items in a way that you prefer. In the example below, the User management will be always on top of the sidebar items and the nested items will be Users and after that Roles. 
+Here is the place where you set the menu items shown in the sidebar of the CMS. You can create normal or nested sidebar menu items. In order to create a nested sidebar list you need to use the `parent` key and state the name of the item you want to assign as parent. The `weight` column is not required. It is used to sort your items in a way that you prefer. In the example below, the User management item will be always on top of the sidebar items and it will have the following nested items: Users and Roles in that particular order. 
 
 _Example_
 
 Nested sidebar list
 
-`config/enteties/users.php`
+`config/entities/users.php`
 
 ```php
 'adminMenu' => [
@@ -132,11 +177,11 @@ Nested sidebar list
         'weight' => 2,
     ],
 ],
- ```
+```
  
- `config/enteties/roles.php`
+`config/entities/roles.php`
  
- ```php
+```php
 'adminMenu' => [
     'roles' => [
         'name' => 'Role',
@@ -145,15 +190,15 @@ Nested sidebar list
         'weight' => 3,
     ],
 ],
- ```
+```
  
 _Example_
 
 Normal sidebar list
 
-`config/enteties/users.php`
+`config/entities/users.php`
 
- ```php
+```php
 'adminMenu' => [
     'users' => [
         'name' => 'User',
@@ -162,7 +207,7 @@ Normal sidebar list
         'weight' => 1,
     ],
 ],
- ```
+```
 
 # Commands
 ## Create new resource
@@ -170,19 +215,19 @@ Use the command `php artisan igni:make:resource` to create all necessary files f
 
 _Example_
 
-  ```
+```
     php artisan igni:make:resource "Blog Post"
-  ```
-## Create Pages resource
-Use the command `php artisan igni:make:pages` to create all necessary files for manipulating a Pages resource. With this command only, you can start building your pages for the new awesome site!
+```
+## Create Pages module
+Use the command `php artisan igni:make:pages` to create all necessary files for manipulating Pages.
 
 _Example_
 
-  ```
+```
     php artisan igni:make:pages
-  ```
-## Create Contacts page resource
-If you want a command for creating a Contacts page resource, you should add our extension to IgniCMS. You can find full information about it [here](https://github.com/despark/igni-contact-us).
+```
+## Create Contacts module
+If you want a command for creating a Contacts page resource, you should add our contacts module for IgniCMS. You can find full information about it [here](https://github.com/despark/igni-contact-us).
 
 # Features info
 ## Form fields
@@ -193,105 +238,6 @@ If you want a command for creating a Contacts page resource, you should add our 
     'label' => 'I am a checkbox',
 ],
 ```
-### Custom
-Of course that you can make a custom field. You can accomplish it by creating a Handler, Template and Factory. As an example, we will make a color picker. You choose where to store the files. For this example, our handler will be created in `app/Fields`:
-```php
-use Despark\Cms\Contracts\FieldContract;
-use Despark\Cms\Fields\Custom;
-
-/**
- * Class Color.
- */
-class Color extends Custom implements FieldContract
-{
-    protected $model;
-    protected $fieldName;
-    protected $value;
-    protected $options;
-
-    /**
-     * Color constructor.
-     *
-     * @param Custom $parent
-     */
-    public function __construct($fieldName, array $options, $value = null, $model = null)
-    {
-        $this->model = $model;
-        $this->fieldName = $fieldName;
-        $this->value = $value;
-        $this->options = $options;
-
-        if (! isset($options['template'])) {
-            throw new \Exception('Template is required for field '.$fieldName);
-        }
-
-        if (isset($options['template']) && \View::exists($options['template'])) {
-            $this->template = $options['template'];
-        }
-    }
-
-    public function getModel()
-    {
-        return $this->model;
-    }
-}
-```
-Our factory class will be stored at `app\Factories`:
-```php
-use Despark\Cms\Fields\Contracts\Factory;
-use App\Fields\Color;
-
-class ColorFactory implements Factory
-{
-    public function make(array $data)
-    {
-        extract($data);
-
-        $field = new Color($field, $options, $value, $model);
-
-        return $field;
-    }
-}
-```
-Let's create a template in `app/resources/views/admin` called `color.blade.php`:
-```php
-<div class="form-group {{ $errors->has($field->getFieldName()) ? 'has-error' : '' }}">
-    {!! Form::label($field->getFieldName(), $field->getOptions('label')) !!}
-    <div class="input-group my-colorpicker2">
-        {!! Form::text($field->getFieldName(), $field->getModel()->active_color, [
-            'id' =>  $field->getFieldName(),
-            'class' => "form-control",
-            'placeholder' => $field->getOptions('label'),
-        ] ) !!}
-
-        <div class="input-group-addon">
-            <i></i>
-        </div>
-    </div>
-    <div class="text-red">
-        {{ join($errors->get($field->getFieldName()), '<br />') }}
-    </div>
-</div>
-
-@push('additionalScripts')
-    <script type="text/javascript">
-        $(".my-colorpicker2").colorpicker({
-            format: 'hex'
-        });
-    </script>
-@endpush
-```
-Finally, let's call our field:
-```php
-'column_name' => [
-    'type' => 'custom',
-    'handler' => \App\Fields\Color::class,
-    'template' => 'admin.color',
-    'factory' => \App\Factories\ColorFactory::class,
-    'label' => 'I am a custom field',
-],
-```
-
 ### Date picker
 ```php
 'column_name' => [
@@ -313,15 +259,87 @@ Finally, let's call our field:
 ],
 ```
 ### Image single
-Keep in mind that the images relation is polymorphic, so you don't have to make a column in your table. You just need to replace `column_name` with your desired one.
+Keep in mind that the images relationship is polymorphic, so you don't have to make a column in your table. You just need to replace `column_name` with your desired one.
 ```php
 'column_name' => [
     'type' => 'imageSingle',
     'label' => 'I am a image single upload',
 ],
 ```
+
+### Password
+```php
+'column_name' => [
+    'type' => 'password',
+    'label' => 'I am a password',
+],
+```
+
+### Select
+In order to use the select field, you need to build up a Source model class. Here is an example Roles class:
+```php
+use Despark\Cms\Contracts\SourceModel;
+use App\Models\Role;
+
+/**
+ * Class Roles.
+ */
+class Roles implements SourceModel
+{
+    /**
+     * @var array
+     */
+    protected $options;
+
+    /**
+     * @return array
+     */
+    public function toOptionsArray()
+    {
+        if (! isset($this->options)) {
+            $this->options = Role::orderBy('name')->pluck('name', 'id')->toArray();
+        }
+
+        return $this->options;
+    }
+}
+```
+
+And here is how to define the field in the entity:
+```php
+'column_name' => [
+    'type' => 'select',
+    'label' => 'I am a select',
+    'sourceModel' => \App\Sources\Roles::class,
+],
+```
+
+### Text
+```php
+'column_name' => [
+    'type' => 'text',
+    'label' => 'I am a text',
+],
+```
+
+### Textarea
+```php
+'column_name' => [
+    'type' => 'textarea',
+    'label' => 'I am a textarea',
+],
+```
+
+### Wysiwyg
+```php
+'column_name' => [
+    'type' => 'wysiwyg',
+    'label' => 'I am a wysiwyg',
+],
+```
+
 ### Many to many select
-First, we need to make the many to many relation between the Models. For this example we are using a User and Permission class.
+This field type can be used for implementing tagging functionality. First, we need to make the many to many relationship between the Models. For this example we are using a User and Permission class.
 ```php
 use Despark\Cms\Models\AdminModel;
 use Illuminate\Auth\Authenticatable;
@@ -382,7 +400,8 @@ class Permission extends AdminModel
     protected $identifier = 'permission';
 }
 ```
-Next we need to get the data for the Select. For example in our `app/Sources` directory, we can make a Permissions class and get the needed data:
+
+Next we need to get the data for the Select. For example in the `app/Sources` directory, we can create `Permissions` class which gets the needed data:
 ```php
 use App\Models\Permission;
 use Despark\Cms\Contracts\SourceModel;
@@ -412,9 +431,10 @@ class Permissions implements SourceModel
     }
 }
 ```
-Finally, we need to setup the field in our entity:
+
+Finally, we need to setup the field in the entity:
 ```php
-'column_name[]' => [ // In our case permissions[]
+'column_name[]' => [ // In this case permissions[]
     'type' => 'manyToManySelect',
     'label' => 'Permissions',
     'additionalClass' => 'select2-tags', // This is not required. Use it if you need some extra classes
@@ -424,75 +444,113 @@ Finally, we need to setup the field in our entity:
     'selectedKey' => 'id', // Which key will be the value for the select
 ],
 ```
-It also works with polymorphic relations. You can find more info about this type of relations in the [Laravel docs](https://laravel.com/docs/5.5/eloquent-relationships#many-to-many-polymorphic-relations)
-### Password
-```
-'column_name' => [
-    'type' => 'password',
-    'label' => 'I am a password',
-],
-```
-### Select
-In order to use the select field, you need to build up a Source model class. Here is an example Roles class:
+
+It also works with polymorphic relationships. You can find more info about this type of relationships in the [Laravel docs](https://laravel.com/docs/5.5/eloquent-relationships#many-to-many-polymorphic-relations)
+
+### Custom
+If you need to do a more customized functionality than the ones which are provided for you out of the box you can use a custom field implementation. To accomplish this you must create a Handler, Template and Factory, the place of these files depends on you. In the example below we've implemented a color picker and stored the files for it in `app/Fields`:
 ```php
-use Despark\Cms\Contracts\SourceModel;
-use App\Models\Role;
+use Despark\Cms\Contracts\FieldContract;
+use Despark\Cms\Fields\Custom;
 
 /**
- * Class Roles.
+ * Class Color.
  */
-class Roles implements SourceModel
+class Color extends Custom implements FieldContract
 {
-    /**
-     * @var array
-     */
+    protected $model;
+    protected $fieldName;
+    protected $value;
     protected $options;
 
     /**
-     * @return array
+     * Color constructor.
+     *
+     * @param Custom $parent
      */
-    public function toOptionsArray()
+    public function __construct($fieldName, array $options, $value = null, $model = null)
     {
-        if (! isset($this->options)) {
-            $this->options = Role::orderBy('name')->pluck('name', 'id')->toArray();
+        $this->model = $model;
+        $this->fieldName = $fieldName;
+        $this->value = $value;
+        $this->options = $options;
+
+        if (! isset($options['template'])) {
+            throw new \Exception('Template is required for field '.$fieldName);
         }
 
-        return $this->options;
+        if (isset($options['template']) && \View::exists($options['template'])) {
+            $this->template = $options['template'];
+        }
+    }
+
+    public function getModel()
+    {
+        return $this->model;
     }
 }
+```
 
+Our factory class will be stored in `app\Factories`:
+```php
+use Despark\Cms\Fields\Contracts\Factory;
+use App\Fields\Color;
+
+class ColorFactory implements Factory
+{
+    public function make(array $data)
+    {
+        extract($data);
+
+        $field = new Color($field, $options, $value, $model);
+
+        return $field;
+    }
+}
 ```
-And here is how to call the field:
+
+Let's create a template in `app/resources/views/admin` called `color.blade.php`:
+```php
+<div class="form-group {{ $errors->has($field->getFieldName()) ? 'has-error' : '' }}">
+    {!! Form::label($field->getFieldName(), $field->getOptions('label')) !!}
+    <div class="input-group my-colorpicker2">
+        {!! Form::text($field->getFieldName(), $field->getModel()->active_color, [
+            'id' =>  $field->getFieldName(),
+            'class' => "form-control",
+            'placeholder' => $field->getOptions('label'),
+        ] ) !!}
+
+        <div class="input-group-addon">
+            <i></i>
+        </div>
+    </div>
+    <div class="text-red">
+        {{ join($errors->get($field->getFieldName()), '<br />') }}
+    </div>
+</div>
+
+@push('additionalScripts')
+    <script type="text/javascript">
+        $(".my-colorpicker2").colorpicker({
+            format: 'hex'
+        });
+    </script>
+@endpush
+```
+
+Finally, let's define the field in the entity:
 ```php
 'column_name' => [
-    'type' => 'select',
-    'label' => 'I am a select',
-    'sourceModel' => \App\Sources\Roles::class,
+    'type' => 'custom',
+    'handler' => \App\Fields\Color::class,
+    'template' => 'admin.color',
+    'factory' => \App\Factories\ColorFactory::class,
+    'label' => 'I am a custom field',
 ],
 ```
-### Text
-```php
-'column_name' => [
-    'type' => 'text',
-    'label' => 'I am a text',
-],
-```
-### Textarea
-```php
-'column_name' => [
-    'type' => 'textarea',
-    'label' => 'I am a textarea',
-],
-```
-### Wysiwyg
-```php
-'column_name' => [
-    'type' => 'wysiwyg',
-    'label' => 'I am a wysiwyg',
-],
-```
+
 ## Image styles rebuilding
-You can rebuild image styles using `php artisan igni:images:rebuild` . If you want you can specify which resources to rebuil with `--resources=*` switch.
+You can rebuild image styles using `php artisan igni:images:rebuild` . If you want you can specify which resources to rebuil with the `--resources=*` switch.
 You can exclude some resources with `--without=*`
 
 ## Getting your uploaded images
@@ -500,13 +558,15 @@ You can get all images for a given resoruce with the following function:
 ```php
     $image = $model->getImages('image')->first()
 ```
-where ```image``` is the id field given in the resource config file.
+where `image` is the id of the field given in the resource entity file.
+
 To display the images in your view you can use the following function:
 ```php
     {!! $image->toHtml('normal') !!}
 ```
-where ```normal``` is the given image type in the resource config file.
-Example resource config file:
+where ```normal``` is the image thumbnail provided in the resource entity file.
+
+Example resource entity file:
 ```php
 'image_fields' => [
         'image' => [
@@ -525,8 +585,9 @@ Example resource config file:
         ],
     ],
 ```
+
 ## Resetting passwords
-In order to use the reset password function, you must fill up the MAIL and APP settings in your `.env` file or modify your default ones in `config/app.php` and `config/mail.php`.
+In order to use the reset password functionality, you must fill in the MAIL and APP settings in your `.env` file or modify the defaults in `config/app.php` and `config/mail.php`.
 
 ```
     ...
@@ -541,15 +602,15 @@ In order to use the reset password function, you must fill up the MAIL and APP s
     MAIL_FROM_ADDRESS=no-reply@ignicms.com
     MAIL_FROM_NAME=IgniCMS
 ```
-By modifying your APP_URL, the email sent to the user will be working as expecred!
-If you want to change your email's template, you can find out how at [Laravel's website](https://laravel.com/docs/5.4/mail#customizing-the-components).
+After modifying the APP_URL, the URLs in the email sent to the user will be working as expecred!
+
+If you want to change the standard email template, you can find out how in the [Laravel docs](https://laravel.com/docs/5.4/mail#customizing-the-components).
 
 ## Localization
-IgniCMS comes out of the box with localization. You can find full information about it [here](https://github.com/despark/laravel-db-i18n).
+IgniCMS provides internationalization out of the box through the i18n package. You can find full information about it [here](https://github.com/despark/laravel-db-i18n).
 
-
-## Change company logo
-You can change the company logo from `config/ignicms.php`.
+## Change CMS logo
+You can change the CMS logo in `config/ignicms.php`.
   ```php
    ...
     // For best performance the image must be with width 234px
@@ -558,5 +619,5 @@ You can change the company logo from `config/ignicms.php`.
   ```
 
 ## Brute force protection
-If someone tries to login with a certain email and makes 5 wrong attempts, this email will be blocked for 15 minutes.
+If someone unsuccessfully tries to login with a certain email 5 times in a row, this account will be blocked for 15 minutes.
 
