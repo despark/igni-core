@@ -13,6 +13,7 @@ layout: default
 * [Create new resource](#create-new-resource)
 * [Create Pages module](#create-pages-madule)
 * [Create Contacts module](#create-contacts-module)
+* [Image rebuilding](#image-rebuilding)
 
 # Features info
 * [Form fields](#form-fields)
@@ -28,11 +29,23 @@ layout: default
     * [Textarea](#textarea)
     * [Wysiwyg](#wysiwyg)
     * [Custom](#custom)
-* [Image styles rebuilding](#image-styles-rebuilding)
-* [Getting your uploaded images](#getting-your-uploaded-images)
+* [Images](#images)
+    * [Check if the resource has images](check-if-the-resource-has-images)
+    * [Get uploaded images](get-uploaded-images)
+    * [Get image model](get-image-model)
+    * [Get image relation](get-image-relation)
+    * [Get minimal dimensions for an image](get-minimal-dimensions-for-an-image)
+    * [Get retina factor](get-retina-factor)
+    * [Get required form images](get-required-form-images)
+    * [Get image fields and meta fields](get-image-fields-and-meta-fields)
+    * [Get upload directory](get-upload-directory)
+    * [Creating a thumbnail](creating-a-thumbnail)
+    * [Set image model](set-image-model)
+    * [Set minimal dimensions](set-minimal-dimensions)
+    * [Set retina factor](set-retina-factor)
 * [Resetting passwords](#resetting-passwords)
 * [Localization](#localization)
-* [Change company logo](#change-company-logo)
+* [Change CMS logo](#change-cms-logo)
 * [Brute force protection](#brute-force-protection)
 
 ***
@@ -228,6 +241,15 @@ _Example_
 ```
 ## Create Contacts module
 If you want a command for creating a Contacts page resource, you should add our contacts module for IgniCMS. You can find full information about it [here](https://github.com/despark/igni-contact-us).
+
+## Image rebuilding
+You can rebuild your uploaded images `php artisan igni:images:rebuild`. If you want you can specify which resources to rebuild with the `--resources=*` switch.
+_Example_
+
+```
+    php artisan igni:image:rebuild --resources App\\Test
+```
+You can exclude some resources with `--without=*`.
 
 # Features info
 ## Form fields
@@ -548,19 +570,26 @@ Finally, let's define the field in the entity:
     'label' => 'I am a custom field',
 ],
 ```
-
-## Image styles rebuilding
-You can rebuild image styles using `php artisan igni:images:rebuild` . If you want you can specify which resources to rebuil with the `--resources=*` switch.
-You can exclude some resources with `--without=*`
-
-## Getting your uploaded images
-You can get all images for a given resoruce with the following function:
+## Images
+## Images
+### Check if the resource has images
 ```php
-    $image = $model->getImages('image')->first()
+    $model->hasImages($type = null);
 ```
-where `image` is the id of the field given in the resource entity file.
-
-To display the images in your view you can use the following function:
+### Get uploaded images
+Here is how you can get your image for a specific resource:
+```php
+    $image = $model->getImages();
+```
+You can pass the id of the field given in the resource entity file as an argument. In that case the function will return the image associated with the given id.
+```php
+    $image = $model->getImages($fieldName);
+```
+You can also use
+```php
+    $image = $model->getImagesOfType($fieldName);
+```
+To display the image in your view you can use the following function:
 ```php
     {!! $image->toHtml('normal') !!}
 ```
@@ -584,6 +613,73 @@ Example resource entity file:
             ],
         ],
     ],
+```
+
+### Get image model
+```php
+    $model->getImageModel();
+```
+
+### Get image relation
+```php
+    $model->images();
+```
+
+### Get minimal dimensions for an image
+```php
+    $model->getMinDimensions($fieldName);
+```
+By default, the data is returned as an array. If you want it as string, you can set a second parameter as true. Also you can get only the minimal width or height:
+``` php
+    $model->getMinWidth($fieldName);
+    $model->getMinHeight($fieldName);
+```
+
+### Get retina factor
+```php
+    $model->getRetinaFactor();
+```
+
+### Get required form images
+```php
+    $model->getRequiredImages();
+```
+
+### Get image fields and meta fields
+```php
+    $model->getImageFields();
+```
+```php
+    $model->getImageMetaFields($fieldName);
+```
+```php
+    $model->getImageMetaFieldsHtml($fieldName);
+```
+
+### Get upload directory
+```php
+    $model->getCurrentUploadDir();
+```
+
+### Creating a thumbnail
+```php
+    $model->createThumbnail($sourceImagePath, $thumbName, $newFileName, $width = null, $height = null, $resizeType = 'crop', $color = null
+    );
+```
+
+### Set image model
+```php
+    $model->setImageModel($imageModel);
+```
+
+### Set minimal dimensions
+```php
+    $model->setMinDimensions($field, $minDimensions);
+```
+
+### Set retina factor
+```php
+    $model->setRetinaFactor($factor);
 ```
 
 ## Resetting passwords
