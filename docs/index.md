@@ -4,7 +4,7 @@ layout: default
 # Installation
 * [Support](#support)
 * [Prerequisites](#prerequisites)
-* [Installation](#installation)
+* [Installation](#installation-2)
 
 
 # General CMS architecture
@@ -300,7 +300,7 @@ Normal sidebar list
 
 # Commands
 ## Run install
-Install a fresh copy of igniCMS. For more information refer to the [Installation section](#installation)
+Install a fresh copy of igniCMS. For more information refer to the [Installation section](#installation-1)
 _Example_
 
 ```shell
