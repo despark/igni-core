@@ -39,7 +39,7 @@ layout: default
     * [Check if the resource has images](check-if-the-resource-has-images)
     * [Get uploaded images](get-uploaded-images)
     * [Get image model](get-image-model)
-    * [Get image relation](get-image-relation)
+    * [Get image relationship](get-image-relationship)
     * [Get minimal dimensions for an image](get-minimal-dimensions-for-an-image)
     * [Get retina factor](get-retina-factor)
     * [Get required form images](get-required-form-images)
@@ -480,7 +480,7 @@ class User extends AdminModel implements UserContract, CanResetPasswordContract
         ];
     }
     
-    // Here we define a relation to the Permission class
+    // Here we define a relationship to the Permission class
     public function permissions()
     {
         return $this->belongsToMany(Permission::class);
@@ -498,7 +498,7 @@ class Permission extends AdminModel
 
     protected $rules = ['name' => 'required|max:50'];
 
-    // Here we define a relation to the User class
+    // Here we define a relationship to the User class
     public function users()
     {
         return $this->belongsToMany(User::class);
@@ -705,7 +705,7 @@ Example resource entity file:
     $model->getImageModel();
 ```
 
-### Get image relation
+### Get image relationship
 ```php
     $model->images();
 ```
