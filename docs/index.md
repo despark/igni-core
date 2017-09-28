@@ -18,7 +18,7 @@ layout: default
 # Commands
 * [Run install](#run-install)
 * [Create new resource](#create-new-resource)
-* [Create Pages module](#create-pages-madule)
+* [Create Pages module](#create-pages-module)
 * [Create Contacts module](#create-contacts-module)
 * [Image rebuilding](#image-rebuilding)
 
