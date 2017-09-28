@@ -206,7 +206,7 @@ You can also limit the available actions for a resource. By default they are set
 'actions' => ['edit', 'create', 'destroy'],
 ```
 #### adminFormFields
-In that array you set all the fields to which the admins have access in the create/edit form. Don't forget to also set the fields as fillable in the model. For full listing of available field type please go to [Form fields](form-fields).
+In that array you set all the fields to which the admins have access in the create/edit form. Don't forget to also set the fields as fillable in the model. For full listing of available field type please go to [Form fields](#form-fields).
 #### image_fields
 Here you set the settings for all of your image fields. 
 _Example_
