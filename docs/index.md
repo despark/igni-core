@@ -1,6 +1,12 @@
 ---
 layout: default
 ---
+# Installation
+* [Support](#support)
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+
+
 # General CMS architecture
 * [Models](#models)
 * [Controllers](#controllers)
@@ -49,6 +55,76 @@ layout: default
 * [Brute force protection](#brute-force-protection)
 
 ***
+
+# Installation
+## Support
+Currently igniCMS support <a href="https://laravel.com/" target="_blank">Laravel</a> <a href="https://github.com/laravel/laravel/releases/tag/v5.4.30" target="_blank">v5.4</a> and <a href="https://github.com/laravel/laravel/releases/tag/v5.5.0" target="_blank">v5.5</a>
+
+## Prerequisites
+
+ - nodejs >= 4.0
+ - yarn or npm
+ - bower
+ - gulp
+ - composer
+
+## Installation
+
+1. Run `composer require despark/igni-core`.
+
+2. Add igniCMS service providers before the _application service providers_ in the `config/app.php`, as shown below **(Optional for Laravel 5.5)** 
+
+_Example_
+
+```php
+    ...
+    /*
+    * igniCMS Service Providers
+    */
+    Despark\Cms\Providers\AdminServiceProvider::class,
+    Despark\Cms\Providers\IgniServiceProvider::class,
+    Despark\Cms\Providers\EntityServiceProvider::class,
+    Despark\Cms\Providers\JavascriptServiceProvider::class,
+
+    /*
+    * Package Service Providers...
+    */
+    Laravel\Tinker\TinkerServiceProvider::class,
+    ...
+```
+  
+3. Config your database settings in your `.env` file.
+
+```
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=mydbw
+    DB_USERNAME=user
+    DB_PASSWORD=password
+```
+
+4. Run this command in the terminal (it'll set all necessary resources to use the CMS. _To complete this step you should have **composer**, **npm** & **bower**, installed globally_):
+
+```shell
+    php artisan igni:install
+```
+  
+5. Config your `config/auth.php` file to use Igni's User model
+
+_Example_
+
+```php
+   ...
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+   ...
+```
+
+6. All done! Now go to the `<your_site_url>/admin` and use your credentials
 
 # General CMS acrchitecture
 ## Models
@@ -223,12 +299,20 @@ Normal sidebar list
 ```
 
 # Commands
+## Run install
+Install a fresh copy of igniCMS. For more information refer to the [Installation section](#installation)
+_Example_
+
+```shell
+    php artisan igni:install
+```
+
 ## Create new resource
 Use the command `php artisan igni:make:resource` to create all necessary files for manipulating resources. You should specify the resource name (in title case).
 
 _Example_
 
-```
+```shell
     php artisan igni:make:resource "Blog Post"
 ```
 ## Create Pages module
@@ -236,9 +320,10 @@ Use the command `php artisan igni:make:pages` to create all necessary files for 
 
 _Example_
 
-```
+```shell
     php artisan igni:make:pages
 ```
+
 ## Create Contacts module
 If you want a command for creating a Contacts page resource, you should add our contacts module for IgniCMS. You can find full information about it [here](https://github.com/despark/igni-contact-us).
 
@@ -246,7 +331,7 @@ If you want a command for creating a Contacts page resource, you should add our 
 You can rebuild your uploaded images `php artisan igni:images:rebuild`. If you want you can specify which resources to rebuild with the `--resources=*` switch.
 _Example_
 
-```
+```shell
     php artisan igni:image:rebuild --resources App\\Test
 ```
 You can exclude some resources with `--without=*`.
