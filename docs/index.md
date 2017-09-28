@@ -16,6 +16,7 @@ layout: default
     * [How to use them?](#how-to-use-them)
     
 # Commands
+* [Run install](#run-install)
 * [Create new resource](#create-new-resource)
 * [Create Pages module](#create-pages-madule)
 * [Create Contacts module](#create-contacts-module)
