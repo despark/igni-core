@@ -34,9 +34,10 @@ class EntityController extends AdminController
             $this->model->setActiveLocale($input['locale']);
         }
         $record = $this->model->create($input);
-
-        foreach ($this->model->getManyToManyFields() as $metod => $array) {
-            $record->$metod()->sync($request->get($array, []));
+        if (method_exists($this->model, 'getManyToManyFields')) {
+            foreach ($this->model->getManyToManyFields() as $metod => $array) {
+                $record->$metod()->sync($request->get($array, []));
+            }
         }
 
         $this->notify([
@@ -68,8 +69,10 @@ class EntityController extends AdminController
 
         $record->update($input);
 
-        foreach ($this->model->getManyToManyFields() as $metod => $array) {
-            $record->$metod()->sync($request->get($array, []));
+        if (method_exists($this->model, 'getManyToManyFields')) {
+            foreach ($this->model->getManyToManyFields() as $metod => $array) {
+                $record->$metod()->sync($request->get($array, []));
+            }
         }
 
         $this->notify([
