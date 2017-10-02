@@ -11,8 +11,8 @@
 <button type="submit" class="btn btn-primary">Save</button>
 
 <?php $resourceConfig = $controller->getResourceConfig() ?>
-@if(isset($resourceConfig['parentModel']) AND request()->has($resourceConfig['parentModel']['foreignKey']))
-   <a href="{{ route($resourceConfig['id'].'.index').'?'.$resourceConfig['parentModel']['foreignKey'].'='.request()->query($resourceConfig['parentModel']['foreignKey']) }}" class="back-to-filtered-listing">Back to listing</a> 
+@if(isset($resourceConfig['parentModel']) AND $foreignKeyValue = request()->query($resourceConfig['parentModel']['foreignKey']))
+   <a href="{{ route($resourceConfig['id'].'.index').'?'.$resourceConfig['parentModel']['foreignKey'].'='.$foreignKeyValue }}" class="back-to-filtered-listing">Back to listing</a> 
 @endif
 {{-- {!! $record->adminPreviewButton() !!} --}}
 

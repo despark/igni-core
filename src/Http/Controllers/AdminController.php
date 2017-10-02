@@ -294,7 +294,13 @@ abstract class AdminController extends BaseController
     protected function getActionButtons($record)
     {
         $buttons = [];
-        $queryString = str_replace(request()->url(), '', request()->fullURL());
+        $queryString = '';
+
+        $parentModelForeignKey = array_get($this->resourceConfig, 'parentModel.foreignKey');
+
+        if ($parentModelForeignKey AND $foreignKeyValue = request()->query($parentModelForeignKey)) {
+            $queryString .= '?'.$parentModelForeignKey.'='.$foreignKeyValue;
+        }
 
         if (isset($this->viewData['editRoute'])) {
             $buttons[] = '<a href="'.route($this->viewData['editRoute'],
@@ -335,7 +341,13 @@ abstract class AdminController extends BaseController
      */
     public function getDataTablesAjaxUrl()
     {
-        $queryString = str_replace(request()->url(), '', request()->fullURL());
+        $queryString = '';
+
+        $parentModelForeignKey = array_get($this->resourceConfig, 'parentModel.foreignKey');
+
+        if ($parentModelForeignKey AND $foreignKeyValue = request()->query($parentModelForeignKey)) {
+            $queryString .= '?'.$parentModelForeignKey.'='.$foreignKeyValue;
+        }
 
         return route($this->getResourceConfig()['id'].'.index').$queryString;
     }
