@@ -465,7 +465,6 @@ trait AdminImage
      */
     public function manipulateImage($file, array $options)
     {
-        $this->setRetinaFactor(config('ignicms.images.retina_factor'));
         // Detect file type
         if ($file instanceof Temp) {
             $sanitizedFilename = $this->sanitizeFilename($file->filename);
