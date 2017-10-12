@@ -25,6 +25,7 @@ class Factory implements FactoryContract
         'imageSingle' => ImageSingle::class,
         'wysiwyg' => Wysiwyg::class,
         'manyToManySelect' => ManyToManySelect::class,
+        'seo' => Seo::class,
     ];
 
     /**
