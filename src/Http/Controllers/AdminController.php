@@ -309,7 +309,7 @@ abstract class AdminController extends BaseController
 
         if (isset($this->viewData['destroyRoute'])) {
             $buttons[] = '<a href="#"  class="js-open-delete-modal btn btn-danger"
-                    data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->id]).$queryString.'">
+                    data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->{$this->model->getKeyName()}]).$queryString.'">
                     '.trans('ignicms::admin.delete').'
                 </a>';
         }
