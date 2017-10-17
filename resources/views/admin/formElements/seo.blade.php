@@ -28,6 +28,7 @@
 </div>
 
 @push('additionalScripts')
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
     <script type="text/javascript">
     	var url = '{{ $field->getRoute() }}',
     		slug = $('#slug').val(),
@@ -48,6 +49,7 @@
     		slug = '{{ $field->getSlug() }}'
     	}
 
+    	$('#seo_readability_list').hide();
     	$('#seo_meta_title').html($('#title').val());
     	$('#seo_meta_url').html(url+'/'+slug);
     	$('#seo_meta_description').html($('#meta_description').val());
@@ -95,24 +97,41 @@
 			}
 		});
 
-		function wysiwygTextChanged(editor) {
-			var readabilityColumn = '{{ $field->getOptions('readabilityColumn') ?? 'content' }}';
+		setTimeout(function () {
+			makeAjaxCall(tinymce.activeEditor);
+		}, 2000);
 
-		  	editor.on('mouseleave', function (e) {
-		  		if (editor.id === readabilityColumn) {
-		  			$.ajax({
-		                url: '/admin/check/readability',
-		                type: 'GET',
-		                data: $('#'+readabilityColumn).serialize()
-		            }).done(function (data) {
-		                
-		            }).fail(function (data) {
-		                // setErrors(data.responseJSON, $self);
-		            }).always(function (data) {
-		               	
-		            });
-		  		}
-       		});
+		function wysiwygTextChanged(editor) {
+		  	editor.on('keyup', _.debounce(function (e) {
+		  		makeAjaxCall(editor);
+		  	}, 2000));
+		}
+
+		function makeAjaxCall(editor) {
+			var readabilityColumn = '{{ $field->getOptions('readabilityColumn') ?? 'content' }}',
+				token = '{{ csrf_token() }}';
+			
+	  		if (editor.id === readabilityColumn) {
+	  			$.ajax({
+	                url: '/admin/check/readability',
+	                type: 'POST',
+	                data: {html: editor.getContent(), _token: token}
+	            }).done(function (data) {
+	            	$('#flesch_reading_ease_test').html(data.fleschKincaidReadingEaseResult.text).css('color', data.fleschKincaidReadingEaseResult.color);
+	            	$('#words_per_subheading').html(data.html.subheadings.text).css('color', data.html.subheadings.color);
+	            	$('#more_than_20_words').html(data.sentences.moreThan20Words.text).css('color', data.sentences.moreThan20Words.color);
+	            	$('#transition_words').html(data.sentences.transitionWords.text).css('color', data.sentences.transitionWords.color);
+	            	$('#words_in_paragraph').html(data.html.paragraphs.text).css('color', data.html.paragraphs.color);
+	            	if (data.showTextLengthError) {
+	            		$('#text_length').show();
+	            	} else {
+	            		$('#text_length').hide();
+	            	}
+	            	$('#seo_readability_list').show();
+	            }).fail(function (data) {
+	            	$('#seo_readability_list').hide();
+	            });
+	  		}
 		}
     </script>
 @endpush
