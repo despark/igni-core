@@ -1,11 +1,12 @@
 <hr>
 <h3>SEO</h3>
-<hr>
-<h4>Readability</h4>
-
-<div id="seo_readability_content">
-	@include('ignicms::admin.formElements.seoReadability')
-</div>
+@if ($field->getOptions('readability'))
+	<hr>
+	<h4>Readability</h4>
+	<div id="seo_readability_content">
+		@include('ignicms::admin.formElements.seoReadability')
+	</div>
+@endif
 
 <hr>
 <h4>Social</h4>
@@ -28,7 +29,9 @@
 </div>
 
 @push('additionalScripts')
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
+	@if ($field->getOptions('readability'))
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
+	@endif
     <script type="text/javascript">
     	var url = '{{ $field->getRoute() }}',
     		slug = $('#slug').val(),
@@ -49,7 +52,6 @@
     		slug = '{{ $field->getSlug() }}'
     	}
 
-    	$('#seo_readability_list').hide();
     	$('#seo_meta_title').html($('#title').val());
     	$('#seo_meta_url').html(url+'/'+slug);
     	$('#seo_meta_description').html($('#meta_description').val());
@@ -97,42 +99,46 @@
 			}
 		});
 
-		setTimeout(function () {
-			makeAjaxCall(tinymce.activeEditor);
-		}, 2000);
+		@if ($field->getOptions('readability'))
+			$('#seo_readability_list').hide();
 
-		function wysiwygTextChanged(editor) {
-		  	editor.on('keyup', _.debounce(function (e) {
-		  		makeAjaxCall(editor);
-		  	}, 2000));
-		}
+			setTimeout(function () {
+				makeAjaxCall(tinymce.activeEditor);
+			}, 2000);
 
-		function makeAjaxCall(editor) {
-			var readabilityColumn = '{{ $field->getOptions('readabilityColumn') ?? 'content' }}',
-				token = '{{ csrf_token() }}';
-			
-	  		if (editor.id === readabilityColumn) {
-	  			$.ajax({
-	                url: '/admin/check/readability',
-	                type: 'POST',
-	                data: {html: editor.getContent(), _token: token}
-	            }).done(function (data) {
-	            	$('#flesch_reading_ease_test').html(data.fleschKincaidReadingEaseResult.text).css('color', data.fleschKincaidReadingEaseResult.color);
-	            	$('#words_per_subheading').html(data.html.subheadings.text).css('color', data.html.subheadings.color);
-	            	$('#passive_voice').html(data.sentences.passiveVoice.text).css('color', data.sentences.passiveVoice.color);
-	            	$('#more_than_20_words').html(data.sentences.moreThan20Words.text).css('color', data.sentences.moreThan20Words.color);
-	            	$('#transition_words').html(data.sentences.transitionWords.text).css('color', data.sentences.transitionWords.color);
-	            	$('#words_in_paragraph').html(data.html.paragraphs.text).css('color', data.html.paragraphs.color);
-	            	if (data.showTextLengthError) {
-	            		$('#text_length').show();
-	            	} else {
-	            		$('#text_length').hide();
-	            	}
-	            	$('#seo_readability_list').show();
-	            }).fail(function (data) {
-	            	$('#seo_readability_list').hide();
-	            });
-	  		}
-		}
+			function wysiwygTextChanged(editor) {
+			  	editor.on('keyup', _.debounce(function (e) {
+			  		makeAjaxCall(editor);
+			  	}, 2000));
+			}
+
+			function makeAjaxCall(editor) {
+				var readabilityColumn = '{{ $field->getOptions('readabilityColumn') ?? 'content' }}',
+					token = '{{ csrf_token() }}';
+				
+		  		if (editor.id === readabilityColumn) {
+		  			$.ajax({
+		                url: '/admin/check/readability',
+		                type: 'POST',
+		                data: {html: editor.getContent(), _token: token}
+		            }).done(function (data) {
+		            	$('#flesch_reading_ease_test').html(data.fleschKincaidReadingEaseResult.text).css('color', data.fleschKincaidReadingEaseResult.color);
+		            	$('#words_per_subheading').html(data.html.subheadings.text).css('color', data.html.subheadings.color);
+		            	$('#passive_voice').html(data.sentences.passiveVoice.text).css('color', data.sentences.passiveVoice.color);
+		            	$('#more_than_20_words').html(data.sentences.moreThan20Words.text).css('color', data.sentences.moreThan20Words.color);
+		            	$('#transition_words').html(data.sentences.transitionWords.text).css('color', data.sentences.transitionWords.color);
+		            	$('#words_in_paragraph').html(data.html.paragraphs.text).css('color', data.html.paragraphs.color);
+		            	if (data.showTextLengthError) {
+		            		$('#text_length').show();
+		            	} else {
+		            		$('#text_length').hide();
+		            	}
+		            	$('#seo_readability_list').show();
+		            }).fail(function (data) {
+		            	$('#seo_readability_list').hide();
+		            });
+		  		}
+			}
+		@endif
     </script>
 @endpush
