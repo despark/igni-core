@@ -339,6 +339,8 @@ trait AdminImage
                 }
             }
 
+            $imageFields = $this->getImageFields();
+
             if (! isset($imageFields[$fileField])) {
                 throw new \Exception('Configuration not found for file/image field '.$fileField);
             }
