@@ -58,6 +58,7 @@ class AdminServiceProvider extends ServiceProvider
         return [
             ImageContract::class,
             AssetsContract::class,
+            \Flow\File::class,
             'field',
             'auth.admin',
         ];
