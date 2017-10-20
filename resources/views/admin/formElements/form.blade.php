@@ -13,6 +13,8 @@
 <?php $resourceConfig = $controller->getResourceConfig() ?>
 @if(isset($resourceConfig['parentModel']) AND $foreignKeyValue = request()->query($resourceConfig['parentModel']['foreignKey']))
    <a href="{{ route($resourceConfig['id'].'.index').'?'.$resourceConfig['parentModel']['foreignKey'].'='.$foreignKeyValue }}" class="back-to-filtered-listing">Back to listing</a> 
+
+   {!! Form::hidden('parent_model', '?'.$resourceConfig['parentModel']['foreignKey'].'='.$foreignKeyValue) !!}
 @endif
 {{-- {!! $record->adminPreviewButton() !!} --}}
 
