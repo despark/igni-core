@@ -66,25 +66,8 @@ class Seo extends Field
      */
     public function getGalleryItems($type)
     {
-        if (! isset($this->galleryItems)) {
-            // Get all images
-            $this->galleryItems = $this->model->images()
-                ->where('image_type', $type)
-                ->get();
-        }
-
-        return $this->galleryItems;
-    }
-
-    /**
-     * @param Model $item
-     *
-     * @return string
-     *
-     * @throws \Exception
-     */
-    public function getItemType(Model $item)
-    {
-        return 'image';
+        return $this->model->images()
+            ->where('image_type', $type)
+            ->first();
     }
 }

@@ -17,6 +17,5 @@
 @include('ignicms::admin.formElements.seo.imageUploader', [
         'fieldName' => 'facebook_image',
         'label' => 'Facebook Image', 
-        'type' => 'facebook_image',
         'help' => 'If you want to override the image used on Facebook, upload an image here. The image size should be at least 1200x630px and with the same aspect ratio.',
 ])
