@@ -77,8 +77,8 @@
             this.config = config;
             this.flowjs = flowjs;
             this.weight = 0;
-            this.defaultWidth = '{{ config('ignicms.images.admin_thumb_width',200) }}';
-            this.defaultHeight = '{{ config('ignicms.images.admin_thumb_height',200) }}';
+            this.defaultWidth = '{{ config('ignicms.images.admin_thumb_width', 200) }}';
+            this.defaultHeight = '{{ config('ignicms.images.admin_thumb_height', 200) }}';
 
             this.getImagePreview = function (id) {
                 var src = this.config.previewUrl + '/' + id;

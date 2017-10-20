@@ -26,6 +26,7 @@ class Factory implements FactoryContract
         'wysiwyg' => Wysiwyg::class,
         'manyToManySelect' => ManyToManySelect::class,
         'seo' => Seo::class,
+        'readability' => Readability::class,
     ];
 
     /**
