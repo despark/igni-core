@@ -3,6 +3,15 @@
 @section('pageTitle', $pageTitle)
 
 @section('content')
+
+@php 
+    $resourceConfig = $controller->getResourceConfig();
+    $isFilteredByForeignKey = false;
+
+    if(isset($resourceConfig['parentModel']) AND request()->has($resourceConfig['parentModel']['foreignKey'])) {
+        $isFilteredByForeignKey = true;
+    }
+@endphp
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
@@ -19,7 +28,7 @@
                 <div class="box-body">
                     <div id="data-table_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
                         @if(isset($createRoute))
-                            <a href="{{ route($createRoute) }}"
+                            <a href="{{ route($createRoute) }}<?=($isFilteredByForeignKey ? '?'.$resourceConfig['parentModel']['foreignKey'].'='.request()->query($resourceConfig['parentModel']['foreignKey']) : '')?>"
                                class="btn btn-success pull-left">+ {{ trans('ignicms::admin.add') }} {{ $pageTitle }}</a>
                         @endif
                         
@@ -41,10 +50,7 @@
                             </div>
                         </div>
 
-                        @php 
-                            $resourceConfig = $controller->getResourceConfig();
-                        @endphp
-                        @if(isset($resourceConfig['parentModel']) AND request()->has($resourceConfig['parentModel']['foreignKey']))
+                        @if($isFilteredByForeignKey)
                            <a href="{{ route($resourceConfig['parentModel']['listingButtonRoute'], request()->query($resourceConfig['parentModel']['foreignKey'])) }}" class="btn btn-primary pull-left parent-model-btn">{{ $resourceConfig['parentModel']['listingButtonLabel'] }}</a> 
                         @endif
                     </div>

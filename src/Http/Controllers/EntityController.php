@@ -46,7 +46,7 @@ class EntityController extends AdminController
             'description' => $this->getResourceConfig()['name'].' is created successfully!',
         ]);
 
-        return redirect(route($this->getResourceConfig()['id'].'.edit', ['id' => $record->{$this->model->getKeyName()}]));
+        return redirect(route($this->getResourceConfig()['id'].'.edit', ['id' => $record->{$this->model->getKeyName()}]).(array_get($input, 'parent_model') ? array_get($input, 'parent_model') : ''));
     }
 
     /**
