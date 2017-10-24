@@ -37,13 +37,13 @@ class Rebuild extends Command
         $query = Image::query();
 
         if ($resource) {
-            if ( ! is_array($resource)) {
+            if (! is_array($resource)) {
                 $resource = [$resource];
             }
             $query->whereIn('resource_model', $resource);
         }
         if ($without) {
-            if ( ! is_array($without)) {
+            if (! is_array($without)) {
                 $without = [$without];
             }
             $query->whereNotIn('resource_model', $without);
@@ -51,7 +51,7 @@ class Rebuild extends Command
 
         // Get all uploaded images grouped by model / type
         $count = $query->count();
-        if ( ! $count) {
+        if (! $count) {
             $this->info('Nothing to process');
 
             return;
@@ -64,9 +64,9 @@ class Rebuild extends Command
         $checked = [];
         // Validate all relations first.
         foreach ($images as $image) {
-            if ( ! in_array($image->resource_model, $checked)) {
+            if (! in_array($image->resource_model, $checked)) {
                 $className = $image->getActualClassNameForMorph($image->resource_model);
-                if ( ! class_exists($className)) {
+                if (! class_exists($className)) {
                     $this->error('Resource model '.$className.' doesn\'t exist. Review your images table and fix it.');
 
                     return;

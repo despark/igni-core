@@ -12,6 +12,7 @@ use Despark\Cms\Helpers\FileHelper;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Models\File\Temp;
 use Despark\Cms\Models\Image as ImageModel;
+use Despark\Cms\Seo\Contracts\Seoable;
 use File as FileFacade;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -337,6 +338,8 @@ trait AdminImage
                     $fileField = $fieldName;
                 }
             }
+
+            $imageFields = $this->getImageFields();
 
             if (! isset($imageFields[$fileField])) {
                 throw new \Exception('Configuration not found for file/image field '.$fileField);
@@ -686,6 +689,10 @@ trait AdminImage
                     $imageField['thumbnails'] = array_merge($imageField['thumbnails'], $adminThumb);
                 }
             }
+        }
+
+        if ($this instanceof Seoable) {
+            return array_merge($this->imageFields, config('igniseo.image_fields'));
         }
 
         return $this->imageFields;
