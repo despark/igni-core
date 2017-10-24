@@ -57,7 +57,7 @@
 		$('#meta_description').change(function() {
 			$('#seo_meta_description').html($('#meta_description').val());
 		});
-	
+
 		$('.btn-seo-social').click(function(event) {
 			event.preventDefault();
 			var targetId = event.target.id;
@@ -71,18 +71,22 @@
 			}
 		});
 
-		$(activeDevice).addClass('active');
+        $(activeDevice).addClass('active');
 
-		$('.btn-seo-google-switch').click(function(event) {
-			event.preventDefault();
-			var targetId = event.target.id;
+        $('.btn-seo-google-switch').click(function(event) {
+            event.preventDefault();
+            var targetId = event.target.id;
 
-			if ('#'+targetId != activeDevice) {
-				// $(activeDevice+'_div').hide();
-				$(activeDevice).removeClass('active');
-				activeDevice = '#'+targetId;
-				// $(activeDevice+'_div').show();
-				$(activeDevice).addClass('active');
+            if ('#'+targetId != activeDevice) {
+                $(activeDevice).removeClass('active');
+                activeDevice = '#'+targetId;
+                $(activeDevice).addClass('active');
+
+                if (activeDevice === '#seo_google_mobile') {
+                    $('.device-tabs').addClass('mobile');
+                }   else {
+                    $('.device-tabs').removeClass('mobile');
+                }
 			}
 		});
     </script>
