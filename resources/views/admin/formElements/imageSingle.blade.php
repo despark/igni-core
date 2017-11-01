@@ -8,7 +8,10 @@
                     @if (pathinfo($image->getOriginalImagePath('original'), PATHINFO_EXTENSION) === 'svg')
                         {!! Html::image($image->getOriginalImagePath('original'), $image->alt, ['title' => $image->title]) !!}
                     @else
-                        {!! Html::image($image->getOriginalImagePath('admin'), $image->alt, ['title' => $image->title]) !!}
+                        @php 
+                            $imgTag = Html::image($image->getOriginalImagePath('admin'), $image->alt, ['title' => $image->title]);
+                        @endphp
+                        {!! ($field->getOptions('previewLink') === true) ? '<a href="'.asset($image->getSourceImagePath()).'" target="_blank">'.$imgTag.'</a>' : $imgTag !!}
                     @endif
                 </div>
                 {!! $field->getModel()->getImageMetaFieldsHtml($fieldName, $image) !!}
@@ -21,7 +24,7 @@
             </label>
         </div>
     @endif
-
+    
     {!! Form::file($elementName,  [
         'id' => $elementName,
         'class' => "form-control",

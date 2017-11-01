@@ -371,7 +371,8 @@ Keep in mind that the images relationship is polymorphic, so you don't have to m
 ```php
 'column_name' => [
     'type' => 'imageSingle',
-    'label' => 'I am a image single upload',
+    'label' => 'I am a image single upload'
+    'previewLink' => true,  //Defines whether the CMS user should be able to see the original image file when clicking on the thumbnail preview in the form
 ],
 ```
 
