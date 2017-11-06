@@ -46,7 +46,13 @@ class EntityController extends AdminController
             'description' => $this->getResourceConfig()['name'].' is created successfully!',
         ]);
 
-        return redirect(route($this->getResourceConfig()['id'].'.edit', ['id' => $record->{$this->model->getKeyName()}]).(array_get($input, 'parent_model') ? array_get($input, 'parent_model') : ''));
+        $redirectRoute = route($this->getResourceConfig()['id'].'.edit', ['id' => $record->{$this->model->getKeyName()}]);
+
+        if (array_get($input, 'submit') == 'save-and-add') {
+            $redirectRoute = route($this->getResourceConfig()['id'].'.create');
+        }
+
+        return redirect($redirectRoute.(array_get($input, 'parent_model') ? array_get($input, 'parent_model') : ''));
     }
 
     /**
@@ -80,6 +86,10 @@ class EntityController extends AdminController
             'title' => 'Successful update!',
             'description' => $this->getResourceConfig()['name'].' is updated successfully.',
         ]);
+
+        if (array_get($input, 'submit') == 'save-and-add') {
+            return redirect(route($this->getResourceConfig()['id'].'.create').(array_get($input, 'parent_model') ? array_get($input, 'parent_model') : ''));
+        }
 
         return redirect()->back();
     }

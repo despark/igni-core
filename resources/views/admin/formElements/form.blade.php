@@ -8,7 +8,8 @@
 
 {!! $form->renderFields() !!}
 
-<button type="submit" class="btn btn-primary">Save</button>
+<button type="submit" class="btn btn-primary" value="save" name="submit">Save</button>
+<button type="submit" class="btn btn-primary" value="save-and-add" name="submit">Save and Add New</button>
 
 <?php $resourceConfig = $controller->getResourceConfig() ?>
 @if(isset($resourceConfig['parentModel']) AND $foreignKeyValue = request()->query($resourceConfig['parentModel']['foreignKey']))
@@ -17,5 +18,6 @@
    {!! Form::hidden('parent_model', '?'.$resourceConfig['parentModel']['foreignKey'].'='.$foreignKeyValue) !!}
 @endif
 {{-- {!! $record->adminPreviewButton() !!} --}}
+
 
 {!! Form::close() !!}
