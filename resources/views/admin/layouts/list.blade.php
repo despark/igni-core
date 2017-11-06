@@ -169,6 +169,13 @@
     });
 
     var isSortable = $('th.sort').length === 0;
+    var orderColumns = [];
+
+    @if($sortColumns = array_get($resourceConfig, 'adminColumnsSort'))
+        @foreach($sortColumns as $columnIndex => $sortType)
+            orderColumns.push([<?=$columnIndex?>, '<?=$sortType?>']);
+        @endforeach
+    @endif
 
     var table = $('#data-table').DataTable({
         paging: isSortable !== false,
@@ -176,6 +183,7 @@
         lengthChange: false,
         searching: true,
         ordering: isSortable !== false,
+        order: orderColumns,
         info: false,
         autoWidth: true,
         processing: true,

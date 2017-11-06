@@ -23,6 +23,7 @@ layout: default
 * [Image rebuilding](#image-rebuilding)
 
 # Features info
+* [List views](#list-views)
 * [Form fields](#form-fields)
     * [Checkbox](#checkbox)
     * [Date picker](#date-picker)
@@ -338,6 +339,31 @@ _Example_
 You can exclude some resources with `--without=*`.
 
 # Features info
+## List views
+### Defining the listing columns
+The columns of an entity's listing are degined in the `adminColumns` key in the entity config. This is an array defining which columns to show in your table at the listing page. You can also use relationships here.
+
+_Example_
+
+You have a relationship between a user and a car and you want to show the user's name and their car model in the users listing:
+```php
+'adminColumns' => [
+    'name',
+    'car model' => 'car.model',
+],
+```
+Keep in mind that in the listing all 0 and 1 values are casted to No/Yes.
+### Actions
+You can also limit the available actions for a resource. By default they are set to all:
+```php
+'actions' => ['edit', 'create', 'destroy'],
+```
+### Sorting
+By default the listing can be sorted by all columns different than the actions column. You can however define the default sorting which is applied up on table load in the `adminColumnsSort` key. You can also define a sort by multiple columns as shown in the example. The key is the index of the column (starting from 0) and the value is the sorting type.
+```php 
+'adminColumnsSort' => [4 => 'desc', 2 => 'asc'],
+```
+
 ## Form fields
 ### Checkbox
 ```php
