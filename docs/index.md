@@ -53,7 +53,7 @@ layout: default
     * [Set retina factor](#set-retina-factor)
 * [Resetting passwords](#resetting-passwords)
 * [Localization](#localization)
-* [Change CMS logo](#change-cms-logo)
+* [Change CMS logo and favicon](#change-cms-logo-and-favicon)
 * [Brute force protection](#brute-force-protection)
 
 ***
@@ -818,12 +818,19 @@ If you want to change the standard email template, you can find out how in the [
 ## Localization
 IgniCMS provides internationalization out of the box through the i18n package. You can find full information about it [here](https://github.com/despark/laravel-db-i18n).
 
-## Change CMS logo
+## Change CMS logo and favicon
 You can change the CMS logo in `config/ignicms.php`.
   ```php
    ...
     // For best performance the image must be with width 234px
     'logo' => 'images/logo.png',
+   ...
+  ```
+
+and the favicon in the same file right below the logo configuration.
+  ```php
+   ...
+    'favicon' => 'images/favicon.ico',
    ...
   ```
 
