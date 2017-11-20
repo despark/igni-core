@@ -18,10 +18,13 @@
 	@include('ignicms::admin.formElements.seo.twitter')
 </div>
 
+<hr>
+
 @push('additionalScripts')
     <script type="text/javascript">
-    	var url = '{{ $field->getRoute() }}',
+    	var url = '{{ route($field->getOptions('routeName'), '') }}',
     		slug = $('#slug').val(),
+            metaTitle = '#'+'{{ $field->getOptions('meta_title_field') ?? 'title' }}',
     		active = '#seo_google',
     		activeDevice = '#seo_google_desktop';
 
@@ -39,15 +42,15 @@
     		slug = '{{ $field->getSlug() }}'
     	}
 
-    	$('#seo_meta_title').html($('#title').val());
+    	$('#seo_meta_title').html($(metaTitle).val());
     	$('#seo_meta_url').html(url+'/'+slug);
     	$('#seo_meta_description').html($('#meta_description').val());
     	$(active).addClass('active');
     	$('#seo_facebook_div').hide();
     	$('#seo_twitter_div').hide();
 
-    	$('#title').change(function() {
-			$('#seo_meta_title').html($('#title').val());
+    	$(metaTitle).change(function() {
+			$('#seo_meta_title').html($(metaTitle).val());
 		});
 
 		$('#slug').change(function() {

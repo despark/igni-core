@@ -11,13 +11,6 @@ class Seo extends Field
     protected $fieldName;
     protected $options;
 
-    public function getRoute()
-    {
-        $actionVerb = $this->options['actionVerb'] ?? 'show';
-
-        return route(strtolower(class_basename($this->model)).'.'.$actionVerb, '');
-    }
-
     public function getSlug()
     {
         return $this->model->slug;
