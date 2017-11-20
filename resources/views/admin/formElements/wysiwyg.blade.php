@@ -22,6 +22,7 @@
     }
 
     var defaultOptions = {
+        init_instance_callback: 'wysiwygTextChanged',
         selector: ".wysiwyg",
         skin: "despark-cms",
         plugins: [
@@ -68,8 +69,6 @@
         end_container_on_empty_block: true
     };
 
-    var additionalOptions = {!! json_encode($field->getOptions('additional_options')) !!};
-
-    tinymce.init(merge_options(defaultOptions, additionalOptions));
+    tinymce.init(defaultOptions);
 </script>
 @endpush
