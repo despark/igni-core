@@ -34,15 +34,20 @@
     	@if ($errors->has('facebook_title') || $errors->has('facebook_description') | $errors->has('facebook_image'))
         	$('#seo_facebook').addClass('btn-danger').removeClass('btn-primary');
         @endif
-        @if ($errors->has('meta_description'))
-        	$('#seo_google').addClass('btn-danger').removeClass('btn-primary');
+        @if ($errors->has('meta_title') || $errors->has('meta_description'))
+            $('#seo_google').addClass('btn-danger').removeClass('btn-primary');
         @endif
 
     	if ($('#slug').val() == undefined) {
     		slug = '{{ $field->getSlug() }}'
     	}
 
-    	$('#seo_meta_title').html($(metaTitle).val());
+    	if ($('#meta_title').val().length) {
+            $('#seo_meta_title').html($('#meta_title').val());
+        } else {
+            $('#seo_meta_title').html($(metaTitle).val());
+        }
+
     	$('#seo_meta_url').html(url+'/'+slug);
     	$('#seo_meta_description').html($('#meta_description').val());
     	$(active).addClass('active');
@@ -50,8 +55,18 @@
     	$('#seo_twitter_div').hide();
 
     	$(metaTitle).change(function() {
-			$('#seo_meta_title').html($(metaTitle).val());
-		});
+            if ($('#meta_title').val().length == 0) {
+                $('#seo_meta_title').html($(metaTitle).val());
+            }
+        });
+
+        $('#meta_title').change(function() {
+            if ($('#meta_title').val().length) {
+                $('#seo_meta_title').html($('#meta_title').val());
+            } else {
+                $('#seo_meta_title').html($(metaTitle).val());
+            }
+        });
 
 		$('#slug').change(function() {
 			$('#seo_meta_url').html(url+'/'+$('#slug').val());
