@@ -1,10 +1,10 @@
 <?php
 
-use Despark\Cms\Models\IgniMigration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsAdminToUsers extends IgniMigration
+class AddIsAdminToUsers extends Migration
 {
     /**
      * Run the migrations.

@@ -28,23 +28,9 @@ class PagesResourceCommand extends Command
     /**
      * Table name.
      *
-     * @var string|null
-     */
-    protected $tablePrefix;
-
-    /**
-     * Table name.
-     *
      * @var string
      */
-    protected $tableName;
-
-    /**
-     * Full table name.
-     *
-     * @var string
-     */
-    protected $fullTableName;
+    protected $tableName = 'pages';
 
     /**
      * Compiler.
@@ -59,9 +45,6 @@ class PagesResourceCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->tablePrefix = config('ignicms.igniTablesPrefix');
-        $this->tableName = 'pages';
-        $this->fullTableName = $this->tablePrefix ? $this->tablePrefix.'_'.$this->tableName : $this->tableName;
     }
 
     /**
@@ -69,24 +52,22 @@ class PagesResourceCommand extends Command
      */
     public function handle()
     {
-        // if (Schema::hasTable($this->fullTableName)) {
-        //     $this->tableName = $this->ask('The table name '.$this->fullTableName.' already exists! Please enter a new one without it\'s prefix:');
-        //     $this->fullTableName = $this->tablePrefix ? $this->tablePrefix.'_'.$this->tableName : $this->tableName;
-        // }
-
-        $this->compiler = new PageCompiler($this->tableName, $this->fullTableName);
+        if ($prefix = config('ignicms.igniTablesPrefix')) {
+            $this->tableName = $prefix . '_pages';
+        }
+        $this->compiler = new PageCompiler($this->tableName);
         $this->createResource('entities');
         $this->createResource('model');
         $this->createResource('controller');
         $this->createResource('request');
         $this->createResource('migration');
-        $this->info('Migrating..'.PHP_EOL);
+        $this->info('Migrating..' . PHP_EOL);
         $this->call('migrate');
         if ($this->confirm('Do you want to insert dummy data?')) {
-            $this->info('Seeding..'.PHP_EOL);
+            $this->info('Seeding..' . PHP_EOL);
             $this->seedPage();
         }
-        $this->info('Fantastic! You are good to go :)'.PHP_EOL);
+        $this->info('Fantastic! You are good to go :)' . PHP_EOL);
     }
 
     /**
@@ -95,9 +76,9 @@ class PagesResourceCommand extends Command
     protected function createResource($type)
     {
         $template = $this->getTemplate($type);
-        $template = $this->compiler->{'render_'.$type}($template);
-        $path = config('ignicms.paths.'.$type);
-        $filename = $this->{$type.'_name'}().'.php';
+        $template = $this->compiler->{'render_' . $type}($template);
+        $path = config('ignicms.paths.' . $type);
+        $filename = $this->{$type . '_name'}() . '.php';
         $this->saveResult($template, $path, $filename);
     }
 
@@ -108,7 +89,7 @@ class PagesResourceCommand extends Command
      */
     public function getTemplate($type)
     {
-        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'Page'.DIRECTORY_SEPARATOR.$type.'.stub');
+        return file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'Page' . DIRECTORY_SEPARATOR . $type . '.stub');
     }
 
     /**
@@ -118,16 +99,16 @@ class PagesResourceCommand extends Command
      */
     protected function saveResult($template, $path, $filename)
     {
-        $file = $path.DIRECTORY_SEPARATOR.$filename;
+        $file = $path . DIRECTORY_SEPARATOR . $filename;
 
         if (File::exists($file)) {
-            $result = $this->confirm('File "'.$filename.'" already exist. Overwrite?', false);
-            if (! $result) {
+            $result = $this->confirm('File "' . $filename . '" already exist. Overwrite?', false);
+            if (!$result) {
                 return;
             }
         }
         File::put($file, $template);
-        $this->info('File "'.$file.'" was created.');
+        $this->info('File "' . $file . '" was created.');
     }
 
     /**
@@ -169,7 +150,7 @@ class PagesResourceCommand extends Command
      */
     public function migration_name()
     {
-        return date('Y_m_d_His').'_create_'.str_plural($this->tableName).'_table';
+        return date('Y_m_d_His') . '_create_' . str_plural($this->tableName) . '_table';
     }
 
     public function seedPage()

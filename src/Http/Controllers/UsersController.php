@@ -39,8 +39,11 @@ class UsersController extends AdminController
         }
 
         $record = $this->model->create($input);
-        foreach ($this->model->getManyToManyFields() as $metod => $array) {
-            $record->$metod()->sync($request->get($array, []));
+
+        if (method_exists($record, 'getManyToManyFields')) {
+            foreach ($this->model->getManyToManyFields() as $metod => $array) {
+                $record->$metod()->sync($request->get($array, []));
+            }
         }
 
         if ($request->has('roles')) {
@@ -59,8 +62,8 @@ class UsersController extends AdminController
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int     $id
+     * @param UserUpdateRequest $request
+     * @param int $id
      *
      * @return Response
      */
@@ -80,8 +83,10 @@ class UsersController extends AdminController
             $record->syncRoles($request->roles);
         }
 
-        foreach ($this->model->getManyToManyFields() as $metod => $array) {
-            $record->$metod()->sync($request->get($array, []));
+        if (method_exists($record, 'getManyToManyFields')) {
+            foreach ($this->model->getManyToManyFields() as $metod => $array) {
+                $record->$metod()->sync($request->get($array, []));
+            }
         }
 
         $record->update($input);
