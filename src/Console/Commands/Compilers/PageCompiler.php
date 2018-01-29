@@ -13,17 +13,11 @@ class PageCompiler
     protected $tableName;
 
     /**
-     * @var string
-     */
-    protected $fullTableName;
-
-    /**
      * @var array
      */
     protected $modelReplacements = [
         ':app_namespace' => '',
         ':table_name' => '',
-        ':full_table_name' => '',
     ];
 
     /**
@@ -56,16 +50,12 @@ class PageCompiler
     ];
 
     /**
-     * @param Command $command
-     * @param         $identifier
-     * @param         $options
-     *
-     * @todo why setting options where we can get it from command? Either remove command or keep options
+     * PageCompiler constructor.
+     * @param $tableName
      */
-    public function __construct($tableName, $fullTableName)
+    public function __construct($tableName)
     {
         $this->tableName = $tableName;
-        $this->fullTableName = $fullTableName;
     }
 
     /**
@@ -79,7 +69,6 @@ class PageCompiler
     {
         $this->modelReplacements[':app_namespace'] = app()->getNamespace();
         $this->modelReplacements[':table_name'] = $this->tableName;
-        $this->modelReplacements[':full_table_name'] = $this->fullTableName;
 
         $template = strtr($template, $this->modelReplacements);
 
@@ -94,7 +83,6 @@ class PageCompiler
     public function render_entities($template)
     {
         $this->entitiesReplacements[':app_namespace'] = app()->getNamespace();
-        $this->entitiesReplacements[':table_name'] = $this->tableName;
 
         $template = strtr($template, $this->entitiesReplacements);
 
@@ -137,7 +125,7 @@ class PageCompiler
     public function render_migration($template)
     {
         $this->migrationReplacements[':table_name'] = str_plural($this->tableName);
-        $this->migrationReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->tableName)).'Table';
+        $this->migrationReplacements[':migration_class'] = 'Create' . str_plural(studly_case($this->tableName)) . 'Table';
 
         $template = strtr($template, $this->migrationReplacements);
 

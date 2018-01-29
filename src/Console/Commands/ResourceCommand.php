@@ -50,6 +50,11 @@ class ResourceCommand extends Command
     ];
 
     /**
+     * @var string
+     */
+    protected $tableName;
+
+    /**
      * Create a new command instance.
      */
     public function __construct()
@@ -64,23 +69,25 @@ class ResourceCommand extends Command
     {
         $this->identifier = self::normalize($this->argument('identifier'));
         $this->configIdentifier = $this->generateConfigIdentifier();
+        $this->tableName = $this->getTableName();
 
         $this->askImageUploads();
         $this->askTranslations();
         $this->askMigration();
         $this->askActions();
-        $this->compiler = new ResourceCompiler($this, $this->identifier, $this->configIdentifier, $this->resourceOptions);
+        $this->compiler = new ResourceCompiler($this, $this->identifier, $this->configIdentifier,
+            $this->resourceOptions, $this->tableName);
         $this->createResource('entities');
-        $this->info('Don’t forget to add all the fields you want to manage in your new resource in the entity before running it.'.PHP_EOL);
+        $this->info('Don’t forget to add all the fields you want to manage in your new resource in the entity before running it.' . PHP_EOL);
         $this->createResource('model');
-        $this->info('Don’t forget to add all the fields you want to manage in your new resource in the model before running it.'.PHP_EOL);
+        $this->info('Don’t forget to add all the fields you want to manage in your new resource in the model before running it.' . PHP_EOL);
         $this->createResource('controller');
         if ($this->resourceOptions['migration']) {
             $this->createResource('migration');
             if ($this->resourceOptions['translations']) {
                 $this->createResource('migration_i18n');
             }
-            $this->info('Don’t forget to add all the fields you want to manage in your new resource in the migration before running it.'.PHP_EOL);
+            $this->info('Don’t forget to add all the fields you want to manage in your new resource in the migration before running it.' . PHP_EOL);
         }
     }
 
@@ -90,14 +97,14 @@ class ResourceCommand extends Command
     protected function createResource($type)
     {
         $template = $this->getTemplate($type);
-        $template = $this->compiler->{'render_'.$type}($template);
+        $template = $this->compiler->{'render_' . $type}($template);
         if ($type !== 'migration_i18n') {
-            $path = config('ignicms.paths.'.$type);
+            $path = config('ignicms.paths.' . $type);
         } else {
             $path = config('ignicms.paths.migration');
         }
 
-        $filename = $this->{$type.'_name'}().'.php';
+        $filename = $this->{$type . '_name'}() . '.php';
         $this->saveResult($template, $path, $filename);
     }
 
@@ -137,7 +144,7 @@ class ResourceCommand extends Command
     protected function askActions()
     {
         $options = ['create', 'edit', 'destroy'];
-        $answer = $this->ask('Which actions do you need? ['.implode(', ', $options).', all]', 'all');
+        $answer = $this->ask('Which actions do you need? [' . implode(', ', $options) . ', all]', 'all');
         $answer = str_replace(' ', '', $answer);
         if ($answer == 'all') {
             foreach ($options as $action) {
@@ -161,7 +168,7 @@ class ResourceCommand extends Command
      */
     public function getTemplate($type)
     {
-        return file_get_contents(__DIR__.DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.$type.'.stub');
+        return file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . $type . '.stub');
     }
 
     /**
@@ -171,16 +178,16 @@ class ResourceCommand extends Command
      */
     protected function saveResult($template, $path, $filename)
     {
-        $file = $path.DIRECTORY_SEPARATOR.$filename;
+        $file = $path . DIRECTORY_SEPARATOR . $filename;
 
         if (File::exists($file)) {
-            $result = $this->confirm('File "'.$filename.'" already exist. Overwrite?', false);
-            if (! $result) {
+            $result = $this->confirm('File "' . $filename . '" already exist. Overwrite?', false);
+            if (!$result) {
                 return;
             }
         }
         File::put($file, $template);
-        $this->info('File "'.$file.'" was created.');
+        $this->info('File "' . $file . '" was created.');
     }
 
     /**
@@ -206,7 +213,7 @@ class ResourceCommand extends Command
      */
     public function controller_name()
     {
-        return str_plural(studly_case($this->identifier)).'Controller';
+        return str_plural(studly_case($this->identifier)) . 'Controller';
     }
 
     /**
@@ -214,7 +221,7 @@ class ResourceCommand extends Command
      */
     public function migration_name()
     {
-        return date('Y_m_d_His').'_create_'.str_plural($this->identifier).'_table';
+        return date('Y_m_d_His') . '_create_' . $this->tableName . '_table';
     }
 
     /**
@@ -222,7 +229,7 @@ class ResourceCommand extends Command
      */
     public function migration_i18n_name()
     {
-        return Carbon::now()->addSeconds(1)->format('Y_m_d_His').'_create_'.str_plural($this->identifier).'_i18n_table';
+        return Carbon::now()->addSeconds(1)->format('Y_m_d_His') . '_create_' . $this->tableName . '_i18n_table';
     }
 
     /**
@@ -269,5 +276,17 @@ class ResourceCommand extends Command
         }
 
         return $string;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTableName()
+    {
+        if ($tablePrefix = config('ignicms.igniTablesPrefix')) {
+            return $tablePrefix . '_' . str_plural($this->identifier);
+        }
+
+        return str_plural($this->identifier);
     }
 }

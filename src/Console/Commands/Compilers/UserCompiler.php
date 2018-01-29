@@ -13,30 +13,19 @@ class UserCompiler
     protected $tableName;
 
     /**
-     * @var string
-     */
-    protected $fullTableName;
-
-    /**
      * @var array
      */
     protected $modelReplacements = [
         ':app_namespace' => '',
         ':table_name' => '',
-        ':full_table_name' => '',
     ];
 
     /**
-     * @param Command $command
-     * @param         $identifier
-     * @param         $options
-     *
-     * @todo why setting options where we can get it from command? Either remove command or keep options
+     * @param $tableName
      */
-    public function __construct($tableName, $fullTableName)
+    public function __construct($tableName)
     {
         $this->tableName = $tableName;
-        $this->fullTableName = $fullTableName;
     }
 
     /**
@@ -50,7 +39,6 @@ class UserCompiler
     {
         $this->modelReplacements[':app_namespace'] = app()->getNamespace();
         $this->modelReplacements[':table_name'] = $this->tableName;
-        $this->modelReplacements[':full_table_name'] = $this->fullTableName;
 
         $template = strtr($template, $this->modelReplacements);
 

@@ -60,7 +60,6 @@ class ResourceCompiler
         ':app_namespace' => '',
         ':controller_name' => '',
         ':index_route' => '',
-        ':identifier' => '',
         ':actions' => '',
     ];
 
@@ -83,18 +82,26 @@ class ResourceCompiler
     ];
 
     /**
+     * @var string
+     */
+    protected $tableName;
+
+    /**
      * @param Command $command
      * @param         $identifier
      * @param         $options
+     * @param $configIdentifier
+     * @param $tableName
      *
      * @todo why setting options where we can get it from command? Either remove command or keep options
      */
-    public function __construct(Command $command, $identifier, $configIdentifier, $options)
+    public function __construct(Command $command, $identifier, $configIdentifier, $options, $tableName)
     {
         $this->command = $command;
         $this->identifier = $identifier;
         $this->configIdentifier = $configIdentifier;
         $this->options = $options;
+        $this->tableName = $tableName;
     }
 
     /**
@@ -122,7 +129,7 @@ class ResourceCompiler
         }
 
         $this->modelReplacements[':app_namespace'] = app()->getNamespace();
-        $this->modelReplacements[':table_name'] = str_plural($this->identifier);
+        $this->modelReplacements[':table_name'] = $this->tableName;
         $this->modelReplacements[':model_name'] = $this->command->model_name($this->identifier);
         $this->modelReplacements[':identifier'] = $this->configIdentifier;
 
@@ -139,19 +146,19 @@ class ResourceCompiler
     private function prepareReplacements()
     {
         $usesString = '';
-        if (! empty($this->modelReplacements[':uses'])) {
+        if (!empty($this->modelReplacements[':uses'])) {
             foreach ($this->modelReplacements[':uses'] as $use) {
-                $usesString .= 'use '.$use.';'.PHP_EOL;
+                $usesString .= 'use ' . $use . ';' . PHP_EOL;
             }
         }
 
         $this->modelReplacements[':uses'] = $usesString;
 
-        $this->modelReplacements[':implementations'] = ! empty($this->modelReplacements[':implementations']) ?
-            'implements '.implode(', ', $this->modelReplacements[':implementations']) : '';
+        $this->modelReplacements[':implementations'] = !empty($this->modelReplacements[':implementations']) ?
+            'implements ' . implode(', ', $this->modelReplacements[':implementations']) : '';
 
-        $this->modelReplacements[':traits'] = ! empty($this->modelReplacements[':traits']) ?
-            'use '.implode(', ', $this->modelReplacements[':traits']).';' : '';
+        $this->modelReplacements[':traits'] = !empty($this->modelReplacements[':traits']) ?
+            'use ' . implode(', ', $this->modelReplacements[':traits']) . ';' : '';
     }
 
     /**
@@ -162,7 +169,6 @@ class ResourceCompiler
     public function render_entities($template)
     {
         $this->entitiesReplacements[':app_namespace'] = app()->getNamespace();
-        $this->entitiesReplacements[':table_name'] = str_plural($this->identifier);
         $this->entitiesReplacements[':model_name'] = $this->command->model_name($this->identifier);
         $this->entitiesReplacements[':controller_name'] = $this->command->controller_name($this->identifier);
         $this->entitiesReplacements[':identifier'] = str_plural($this->configIdentifier);
@@ -232,8 +238,8 @@ class ResourceCompiler
     public function render_migration($template)
     {
         $this->migrationReplacements[':app_namespace'] = app()->getNamespace();
-        $this->migrationReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->identifier)).'Table';
-        $this->migrationReplacements[':table_name'] = str_plural($this->identifier);
+        $this->migrationReplacements[':migration_class'] = 'Create' . str_plural(studly_case($this->identifier)) . 'Table';
+        $this->migrationReplacements[':table_name'] = $this->tableName;
 
         $template = strtr($template, $this->migrationReplacements);
 
@@ -248,9 +254,9 @@ class ResourceCompiler
     public function render_migration_i18n($template)
     {
         $this->migrationReplacements[':app_namespace'] = app()->getNamespace();
-        $this->migrationReplacements[':migration_class'] = 'Create'.str_plural(studly_case($this->identifier)).'I18nTable';
-        $this->migrationReplacements[':table_name'] = str_plural($this->identifier).'_i18n';
-        $this->migrationReplacements[':parent_table_name'] = str_plural($this->identifier);
+        $this->migrationReplacements[':migration_class'] = 'Create' . str_plural(studly_case($this->identifier)) . 'I18nTable';
+        $this->migrationReplacements[':table_name'] = $this->tableName . '_i18n';
+        $this->migrationReplacements[':parent_table_name'] = $this->tableName;
 
         $template = strtr($template, $this->migrationReplacements);
 
@@ -270,7 +276,7 @@ class ResourceCompiler
                 if (end($modelNameSplitted) === $value) {
                     $string .= $value;
                 } else {
-                    $string .= $value.' ';
+                    $string .= $value . ' ';
                 }
             }
         }
@@ -283,6 +289,6 @@ class ResourceCompiler
      */
     public function getIndexRoute()
     {
-        return strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']).'.index');
+        return strtolower(str_replace(' ', '', $this->entitiesReplacements[':model_config_name']) . '.index');
     }
 }
