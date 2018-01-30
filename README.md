@@ -76,7 +76,7 @@ _Example_
 
 ## GDPR Compliance
 
-- IgniCMS provides you with out of the box functionalities, which will make the process of GDPR compliance on boarding easier. In our<a href="https://despark.github.io/igni-core/">Github page</a>you will understand how to use them.
+- IgniCMS provides you with out of the box functionalities, which will make the process of GDPR compliance on boarding easier. In our <a href="https://despark.github.io/igni-core/">Github page</a> you will understand how to use them.
 
 ## Additional information
 
