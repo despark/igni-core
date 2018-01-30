@@ -74,6 +74,10 @@ _Example_
 
 6. All done! Now go to the `<your_site_url>/admin` and use your credentials
 
+## GDPR Compliance
+
+- IgniCMS provides you with out of the box functionalities, which will make the process of GDPR compliance on boarding easier. In our<a href="https://despark.github.io/igni-core/">Github page</a>you will understand how to use them.
+
 ## Additional information
 
 - You can find more info about IgniCMS in our <a href="https://despark.github.io/igni-core/">Github page</a>.
