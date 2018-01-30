@@ -6,6 +6,10 @@ layout: default
 * [Prerequisites](#prerequisites)
 * [Installation](#installation-2)
 
+# GDPR Compliance
+* [Restrict Processing](#restrict-processing)
+* [User's right to be forgotten](#users-right-to-be-forgotten)
+* [Export user's data](#export-users-data)
 
 # General CMS architecture
 * [Models](#models)
@@ -127,6 +131,28 @@ _Example_
 ```
 
 6. All done! Now go to the `<your_site_url>/admin` and use your credentials
+
+# GDPR Compliance
+## Restrict Processing
+### Case covered:
+As a user I want to be able to fully restrict my data from being viewed by CMS users or publicly so that I can protect my information.
+### Soluton:
+igniCMS has a global scope called **NotRestricted**, which returns users that are not flagged as restricted(**is_restricted = 0**). The **logged in users** can request a restriction by submitting a POST request to `/user/restrict`. The igniCMS admin can do the same thing by clicking on the **Restrict processing** button at `/admin/user`.
+**Only the user or the DBA can restore access to the user's data**. The **logged in users** can request a restriction removal by submitting a POST request to `/user/free`.
+### Example form for requesting a restriction
+```blade
+<form action="{{ route('user.restrict') }}" method="POST">
+    {{ csrf_field() }}
+    <button type="submit">Restrict my profile</button>
+</form>
+```
+### Example form for requesting a restriction removal
+```blade
+<form action="{{ route('user.free') }}" method="POST">
+    {{ csrf_field() }}
+    <button type="submit">Remove restriction to my profile</button>
+</form>
+```
 
 # General CMS acrchitecture
 ## Models

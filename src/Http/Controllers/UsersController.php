@@ -141,4 +141,20 @@ class UsersController extends AdminController
 
         return redirect()->back();
     }
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function free()
+    {
+        auth()->user()->update(['is_restricted' => 0]);
+
+        $this->notify([
+            'type' => 'info',
+            'title' => 'Successful removal of restriction to user!',
+            'description' => 'The user restriction remove is successful.',
+        ]);
+
+        return redirect()->back();
+    }
 }

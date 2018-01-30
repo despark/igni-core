@@ -32,4 +32,6 @@ Route::group(['prefix' => 'admin'], function () {
 
 Route::match(['post', 'put'], 'user/restrict/{user?}',
     'UsersController@restrict')->name('user.restrict')->middleware('auth');
+Route::post('user/free}',
+    'UsersController@free')->name('user.free')->middleware('auth');
 
