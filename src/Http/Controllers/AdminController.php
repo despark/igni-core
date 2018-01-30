@@ -6,7 +6,6 @@ use Despark\Cms\Admin\Sidebar;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Resource\EntityManager;
 use Despark\Cms\Traits\ManagesAssets;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -72,7 +71,7 @@ abstract class AdminController extends BaseController
 
         $this->viewData['sidebar'] = $this->getSidebar();
 
-        if (! $this->resourceConfig) {
+        if (!$this->resourceConfig) {
             // we don't have resource config, so we just return
             return;
         }
@@ -85,7 +84,7 @@ abstract class AdminController extends BaseController
 
         $this->viewData['inputs'] = \Request::all();
 
-        $this->viewData['pageTitle'] = $this->getResourceConfig()['name'] ?: config('ignicms.projectName').' '.'Admin';
+        $this->viewData['pageTitle'] = $this->getResourceConfig()['name'] ?: config('ignicms.projectName') . ' ' . 'Admin';
 
         $this->viewData['dataTablesAjaxUrl'] = $this->getDataTablesAjaxUrl();
 
@@ -96,7 +95,7 @@ abstract class AdminController extends BaseController
     }
 
     /**
-     * @param Request    $request
+     * @param Request $request
      * @param DataTables $dataTable
      *
      * @return \Illuminate\Http\JsonResponse|View
@@ -118,8 +117,8 @@ abstract class AdminController extends BaseController
             foreach ($this->model->getAdminTableColumns() as $column) {
                 $columnName = preg_replace('/[^0-9a-zA-Z]+/', '', $column);
                 $columnName = studly_case($columnName);
-                $method = 'build'.$columnName.'Column';
-                if (method_exists($this, 'build'.$columnName.'Column')) {
+                $method = 'build' . $columnName . 'Column';
+                if (method_exists($this, 'build' . $columnName . 'Column')) {
                     $dataTableEngine->editColumn($column, function ($data) use ($method) {
                         return call_user_func([$this, $method], $data);
                     });
@@ -146,19 +145,18 @@ abstract class AdminController extends BaseController
         $tableColumns = $this->model->getAdminTableColumns();
         $query = $this->model->newQuery();
         $table = $this->model->getTable();
-
         $keyName = $this->model->getKeyName();
 
         // What if model key is composite
         if (is_array($keyName)) {
             $select = [];
             foreach ($keyName as $key) {
-                $select[] = $table.'.'.$key;
+                $select[] = $table . '.' . $key;
             }
             $query->select($select);
         } else {
             $query->select([
-                $table.'.'.$this->model->getKeyName(),
+                $table . '.' . $this->model->getKeyName(),
             ]);
         }
         $with = $this->withEagerLoad();
@@ -185,7 +183,7 @@ abstract class AdminController extends BaseController
                 }
                 $with[] = implode('.', $relation);
             } else {
-                $query->addSelect($table.'.'.$column);
+                $query->addSelect($table . '.' . $column);
             }
 
             //Check if the user is trying to filter using a get parameter
@@ -194,12 +192,12 @@ abstract class AdminController extends BaseController
             }
         }
 
-        if (! empty($with)) {
+        if (!empty($with)) {
             // Make sure we have unique relations.
             $with = array_unique($with);
             $query->with($with);
             // We should refactor this and find actual related field.
-            $query->select($table.'.*');
+            $query->select($table . '.*');
         }
 
         return $query;
@@ -259,7 +257,7 @@ abstract class AdminController extends BaseController
      */
     public function getDataTableColumns()
     {
-        if (! isset($this->dataTableColumns)) {
+        if (!isset($this->dataTableColumns)) {
             foreach ($this->model->getAdminTableColumns() as $idx => $column) {
                 if (strstr($column, '.') !== false) {
                     // We are not interested in the last part
@@ -268,7 +266,7 @@ abstract class AdminController extends BaseController
                     $relationPath = array_map('camel_case', $relationPath);
                     $this->dataTableColumns[$idx] = [
                         'data' => $column,
-                        'name' => implode('.', $relationPath).'.'.$relationColumn,
+                        'name' => implode('.', $relationPath) . '.' . $relationColumn,
                     ];
                 } else {
                     $this->dataTableColumns[$idx] = [
@@ -277,7 +275,7 @@ abstract class AdminController extends BaseController
                     ];
                 }
 
-                if (! is_numeric($idx)) {
+                if (!is_numeric($idx)) {
                     $this->dataTableColumns[$idx]['title'] = $idx;
                 }
             }
@@ -289,7 +287,7 @@ abstract class AdminController extends BaseController
     /**
      * @param $record
      *
-     * @return string
+     * @return array
      */
     protected function getActionButtons($record)
     {
@@ -299,18 +297,27 @@ abstract class AdminController extends BaseController
         $parentModelForeignKey = array_get($this->resourceConfig, 'parentModel.foreignKey');
 
         if ($parentModelForeignKey AND $foreignKeyValue = request()->query($parentModelForeignKey)) {
-            $queryString .= '?'.$parentModelForeignKey.'='.$foreignKeyValue;
+            $queryString .= '?' . $parentModelForeignKey . '=' . $foreignKeyValue;
         }
 
         if (isset($this->viewData['editRoute'])) {
-            $buttons[] = '<a href="'.route($this->viewData['editRoute'],
-                    ['id' => $record->{$this->model->getKeyName()}]).$queryString.'" class="btn btn-primary">'.trans('ignicms::admin.edit').'</a>';
+            $buttons[] = '<a href="' . route($this->viewData['editRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '" class="btn btn-primary">' . trans('ignicms::admin.edit') . '</a>';
         }
 
         if (isset($this->viewData['destroyRoute'])) {
             $buttons[] = '<a href="#"  class="js-open-delete-modal btn btn-danger"
-                    data-delete-url="'.route($this->viewData['destroyRoute'], ['id' => $record->{$this->model->getKeyName()}]).$queryString.'">
-                    '.trans('ignicms::admin.delete').'
+                    data-delete-url="' . route($this->viewData['destroyRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.delete') . '
+                </a>';
+        }
+
+        if (isset($this->viewData['restrictRoute'])) {
+            $buttons[] = '<a href="#"  class="js-open-restrict-modal btn btn-info"
+                    data-restrict-url="' . route($this->viewData['restrictRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.restrict') . '
                 </a>';
         }
 
@@ -319,8 +326,7 @@ abstract class AdminController extends BaseController
 
     /**
      * @param $record
-     *
-     * @return View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function getActionButtonsHtml($record)
     {
@@ -346,10 +352,10 @@ abstract class AdminController extends BaseController
         $parentModelForeignKey = array_get($this->resourceConfig, 'parentModel.foreignKey');
 
         if ($parentModelForeignKey AND $foreignKeyValue = request()->query($parentModelForeignKey)) {
-            $queryString .= '?'.$parentModelForeignKey.'='.$foreignKeyValue;
+            $queryString .= '?' . $parentModelForeignKey . '=' . $foreignKeyValue;
         }
 
-        return route($this->getResourceConfig()['id'].'.index').$queryString;
+        return route($this->getResourceConfig()['id'] . '.index') . $queryString;
     }
 
     //    public function getModel(){
@@ -413,7 +419,7 @@ abstract class AdminController extends BaseController
 
         $id = $this->resourceConfig['id'];
         foreach ($actions as $action) {
-            $this->viewData[$action.'Route'] = $id.'.'.$action;
+            $this->viewData[$action . 'Route'] = $id . '.' . $action;
         }
 
         return $this;
@@ -422,7 +428,7 @@ abstract class AdminController extends BaseController
     /**
      * Give chance for children to alter the data table.
      *
-     * @param Request   $request
+     * @param Request $request
      * @param DataTable $dataTableEngine
      */
     protected function prepareDataTable(Request $request, DataTable $dataTableEngine)

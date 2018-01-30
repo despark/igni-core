@@ -119,4 +119,26 @@ class UsersController extends AdminController
 
         return redirect()->back();
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restrict($id)
+    {
+        if ($id) {
+            $this->model->findOrFail($id)->update(['is_restricted' => 1]);
+
+        } else {
+            auth()->user()->update(['is_restricted' => 1]);
+        }
+
+        $this->notify([
+            'type' => 'info',
+            'title' => 'Successful restricted user!',
+            'description' => 'The user is restricted successfully.',
+        ]);
+
+        return redirect()->back();
+    }
 }
