@@ -8,7 +8,6 @@ layout: default
 
 # GDPR Compliance
 * [Restrict Processing](#restrict-processing)
-* [User's right to be forgotten](#users-right-to-be-forgotten)
 * [Export user's data](#export-users-data)
 
 # General CMS architecture
@@ -151,6 +150,115 @@ igniCMS has a global scope called **NotRestricted**, which returns users that ar
 <form action="{{ route('user.free') }}" method="POST">
     {{ csrf_field() }}
     <button type="submit">Remove restriction to my profile</button>
+</form>
+```
+
+## Export user's data
+### Cases covered:
+1. As a user I want to be able to request and receive export of all the data contained in the app about me in a structured format so that I can analyse it on a computer.
+2. As a CMS admin I want to be able to easily export all the data about any user so that I can send it to them easily and comply with GDPR.
+### Solution:
+The **logged in users** can request a data export by submitting a POST request to `/user/export`. The igniCMS admin can do the same thing by clicking on the **Full data export** button at `/admin/user`. If confirmed, a background process which forms a JSON of all the data of the user, saves it on the server as with a hashed name and sends an email with a link to it to the user. There is a command which gets all exported files older than 48h and deletes them. You can check how to set up a cron job at <a href="https://laravel.com/docs/5.5/scheduling">Laravel's docs</a>
+Here is how the export function works
+```php
+/**
+ * @param null $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function export($id = null)
+{
+    $relationships = $this->model->relationships();
+
+    if ($id) {
+        $this->model = $this->model->findOrFail($id);
+
+    } else {
+        $this->model = auth()->user();
+    }
+
+    $this->model->load($relationships);
+    $jsonData = collect($this->model, $this->model->getRelations())->toJson();
+    $filename = $this->generateFilename();
+    $fileFullPath = 'user-exports/' . $filename . '.json';
+    Storage::disk('public')->put($fileFullPath, $jsonData);
+    \Mail::to($this->model)->send(new UserExported($fileFullPath));
+
+    $this->notify([
+        'type' => 'info',
+        'title' => 'Successful export!',
+        'description' => 'The user\'s data is exported and sent successfully.',
+    ]);
+
+    return redirect()->back();
+}
+```
+
+```php
+class CleanUserExports extends Command
+{
+    /**
+     * The console command signature.
+     *
+     * @var string
+     */
+    protected $signature = 'igni:user:exports:clean';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Delete user exports older than 48 hours.';
+
+    /**
+     * Create a new command instance.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $storageDisk = Storage::disk('public');
+        $storagePrefix = $storageDisk->getDriver()->getAdapter()->getPathPrefix();
+        $files = $storageDisk->files('user-exports');
+        $filesToDelete = [];
+        $maxLifetimeInMinutes = 2880;
+
+        foreach ($files as $file) {
+            if (file_exists($storagePrefix . $file)) {
+                $minutesPassedSinceCreated = date('i', filectime($storagePrefix . $file));
+                if ($minutesPassedSinceCreated >= $maxLifetimeInMinutes) {
+                    $filesToDelete[] = $file;
+                }
+            }
+        }
+
+        $count = count($filesToDelete);
+        $bar = $this->output->createProgressBar($count);
+
+        foreach ($filesToDelete as $file) {
+            $storageDisk->delete($file);
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->info(PHP_EOL . 'User exports were deleted successfully');
+    }
+}
+```
+
+### Example form for requesting a user data export
+```blade
+<form action="{{ route('user.export') }}" method="POST">
+    {{ csrf_field() }}
+    <button type="submit">Export data</button>
 </form>
 ```
 
