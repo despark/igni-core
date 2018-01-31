@@ -125,6 +125,38 @@
             </div>
         </div>
     @endif
+
+    @if(isset($exportRoute))
+        <div class="modal modal-info fade" id="export-modal" tabindex="-1" role="dialog"
+             aria-labelledby="exportModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-target="#restrict-modal" data-dismiss="modal"
+                                aria-label="{{ trans('ignicms::admin.close') }}"><span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">{{ trans('ignicms::admin.exportTitle') }}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            {{ trans('ignicms::admin.exportConfirm') }}
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-left" data-target="#export-modal"
+                                data-dismiss="modal">{{ trans('ignicms::admin.close') }}</button>
+                        <form method="POST" action="" class="export-form">
+                            <input type="hidden" name="_token" value="{!! csrf_token() !!}"/>
+
+                            <button type="submit" type="button" class="restrict-btn btn btn-outline">
+                                {{ trans('ignicms::admin.agreeExport') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @stop
 
 @push('additionalScripts')
@@ -212,6 +244,18 @@
             $restrictModal.find('.restrict-form').attr('action', restrictURL);
 
             $restrictModal.modal();
+        });
+
+        // Export entity
+        $('body').on('click', '.js-open-export-modal', function (e) {
+            e.preventDefault();
+            var that = $(this),
+                $exportModal = $('#export-modal'),
+                exportURL = that.data('export-url');
+
+            $exportModal.find('.export-form').attr('action', exportURL);
+
+            $exportModal.modal();
         });
 
         var isSortable = $('th.sort').length === 0;

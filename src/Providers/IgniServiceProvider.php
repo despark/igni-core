@@ -25,6 +25,7 @@ class IgniServiceProvider extends ServiceProvider
         \Despark\Cms\Console\Commands\ResourceCommand::class,
         \Despark\Cms\Console\Commands\PagesResourceCommand::class,
         \Despark\Cms\Console\Commands\Image\Rebuild::class,
+        \Despark\Cms\Console\Commands\User\CleanUserExports::class,
     ];
 
     /**
@@ -34,21 +35,21 @@ class IgniServiceProvider extends ServiceProvider
     {
         // Routes
         $router->group(['namespace' => 'Despark\Cms\Http\Controllers', 'middleware' => ['web']], function ($router) {
-            require __DIR__.'/../routes/web.php';
+            require __DIR__ . '/../routes/web.php';
         });
 
         // Add our resource routes
         $router->group(['prefix' => 'admin', 'middleware' => ['web', 'auth.admin']], function ($router) {
-            require __DIR__.'/../routes/resources.php';
+            require __DIR__ . '/../routes/resources.php';
         });
 
         // Register Assets
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ignicms');
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'ignicms');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'ignicms');
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'ignicms');
 
         // Register config
-        $this->mergeConfigFrom(__DIR__.'/../../config/ignicms.php', 'ignicms');
-        $this->mergeConfigFrom(__DIR__.'/../../config/entities/user.php', 'resources.user');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/ignicms.php', 'ignicms');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/entities/user.php', 'resources.user');
 
         // Register the application commands
         $this->commands($this->commands);
@@ -57,39 +58,39 @@ class IgniServiceProvider extends ServiceProvider
 
         // Migrations
         $this->publishes([
-            __DIR__.'/../../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../../database/migrations' => database_path('migrations'),
         ], 'migrations');
         // Configs
         $this->publishes([
-            __DIR__.'/../../config/' => config_path(),
+            __DIR__ . '/../../config/' => config_path(),
         ], 'configs');
         // Plugins
         $this->publishes([
-            __DIR__.'/../../public/admin_assets/plugins' => base_path('/public/admin_assets/plugins'),
-            __DIR__.'/../../public/plugins/' => base_path('/public/plugins'),
+            __DIR__ . '/../../public/admin_assets/plugins' => base_path('/public/admin_assets/plugins'),
+            __DIR__ . '/../../public/plugins/' => base_path('/public/plugins'),
         ], 'plugins');
         // Resources
         $this->publishes([
-            __DIR__.'/../../resources/assets' => base_path('/resources/assets'),
-            __DIR__.'/../../resources/lang' => base_path('/resources/lang/vendor/ignicms'),
-            __DIR__.'/../../resources/icomoon.json' => base_path('/resources/icomoon.json'),
+            __DIR__ . '/../../resources/assets' => base_path('/resources/assets'),
+            __DIR__ . '/../../resources/lang' => base_path('/resources/lang/vendor/ignicms'),
+            __DIR__ . '/../../resources/icomoon.json' => base_path('/resources/icomoon.json'),
         ], 'resources');
 
         $this->publishes([
-            __DIR__.'/../../gulp/' => base_path('/gulp'),
-            __DIR__.'/../../package.json' => base_path('package.json'),
-            __DIR__.'/../../bower.json' => base_path('bower.json'),
-            __DIR__.'/../../.bowerrc' => base_path('.bowerrc'),
-            __DIR__.'/../../.babelrc' => base_path('.babelrc'),
-            __DIR__.'/../../.eslintrc' => base_path('.eslintrc'),
-            __DIR__.'/../../.editorconfig' => base_path('.editorconfig'),
-            __DIR__.'/../../gulpfile.js' => base_path('gulpfile.js'),
+            __DIR__ . '/../../gulp/' => base_path('/gulp'),
+            __DIR__ . '/../../package.json' => base_path('package.json'),
+            __DIR__ . '/../../bower.json' => base_path('bower.json'),
+            __DIR__ . '/../../.bowerrc' => base_path('.bowerrc'),
+            __DIR__ . '/../../.babelrc' => base_path('.babelrc'),
+            __DIR__ . '/../../.eslintrc' => base_path('.eslintrc'),
+            __DIR__ . '/../../.editorconfig' => base_path('.editorconfig'),
+            __DIR__ . '/../../gulpfile.js' => base_path('gulpfile.js'),
         ], 'igni-frontend');
 
         $configPaths = config('ignicms.paths');
         if ($configPaths) {
             foreach ($configPaths as $key => $path) {
-                if (! is_dir($path)) {
+                if (!is_dir($path)) {
                     File::makeDirectory($path, 0755, true);
                 }
             }

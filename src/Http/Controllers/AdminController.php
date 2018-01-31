@@ -321,6 +321,14 @@ abstract class AdminController extends BaseController
                 </a>';
         }
 
+        if (isset($this->viewData['exportRoute'])) {
+            $buttons[] = '<a href="#"  class="js-open-export-modal btn btn-info"
+                    data-export-url="' . route($this->viewData['exportRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.export') . '
+                </a>';
+        }
+
         return $buttons;
     }
 

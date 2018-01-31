@@ -2,19 +2,18 @@
 
 namespace :app_namespaceModels;
 
+use Despark\Cms\Admin\Traits\RelationshipsTrait;
 use Despark\Cms\Models\AdminModel;
 use Despark\Cms\Scopes\NotRestricted;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 class User extends AdminModel implements UserContract, CanResetPasswordContract
 {
-    use Notifiable;
-    use Authenticatable, Authorizable, CanResetPassword;
+    use Authenticatable, Authorizable, CanResetPassword, RelationshipsTrait;
 
     /**
      * The table associated with the model.
