@@ -9,7 +9,7 @@ return [
         'name',
         'email',
     ],
-    'actions' => ['edit', 'create', 'destroy', 'restrict'],
+    'actions' => ['edit', 'create', 'destroy', 'restrict', 'export'],
     'adminFormFields' => [
         'name' => [
             'type' => 'text',
