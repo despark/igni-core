@@ -16,7 +16,7 @@ class AddIsRestrictedColumnToUsersTable extends Migration
         $tablePrefix = config('ignicms.igniTablesPrefix');
         $tableName = $tablePrefix ? $tablePrefix . '_users' : 'users';
         Schema::table($tableName, function (Blueprint $table) {
-            $table->boolean('is_restricted')->after('is_admin');
+            $table->boolean('is_restricted')->after('is_admin')->default(0);
         });
     }
 
