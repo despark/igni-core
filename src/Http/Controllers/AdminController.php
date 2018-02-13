@@ -133,7 +133,7 @@ abstract class AdminController extends BaseController
 
         $this->viewData['model'] = $this->model;
 
-        return view('ignicms::admin.layouts.list', $this->viewData);
+        return view($this->getListView(), $this->viewData);
     }
 
     /**
@@ -201,6 +201,8 @@ abstract class AdminController extends BaseController
             // We should refactor this and find actual related field.
             $query->select($table.'.*');
         }
+
+        $this->postQueryBuilder($query);
 
         return $query;
     }
@@ -436,4 +438,24 @@ abstract class AdminController extends BaseController
     {
         return app(Sidebar::class);
     }
+
+    /*
+     *  Blow-trough function for controller-specific
+     *  queries
+     */
+
+    public function postQueryBuilder($query) {
+        return $query;
+    }    
+
+    /*
+     *  Blow-trough function for controller-specific
+     *  list views
+     */
+
+    public function getListView() {
+        return 'ignicms::admin.layouts.list';
+    }
+
+
 }
