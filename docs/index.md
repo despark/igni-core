@@ -134,7 +134,7 @@ _Example_
 # GDPR Compliance
 ## Restrict Processing
 ### Case covered:
-As a user I want to be able to fully restrict my data from being viewed by CMS users or publicly so that I can protect my information.
+As per [GDPR's Article 18](https://gdpr-info.eu/art-18-gdpr/) users must be provided with the ability to restrict their data from processing by the staff of the service. Below you can find how to implement this functionality in your IgniCMS powered web app.
 ### Soluton:
 igniCMS has a global scope called **NotRestricted**, which returns users that are not flagged as restricted(**is_restricted = 0**). The **logged in users** can request a restriction by submitting a POST request to `/user/restrict`. The igniCMS admin can do the same thing by clicking on the **Restrict processing** button at `/admin/user`.
 **Only the user or the DBA can restore access to the user's data**. The **logged in users** can request a restriction removal by submitting a POST request to `/user/free`.
@@ -155,8 +155,7 @@ igniCMS has a global scope called **NotRestricted**, which returns users that ar
 
 ## Export user's data
 ### Cases covered:
-1. As a user I want to be able to request and receive export of all the data contained in the app about me in a structured format so that I can analyse it on a computer.
-2. As a CMS admin I want to be able to easily export all the data about any user so that I can send it to them easily and comply with GDPR.
+As per [GDPR's Article 20](https://gdpr-info.eu/art-20-gdpr/) users must be provided with the ability to manually export or request an export of all the data which is stored about them on the server.
 ### Solution:
 The **logged in users** can request a data export by submitting a POST request to `/user/export`. The igniCMS admin can do the same thing by clicking on the **Full data export** button at `/admin/user`. If confirmed, a background process which forms a JSON of all the data of the user, saves it on the server as with a hashed name and sends an email with a link to it to the user. There is a command which gets all exported files older than 48h and deletes them. You can check how to set up a cron job at <a href="https://laravel.com/docs/5.5/scheduling">Laravel's docs</a>
 Here is how the export function works
