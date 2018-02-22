@@ -159,6 +159,8 @@ igniCMS has a global scope called **NotRestricted**, which returns users that ar
 2. As a CMS admin I want to be able to easily export all the data about any user so that I can send it to them easily and comply with GDPR.
 ### Solution:
 The **logged in users** can request a data export by submitting a POST request to `/user/export`. The igniCMS admin can do the same thing by clicking on the **Full data export** button at `/admin/user`. If confirmed, a background process which forms a JSON of all the data of the user, saves it on the server as with a hashed name and sends an email with a link to it to the user. There is a command which gets all exported files older than 48h and deletes them. You can check how to set up a cron job at <a href="https://laravel.com/docs/5.5/scheduling">Laravel's docs</a>
+If you want the background process to be in a queue, please check <a href="https://laravel.com/docs/5.5/queues">Laravel's docs</a> for setup. After that in the `ignicms` config file specify your queue name:
+`'user_export_queue' => env('IGNI_USER_EXPORT_QUEUE', 'user-export')`
 Here is how the export function works
 ```php
 /**
@@ -177,11 +179,12 @@ public function export($id = null)
     }
 
     $this->model->load($relationships);
-    $jsonData = collect($this->model, $this->model->getRelations())->toJson();
-    $filename = $this->generateFilename();
-    $fileFullPath = 'user-exports/' . $filename . '.json';
-    Storage::disk('public')->put($fileFullPath, $jsonData);
-    \Mail::to($this->model)->send(new UserExported($fileFullPath));
+    
+    dispatch((new UserRequestedExport($this->model))->onQueue(config('ignicms.user_export_queue')));
+    
+    if (request()->expectsJson()) {
+        return response(['success' => 'success'], 200);
+    }
 
     $this->notify([
         'type' => 'info',
