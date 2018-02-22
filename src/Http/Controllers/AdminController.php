@@ -300,6 +300,10 @@ abstract class AdminController extends BaseController
             $queryString .= '?' . $parentModelForeignKey . '=' . $foreignKeyValue;
         }
 
+        if (isset($this->viewData['restrictRoute']) || isset($this->viewData['exportRoute'])) {
+            $buttons[] = $this->getGdprActionButtons($record, $queryString);
+        }
+
         if (isset($this->viewData['editRoute'])) {
             $buttons[] = '<a href="' . route($this->viewData['editRoute'],
                     ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '" class="btn btn-primary">' . trans('ignicms::admin.edit') . '</a>';
@@ -310,22 +314,6 @@ abstract class AdminController extends BaseController
                     data-delete-url="' . route($this->viewData['destroyRoute'],
                     ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
                     ' . trans('ignicms::admin.delete') . '
-                </a>';
-        }
-
-        if (isset($this->viewData['restrictRoute'])) {
-            $buttons[] = '<a href="#"  class="js-open-restrict-modal btn btn-info"
-                    data-restrict-url="' . route($this->viewData['restrictRoute'],
-                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
-                    ' . trans('ignicms::admin.restrict') . '
-                </a>';
-        }
-
-        if (isset($this->viewData['exportRoute'])) {
-            $buttons[] = '<a href="#"  class="js-open-export-modal btn btn-info"
-                    data-export-url="' . route($this->viewData['exportRoute'],
-                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
-                    ' . trans('ignicms::admin.export') . '
                 </a>';
         }
 
@@ -449,5 +437,42 @@ abstract class AdminController extends BaseController
     public function getSidebar()
     {
         return app(Sidebar::class);
+    }
+
+    /**
+     * @param $record
+     * @param $queryString
+     * @return string
+     */
+    protected function getGdprActionButtons($record, $queryString)
+    {
+        $dropdownBtn = '<div class="btn-group"><button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+    GDPR <span class="caret"></span></button><ul class="dropdown-menu" role="menu">';
+        $dropdownBtnEnd = '</ul></div>';
+        if (isset($this->viewData['restrictRoute']) && isset($this->viewData['exportRoute'])) {
+            return $dropdownBtn . '<li><a href="#"  class="js-open-restrict-modal"
+                    data-restrict-url="' . route($this->viewData['restrictRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.restrict') . '
+                </a></li><li><a href="#"  class="js-open-export-modal"
+                    data-export-url="' . route($this->viewData['exportRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.export') . '
+                </a></li>' . $dropdownBtnEnd;
+        }
+
+        if (isset($this->viewData['restrictRoute'])) {
+            return $dropdownBtn . '<li><a href="#"  class="js-open-restrict-modal"
+                    data-restrict-url="' . route($this->viewData['restrictRoute'],
+                    ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.restrict') . '
+                </a></li>' . $dropdownBtnEnd;
+        }
+
+        return $dropdownBtn . '<li><a href="#"  class="js-open-export-modal"
+                    data-export-url="' . route($this->viewData['exportRoute'],
+                ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '">
+                    ' . trans('ignicms::admin.export') . '
+                </a></li>' . $dropdownBtnEnd;
     }
 }
