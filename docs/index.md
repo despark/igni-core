@@ -9,6 +9,7 @@ layout: default
 # GDPR Compliance
 * [Restrict Processing](#restrict-processing)
 * [Export user's data](#export-users-data)
+* [Users' right to be FORGOTTEN](#users-right-to-be-forgotten)
 
 # General CMS architecture
 * [Models](#models)
@@ -263,6 +264,39 @@ class CleanUserExports extends Command
     {{ csrf_field() }}
     <button type="submit">Export data</button>
 </form>
+```
+
+## Users' right to be FORGOTTEN
+The igniCMS team finds the solution by adding CASCADE options to the foreign keys.
+If you don't like this approach you can modify the Users' delete method as you prefer.
+Example:
+```php
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $user = $this->model->findOrFail($id);
+        // Here goes your removal logic for the users' relationships
+        // Example: Given we have a user that writes an article and we want to remove the user but keep the article as with not author(user_id = NULL)
+        $user->articles->update(['user_id' => null]);
+        // Or you want to remove the articles
+        $user->articles->delete();
+        // Then we delete the user himself
+        $user->delete();
+
+        $this->notify([
+            'type' => 'danger',
+            'title' => 'Successful deleted user!',
+            'description' => 'The user is deleted successfully.',
+        ]);
+
+        return redirect()->back();
+    }
 ```
 
 # General CMS acrchitecture
