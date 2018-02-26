@@ -300,13 +300,13 @@ abstract class AdminController extends BaseController
             $queryString .= '?' . $parentModelForeignKey . '=' . $foreignKeyValue;
         }
 
-        if (isset($this->viewData['restrictRoute']) || isset($this->viewData['exportRoute'])) {
-            $buttons[] = $this->getGdprActionButtons($record, $queryString);
-        }
-
         if (isset($this->viewData['editRoute'])) {
             $buttons[] = '<a href="' . route($this->viewData['editRoute'],
                     ['id' => $record->{$this->model->getKeyName()}]) . $queryString . '" class="btn btn-primary">' . trans('ignicms::admin.edit') . '</a>';
+        }
+
+        if (isset($this->viewData['restrictRoute']) || isset($this->viewData['exportRoute'])) {
+            $buttons[] = $this->getGdprActionButtons($record, $queryString);
         }
 
         if (isset($this->viewData['destroyRoute'])) {
