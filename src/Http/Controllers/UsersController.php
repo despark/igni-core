@@ -4,10 +4,9 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
 use Despark\Cms\Http\Requests\UserUpdateRequest;
-use Despark\Cms\Mail\UserExported;
+use Despark\Cms\Queue\UserRequestedExport;
 use Illuminate\Http\Request;
 use Response;
-use Storage;
 
 class UsersController extends AdminController
 {
@@ -135,6 +134,10 @@ class UsersController extends AdminController
             auth()->user()->update(['is_restricted' => 1]);
         }
 
+        if (request()->expectsJson()) {
+            return response(['success' => 'success'], 200);
+        }
+
         $this->notify([
             'type' => 'info',
             'title' => 'Successful restricted user!',
@@ -150,6 +153,10 @@ class UsersController extends AdminController
     public function free()
     {
         auth()->user()->update(['is_restricted' => 0]);
+
+        if (request()->expectsJson()) {
+            return response(['success' => 'success'], 200);
+        }
 
         $this->notify([
             'type' => 'info',
@@ -176,11 +183,12 @@ class UsersController extends AdminController
         }
 
         $this->model->load($relationships);
-        $jsonData = collect($this->model, $this->model->getRelations())->toJson();
-        $filename = $this->generateFilename();
-        $fileFullPath = 'user-exports/' . $filename . '.json';
-        Storage::disk('public')->put($fileFullPath, $jsonData);
-        \Mail::to($this->model)->send(new UserExported($fileFullPath));
+
+        dispatch((new UserRequestedExport($this->model))->onQueue(config('ignicms.user_export_queue')));
+
+        if (request()->expectsJson()) {
+            return response(['success' => 'success'], 200);
+        }
 
         $this->notify([
             'type' => 'info',
@@ -191,22 +199,5 @@ class UsersController extends AdminController
         return redirect()->back();
     }
 
-    /**
-     * @return string
-     */
-    protected function generateFilename()
-    {
-        $isUnique = false;
-        $path = Storage::disk('public')->getDriver()->getAdapter()->getPathPrefix() . 'user-exports/';
-        $filename = '';
 
-        while (!$isUnique) {
-            $filename = hash('md5', $this->model->id . date('Y-m-d H:i:s'));
-            if (!file_exists($path . $filename . 'json')) {
-                $isUnique = true;
-            }
-        }
-
-        return $filename;
-    }
 }
