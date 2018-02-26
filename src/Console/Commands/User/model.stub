@@ -2,18 +2,18 @@
 
 namespace :app_namespaceModels;
 
+use Despark\Cms\Admin\Traits\RelationshipsTrait;
 use Despark\Cms\Models\AdminModel;
+use Despark\Cms\Scopes\NotRestricted;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 class User extends AdminModel implements UserContract, CanResetPasswordContract
 {
-    use Notifiable;
-    use Authenticatable, Authorizable, CanResetPassword;
+    use Authenticatable, Authorizable, CanResetPassword, RelationshipsTrait;
 
     /**
      * The table associated with the model.
@@ -28,7 +28,7 @@ class User extends AdminModel implements UserContract, CanResetPasswordContract
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'is_admin',
+        'name', 'email', 'password', 'is_admin', 'is_restricted',
     ];
 
     /**
@@ -51,4 +51,10 @@ class User extends AdminModel implements UserContract, CanResetPasswordContract
         'email' => 'required|email|unique::table_name,email,{id},id',
         'password' => 'max:20',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new NotRestricted());
+    }
 }

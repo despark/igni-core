@@ -6,6 +6,10 @@ layout: default
 * [Prerequisites](#prerequisites)
 * [Installation](#installation-2)
 
+# GDPR Compliance
+* [Restrict Processing](#restrict-processing)
+* [Export user's data](#export-users-data)
+* [Users' right to be FORGOTTEN](#users-right-to-be-forgotten)
 
 # General CMS architecture
 * [Models](#models)
@@ -127,6 +131,172 @@ _Example_
 ```
 
 6. All done! Now go to the `<your_site_url>/admin` and use your credentials
+
+# GDPR Compliance
+## Restrict Processing
+### Case covered:
+As per [GDPR's Article 18](https://gdpr-info.eu/art-18-gdpr/) users must be provided with the ability to restrict their data from processing by the staff of the service. Below you can find how to implement this functionality in your IgniCMS powered web app.
+### Soluton:
+igniCMS has a global scope called **NotRestricted**, which returns users that are not flagged as restricted(**is_restricted = 0**). The **logged in users** can request a restriction by submitting a POST request to `/user/restrict`. The igniCMS admin can do the same thing by clicking on the **Restrict processing** button at `/admin/user`.
+**Only the user or the DBA can restore access to the user's data**. The **logged in users** can request a restriction removal by submitting a POST request to `/user/free`.
+### Example form for requesting a restriction
+```blade
+<form action="{{ route('user.restrict') }}" method="POST">
+    {{ csrf_field() }}
+    <button type="submit">Restrict my profile</button>
+</form>
+```
+### Example form for requesting a restriction removal
+```blade
+<form action="{{ route('user.free') }}" method="POST">
+    {{ csrf_field() }}
+    <button type="submit">Remove restriction to my profile</button>
+</form>
+```
+
+## Export user's data
+### Cases covered:
+As per [GDPR's Article 20](https://gdpr-info.eu/art-20-gdpr/) users must be provided with the ability to manually export or request an export of all the data which is stored about them on the server.
+### Solution:
+The **logged in users** can request a data export by submitting a POST request to `/user/export`. The igniCMS admin can do the same thing by clicking on the **Full data export** button at `/admin/user`. If confirmed, a background process which forms a JSON of all the data of the user, saves it on the server as with a hashed name and sends an email with a link to it to the user. There is a command which gets all exported files older than 48h and deletes them. You can check how to set up a cron job at <a href="https://laravel.com/docs/5.5/scheduling">Laravel's docs</a>
+If you want the background process to be in a queue, please check <a href="https://laravel.com/docs/5.5/queues">Laravel's docs</a> for setup. After that in the `ignicms` config file specify your queue name:
+`'user_export_queue' => env('IGNI_USER_EXPORT_QUEUE', 'user-export')`
+Here is how the export function works
+```php
+/**
+ * @param null $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function export($id = null)
+{
+    $relationships = $this->model->relationships();
+
+    if ($id) {
+        $this->model = $this->model->findOrFail($id);
+
+    } else {
+        $this->model = auth()->user();
+    }
+
+    $this->model->load($relationships);
+    
+    dispatch((new UserRequestedExport($this->model))->onQueue(config('ignicms.user_export_queue')));
+    
+    if (request()->expectsJson()) {
+        return response(['success' => 'success'], 200);
+    }
+
+    $this->notify([
+        'type' => 'info',
+        'title' => 'Successful export!',
+        'description' => 'The user\'s data is exported and sent successfully.',
+    ]);
+
+    return redirect()->back();
+}
+```
+
+```php
+class CleanUserExports extends Command
+{
+    /**
+     * The console command signature.
+     *
+     * @var string
+     */
+    protected $signature = 'igni:user:exports:clean';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Delete user exports older than 48 hours.';
+
+    /**
+     * Create a new command instance.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $storageDisk = Storage::disk('public');
+        $storagePrefix = $storageDisk->getDriver()->getAdapter()->getPathPrefix();
+        $files = $storageDisk->files('user-exports');
+        $filesToDelete = [];
+        $maxLifetimeInMinutes = 2880;
+
+        foreach ($files as $file) {
+            if (file_exists($storagePrefix . $file)) {
+                $minutesPassedSinceCreated = date('i', filectime($storagePrefix . $file));
+                if ($minutesPassedSinceCreated >= $maxLifetimeInMinutes) {
+                    $filesToDelete[] = $file;
+                }
+            }
+        }
+
+        $count = count($filesToDelete);
+        $bar = $this->output->createProgressBar($count);
+
+        foreach ($filesToDelete as $file) {
+            $storageDisk->delete($file);
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->info(PHP_EOL . 'User exports were deleted successfully');
+    }
+}
+```
+
+### Example form for requesting a user data export
+```blade
+<form action="{{ route('user.export') }}" method="POST">
+    {{ csrf_field() }}
+    <button type="submit">Export data</button>
+</form>
+```
+
+## Users' right to be FORGOTTEN
+The igniCMS team finds the solution by adding CASCADE options to the foreign keys.
+If you don't like this approach you can modify the Users' delete method as you prefer.
+Example:
+```php
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $user = $this->model->findOrFail($id);
+        // Here goes your removal logic for the users' relationships
+        // Example: Given we have a user that writes an article and we want to remove the user but keep the article as with not author(user_id = NULL)
+        $user->articles->update(['user_id' => null]);
+        // Or you want to remove the articles
+        $user->articles->delete();
+        // Then we delete the user himself
+        $user->delete();
+
+        $this->notify([
+            'type' => 'danger',
+            'title' => 'Successful deleted user!',
+            'description' => 'The user is deleted successfully.',
+        ]);
+
+        return redirect()->back();
+    }
+```
 
 # General CMS acrchitecture
 ## Models

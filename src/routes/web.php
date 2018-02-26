@@ -24,8 +24,13 @@ Route::group(['prefix' => 'admin'], function () {
         //            ]
         //        );
 
-               // Route::post('file/{file}', 'FileController@get')->name('file.get');
+        // Route::post('file/{file}', 'FileController@get')->name('file.get');
         Route::match(['get', 'post'], 'image/upload', 'Admin\ImageController@upload')->name('image.upload');
         Route::get('image/preview/{temp_image?}', 'Admin\ImageController@preview')->name('image.preview');
     });
 });
+
+Route::match(['post', 'put'], 'user/restrict/{user?}',
+    'UsersController@restrict')->name('user.restrict')->middleware('auth');
+Route::post('user/free', 'UsersController@free')->name('user.free')->middleware('auth');
+Route::post('user/export/{user?}', 'UsersController@export')->name('user.export')->middleware('auth');

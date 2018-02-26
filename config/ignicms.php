@@ -50,4 +50,5 @@ return [
             '/css/admin.css',
         ],
     ],
+    'user_export_queue' => env('IGNI_USER_EXPORT_QUEUE', 'user-export'),
 ];

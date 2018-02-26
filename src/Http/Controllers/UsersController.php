@@ -4,6 +4,7 @@ namespace Despark\Cms\Http\Controllers;
 
 use Despark\Cms\Http\Requests\UserRequest;
 use Despark\Cms\Http\Requests\UserUpdateRequest;
+use Despark\Cms\Queue\UserRequestedExport;
 use Illuminate\Http\Request;
 use Response;
 
@@ -119,4 +120,84 @@ class UsersController extends AdminController
 
         return redirect()->back();
     }
+
+    /**
+     * @param null $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restrict($id = null)
+    {
+        if ($id) {
+            $this->model->findOrFail($id)->update(['is_restricted' => 1]);
+
+        } else {
+            auth()->user()->update(['is_restricted' => 1]);
+        }
+
+        if (request()->expectsJson()) {
+            return response(['success' => 'success'], 200);
+        }
+
+        $this->notify([
+            'type' => 'info',
+            'title' => 'Successful restricted user!',
+            'description' => 'The user is restricted successfully.',
+        ]);
+
+        return redirect()->back();
+    }
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function free()
+    {
+        auth()->user()->update(['is_restricted' => 0]);
+
+        if (request()->expectsJson()) {
+            return response(['success' => 'success'], 200);
+        }
+
+        $this->notify([
+            'type' => 'info',
+            'title' => 'Successful removal of restriction to user!',
+            'description' => 'The user restriction remove is successful.',
+        ]);
+
+        return redirect()->back();
+    }
+
+    /**
+     * @param null $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function export($id = null)
+    {
+        $relationships = $this->model->relationships();
+
+        if ($id) {
+            $this->model = $this->model->findOrFail($id);
+
+        } else {
+            $this->model = auth()->user();
+        }
+
+        $this->model->load($relationships);
+
+        dispatch((new UserRequestedExport($this->model))->onQueue(config('ignicms.user_export_queue')));
+
+        if (request()->expectsJson()) {
+            return response(['success' => 'success'], 200);
+        }
+
+        $this->notify([
+            'type' => 'info',
+            'title' => 'Successful export!',
+            'description' => 'The user\'s data is exported and sent successfully.',
+        ]);
+
+        return redirect()->back();
+    }
+
+
 }
