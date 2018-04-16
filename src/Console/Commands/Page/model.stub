@@ -23,14 +23,14 @@ class Page extends AdminModel implements UploadImageInterface
     protected $rules = [
         'title' => 'required|max:100|unique::table_name,title',
         'meta_description' => 'max:255',
-        'slug' => 'max:200|unique::full_table_name,slug',
+        'slug' => 'max:200|unique::table_name,slug',
         'content' => 'required',
         'meta_image' => 'image|max:5000|required',
     ];
 
     protected $rulesUpdate = [
         'title' => 'required|max:100|unique::table_name,title,{id},id',
-        'slug' => 'max:200|unique::full_table_name,slug,{id},id',
+        'slug' => 'max:200|unique::table_name,slug,{id},id',
         'meta_image' => 'image|max:5000',
     ];
 

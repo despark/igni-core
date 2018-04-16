@@ -165,6 +165,6 @@ class PagesResourceCommand extends Command
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 
-        \DB::table(str_plural($this->fullTableName))->insert($page);
+        \DB::table(str_plural($this->tableName))->insert($page);
     }
 }

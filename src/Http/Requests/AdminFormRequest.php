@@ -4,11 +4,12 @@ namespace Despark\Cms\Http\Requests;
 
 use Despark\Cms\Admin\Traits\AdminValidateTrait;
 use Despark\Cms\Contracts\RequestContract;
+use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 
 /**
  * Class ProjectRequest.
  */
-class AdminFormRequest extends Request implements RequestContract
+class AdminFormRequest extends Request implements RequestContract, ValidatesWhenResolved
 {
     use AdminValidateTrait;
 

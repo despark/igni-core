@@ -31,7 +31,7 @@ class EntityController extends AdminController
         $input = $request->all();
 
         if ($this->model instanceof Translatable) {
-            $this->model->setActiveLocale($input['locale']);
+            $this->model->setActiveLocale($request->get('locale', $this->model->getDefaultLocale()));
         }
         $record = $this->model->create($input);
         if (method_exists($record, 'getManyToManyFields')) {
@@ -69,7 +69,7 @@ class EntityController extends AdminController
         $input = $request->all();
 
         if ($this->model instanceof Translatable) {
-            $this->model->setActiveLocale($input['locale']);
+            $this->model->setActiveLocale($request->get('locale', $this->model->getDefaultLocale()));
         }
 
         $record = $this->model->findOrFail($id);
