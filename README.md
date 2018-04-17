@@ -6,7 +6,9 @@
 
 # Despark's igniCMS
 
-**igniCMS** is an administrative interface builder for Laravel 5.4|5.5|5.6
+**igniCMS** is an administrative interface builder for Laravel 5.6. 
+
+_For older Laravel versions (5.4 & 5.5) please use <a href="https://github.com/despark/igni-core/tree/1.7">version 1.7</a> of the igniCMS._
 
 ## Prerequisites
 
