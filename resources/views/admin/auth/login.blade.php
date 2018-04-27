@@ -28,18 +28,14 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 text-center">
                         <button type="submit" class="btn btn-primary btn-block btn-flat uppercase">Sign In</button>
+                        <br>
+                        <a href="{{ url('/admin/password/reset') }}">Forgot your password?</a>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-xs-12">
-                        <a href="{{ url('/admin/password/reset') }}" class="btn btn-link btn-block btn-flat uppercase">Forgot your password?</button>
-                    </div>
-                </div>
-
-                <div class="">
+                <div class="text-center">
                     <input type="checkbox" name="remember" id="remember" class="css-checkbox">
                     <label for="remember" class="css-label">Remember me</label>
                 </div>
