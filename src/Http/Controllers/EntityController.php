@@ -53,7 +53,11 @@ class EntityController extends AdminController
             $redirectRoute = route($this->getResourceConfig()['id'] . '.create');
         }
 
-        return redirect($redirectRoute . (array_get($input, 'parent_model') ? array_get($input, 'parent_model') : ''));
+        if ($this->model instanceof Translatable) {
+            $redirectRoute .= '?locale=' . $input['locale'];
+        }
+
+        return redirect($redirectRoute);
     }
 
     /**
