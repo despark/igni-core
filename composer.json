@@ -38,7 +38,7 @@
         "doctrine/dbal": "^2.5",
         "yajra/laravel-datatables-oracle": "~8.0",
         "spatie/laravel-permission": "^1.11",
-        "despark/laravel-db-i18n": "v1.x"
+        "despark/laravel-db-i18n": "v3.x"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.1",
